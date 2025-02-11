@@ -7,4 +7,4 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ${SYS_DIR}/front-end/index.html:/usr/share/nginx/html/index.html:ro
+      - ${SYS_DIR}/front-end:/usr/share/nginx/html
