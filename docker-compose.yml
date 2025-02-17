@@ -8,3 +8,34 @@ services:
       - "443:443"
     volumes:
       - ${SYS_DIR}/front-end:/usr/share/nginx/html
+  back-end:
+      build:
+        context: ./back-end
+        dockerfile: Dockerfile  # Adjust if your Dockerfile is not within the `ack-end` directory
+      ports:
+        - "5000:5000"  # Adjust if your Flask app uses a different port
+      volumes:
+        - ./back-end:/app
+      environment:
+        FLASK_APP: app.py  # Adjust if your main app file is named differently
+        FLASK_ENV: development
+  ollama:
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 7869:11434
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
