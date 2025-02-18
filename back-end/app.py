@@ -2,16 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, Response
 import io
-from flask_cors import CORS
 
 app = Flask(__name__)
-# Customize CORS options
-CORS(app, resources={r"/*": {
-    "origins": '*',
-    "methods": ["GET", "POST"],
-    "allow_headers": ["Content-Type", "Authorization"]
-}})
-
 
 @app.route('/base-distribution')
 def base_distribution():

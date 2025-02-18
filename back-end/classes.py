@@ -8,7 +8,6 @@ user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36
 config = Config()
 config.browser_user_agent = user_agent
 
-
 class Text:
     def __init__(self, text: str):
         self.text = text
