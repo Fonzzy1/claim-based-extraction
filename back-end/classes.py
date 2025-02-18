@@ -8,11 +8,26 @@ user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36
 config = Config()
 config.browser_user_agent = user_agent
 
-class Article:
-    def __init__(self, url):
-        self.url = url
-        self.fetched = False
+
+class Text:
+    def __init__(self, text: str):
+        self.text = text
         self.analysed = False
+        self.claims = []
+
+    def analyze(self):
+        if not self.analysed:
+            # Perform some kind of text analysis here
+            self.analysed = True
+
+class Article(Text):
+    def __init__(self, url: str):
+        super().__init__(text=None)
+        self.url = url
+        self.title = None
+        self.authors = []
+        self.publish_date = None
+        self.fetched = False
 
     def fetch(self):
         article = base_article(self.url, config=config)
@@ -26,26 +41,24 @@ class Article:
         self.fetched = True
 
 class Claim:
-    def __init__(self ):
+    def __init__(self):
         pass
-
 
 class Corpus:
     def __init__(self):
-        self.articles: List[Article] = []
+        self.articles: List[Text] = []
 
     def fetch_all(self, redo=False):
         for article in tqdm(self.articles, total=len(self.articles), desc='Fetching Articles'):
-            if not article.fetched or redo:
+            if isinstance(article, Article) and (not article.fetched or redo):
                 article.fetch()
 
     def to_pickle(self, path):
         with open(path, 'wb') as f:
-            dill.dump(self, f)  # Corrected: Dump self, not path
+            dill.dump(self, f)
     
     @classmethod
     def from_pickle(cls, filepath: str) -> 'Corpus':
-        """Create a Corpus instance from a pickle file."""
         with open(filepath, 'rb') as f:
             return dill.load(f)
 
@@ -55,6 +68,14 @@ class Corpus:
         for url in tqdm(urls, total=len(urls), desc='Creating corpus from urls'):
             article = Article(url)
             corpus.articles.append(article)
+        return corpus
+
+    @classmethod
+    def from_texts(cls, texts: List[str]) -> 'Corpus':
+        corpus = cls()
+        for text in tqdm(texts, total=len(texts), desc='Creating corpus from texts'):
+            text_article = Text(text)
+            corpus.articles.append(text_article)
         return corpus
 
 if __name__ == '__main__':
