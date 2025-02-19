@@ -1,3 +1,4 @@
+from enum import Enum
 INFRASTRUCTURE = {
     'Renewables': [
         "Small Scale Solar", 
@@ -39,6 +40,11 @@ for category, items in INFRASTRUCTURE.items():
     for item in items:
         reverse_map[item] = category
 
+# Dynamically construct the enum
+InfrastructureType = Enum(
+    'InfrastructureType', 
+    {option.replace(' ', '_').upper(): option for option in all_infrastructure_options}
+)
 
 SYSTEM_EXTRACTOR = f"""
 **Task Description:**
@@ -51,7 +57,7 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 
 2. **Identify the Claims**: Identify all claims made in the article, and note down each quote that relates to these claims.
 
-3. **Identify the Energy-Producing Infrastructure**: Focus on infrastructure related to energy production methods or technologies pertinent to energy transmission and storage. Look for claims only related to the following, and ignore the rest: {", ".join(all_infrastructure_options)}. 
+3. **Identify the Energy-Producing Infrastructure**: Focus on infrastructure related to energy production methods or technologies pertinent to energy transmission and storage. Look for claims only related to the following, and don't return the the rest: {", ".join(all_infrastructure_options)}. 
 
 4. **Identify Claims and Adjectives**: Look for statements with explicit or implicit claims about the identified energy infrastructure. For each claim, determine the single adjective that best captures the essence of the moral judgment, such as "expensive," "beneficial," "harmful," etc. You may include qualifying information with these adjectives, e.g., 'harmful to birds', 'environmentally beneficial', 'emission-reducing'.
 
@@ -62,6 +68,7 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 - **Adjective Selection**: Ensure that the selected adjectives reflect both explicit and implicit moral evaluations of the claims.
 - **Multiple Claims**: A single piece of infrastructure may have multiple claims associated with it.
 - **Implicit Claims**: Many claims may be implicit, where the moral judgment is implied. Be attentive to these subtle expressions.
+- **Non-Relevant Claims**: Only return claims that reference one of the technologies listed above. Do not return any claims about technology that is not in the list.
 """
 
 SYSTEM_EVALUATION = """
