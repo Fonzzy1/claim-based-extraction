@@ -1,7 +1,6 @@
-
+from openai import OpenAI
 from typing import List
-import json
-from models import ClaimList
+from models.claim import ClaimList
 from constants import SYSTEM_EXTRACTOR
 
 # OpenAI client initialization

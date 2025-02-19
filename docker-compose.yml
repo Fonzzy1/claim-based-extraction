@@ -7,15 +7,16 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ${SYS_DIR}/front-end:/usr/share/nginx/html
+      - ${SYS_DIR}/front_end:/usr/share/nginx/html
   back-end:
       build:
-        context: ./back-end
+        context: ./back_end
         dockerfile: Dockerfile  # Adjust if your Dockerfile is not within the `ack-end` directory
       ports:
         - "5000:5000"  # Adjust if your Flask app uses a different port
       volumes:
-        - ${SYS_DIR}/back-end:/app
+        - ${SYS_DIR}/back_end:/app
+        - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
   ollama:
     volumes:
       - ollama:/root/.ollama

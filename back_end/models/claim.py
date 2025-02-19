@@ -44,7 +44,7 @@ class Claim(BaseModel):
             )
             evaluation: Evaluation = completion.choices[0].message.parsed
             self.dimension = evaluation.dimension
-            self.valence = evaluation.dimension
+            self.valence = evaluation.valence
             self.evaluated = True
 
     def __getstate__(self):
