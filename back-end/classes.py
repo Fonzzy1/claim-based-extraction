@@ -23,14 +23,14 @@ class Text:
     """
     def __init__(self, text: str) -> None:
         self.text: str = text
-        self.analysed: bool = False
+        self.analyzed: bool = False
         self.claims: List[Claim] = []
 
-    def analyze(self) -> None:
+    def analyze_text(self, redo: bool = False) -> None:
         """
         Analyze the text to extract claims using OpenAI's service.
         """
-        if not self.analysed:
+        if not self.analyzed or redo:
             completion = client.beta.chat.completions.parse(
                 model="gpt-4o-2024-08-06",
                 messages=[
@@ -42,7 +42,7 @@ class Text:
 
             claimlist: ClaimList = completion.choices[0].message.parsed
             self.claims = claimlist.claims
-            self.analysed = True
+            self.analyzed = True
 
 class Claim(BaseModel):
     """
@@ -51,7 +51,7 @@ class Claim(BaseModel):
     quote: str = Field(..., description="A quote from the article text that makes the claim")
     infrastructure: str = Field(..., description=f"The infrastructure that the claim is made about. One of: {', '.join(all_infrastructure_options)}")
     judgement: str = Field(..., description="An adjective with or without qualifying information")
-    evaluated: bool = Field(default=False, description="A field that is always False")
+    evaluated: bool = Field(..., description="A field that is always False")
 
     @field_validator('infrastructure')
     def validate_infrastructure(cls, value: str) -> str:
@@ -65,21 +65,21 @@ class Claim(BaseModel):
             raise ValueError('Evaluated must be set as false')
         return value
 
-    def evaluate(self) -> None:
+    def evaluate_claim(self, redo: bool = False) -> None:
         """
-        Analyze the text to extract claims using OpenAI's service.
+        Evaluate the claim using OpenAI's service.
         """
-        if not self.evaluated:
+        if not self.evaluated or redo:
             completion = client.beta.chat.completions.parse(
                 model="gpt-4o-2024-08-06",
                 messages=[
                     {"role": "system", "content": SYSTEM_EVALUATION},
-                    {"role": "user", "content": json.dumps(self.dict())},
+                    {"role": "user", "content": json.dumps(self.__dict__)},
                 ],
                 response_format=Evaluation,
             )
             evaluation: Evaluation = completion.choices[0].message.parsed
-            self.__dict__ = {**self.__dict__, **evaluation.dict()}
+            self.__dict__.update(evaluation.__dict__)
             self.evaluated = True
 
 class Evaluation(BaseModel):
@@ -113,19 +113,20 @@ class Article(Text):
         self.publish_date: Optional[str] = None
         self.fetched: bool = False
 
-    def fetch(self) -> None:
+    def fetch_article(self, redo: bool = True) -> None:
         """
-        Fetches and parses the article content from the given URL.
+        Fetch and parse the article content from the given URL.
         """
-        article = BaseArticle(self.url, config=config)
-        article.download()
-        article.parse()
-        
-        self.title = article.title
-        self.text = article.text
-        self.authors = article.authors
-        self.publish_date = article.publish_date
-        self.fetched = True
+        if not self.fetched or redo:
+            article = BaseArticle(self.url, config=config)
+            article.download()
+            article.parse()
+
+            self.title = article.title
+            self.text = article.text
+            self.authors = article.authors
+            self.publish_date = article.publish_date
+            self.fetched = True
 
 class Corpus:
     """
@@ -133,18 +134,46 @@ class Corpus:
     """
     def __init__(self) -> None:
         self.articles: List[Text] = []
+    
+    def process_all_articles(self, redo: bool = False) -> None:
+        """
+        Fetch, analyze, and evaluate all articles in the corpus.
+        """
+        self.fetch_all_articles(redo)
+        self.analyze_all_articles(redo)
+        self.evaluate_all_claims(redo)
 
-    def fetch_all(self, redo: bool = False) -> None:
+    def fetch_all_articles(self, redo: bool = False) -> None:
         """
         Fetch all articles in the corpus if not already fetched.
         """
         for article in tqdm(self.articles, total=len(self.articles), desc='Fetching Articles'):
-            if isinstance(article, Article) and (not article.fetched or redo):
-                article.fetch()
+            if isinstance(article, Article):
+                article.fetch_article(redo)
+
+    def analyze_all_articles(self, redo: bool = False) -> None:
+        """
+        Analyze all articles in the corpus to extract claims.
+        """
+        for text in tqdm(self.articles, total=len(self.articles), desc='Analyzing Texts'):
+            if isinstance(text, Article):
+                if not text.fetched:
+                    raise Exception('Article has not been fetched yet')
+            text.analyze_text(redo=redo)
+
+    def evaluate_all_claims(self, redo: bool = False) -> None:
+        """
+        Evaluate all claims in the corpus.
+        """
+        for text in tqdm(self.articles, total=len(self.articles), desc='Evaluating Claims'):
+            if not text.analyzed:
+                raise Exception('Text has not been analyzed yet')
+            for claim in text.claims:
+                claim.evaluate_claim(redo=redo)
 
     def to_pickle(self, path: str) -> None:
         """
-        Serialize the corpus to a file using pickle.
+        Serialize the corpus to a file using dill.
         """
         with open(path, 'wb') as f:
             dill.dump(self, f)
@@ -182,13 +211,6 @@ class Corpus:
 if __name__ == '__main__':
     with open('../urls.txt', 'r') as f:
         urls = f.read().split('\n')
-    urls = [url for url in urls if url.strip()]
     corpus = Corpus.from_urls(urls)
-    corpus.fetch_all()
-    corpus.to_pickle('corpus.pkl')
-    first_article = corpus.articles[0]
-    first_article.analyze()
-    claims = first_article.claims
-    claim = claims[0]
-    claim.evaluate()
-    claim.valence
+    corpus.process_all_articles()
+    corpus.to_pickle('../corpus.pkl')
