@@ -1,6 +1,3 @@
-from pydantic import BaseModel, Field, field_validator
-from typing import Literal, List
-
 INFRASTRUCTURE = {
     'Renewables': [
         "Small Scale Solar", 
@@ -54,7 +51,7 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 
 2. **Identify the Claims**: Identify all claims made in the article, and note down each quote that relates to these claims.
 
-3. **Identify the Energy-Producing Infrastructure**: Focus on infrastructure related to energy production methods or technologies pertinent to energy transmission and storage. Look for claims related to: {", ".join(all_infrastructure_options)}
+3. **Identify the Energy-Producing Infrastructure**: Focus on infrastructure related to energy production methods or technologies pertinent to energy transmission and storage. Look for claims only related to the following, and ignore the rest: {", ".join(all_infrastructure_options)}. 
 
 4. **Identify Claims and Adjectives**: Look for statements with explicit or implicit claims about the identified energy infrastructure. For each claim, determine the single adjective that best captures the essence of the moral judgment, such as "expensive," "beneficial," "harmful," etc. You may include qualifying information with these adjectives, e.g., 'harmful to birds', 'environmentally beneficial', 'emission-reducing'.
 
@@ -67,30 +64,26 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 - **Implicit Claims**: Many claims may be implicit, where the moral judgment is implied. Be attentive to these subtle expressions.
 """
 
+SYSTEM_EVALUATION = """
+**Task Description:**
 
-class ClaimModel(BaseModel):
-    quote: str = Field(..., description="A quote from the article text that makes the claim")
-    infrastructure: str = Field(..., description="The infristructure that the claim is being made about. One of: " + ", ".join(all_infrastructure_options))
-    judgement: str = Field(..., description="An adjective with or without qualifying information")
-    
-    @field_validator('infrastructure')
-    def validate_infrastructure(cls, value):
-        if value not in all_infrastructure_options:
-            raise ValueError(f'infrastructure must be one of {all_infrastructure_options}')
-        return value
+You are tasked with evaluating a claim that has been made about a peice of energy infrutucure. In this task, you will assess whether the moral judgments highlighted in the text are predominantly along an economic dimension or an externality dimension. Furthermore, you will determine a valence score between -1 and 1 for each judgment, reflecting a spectrum from strong disapproval to strong approval.
+
+**Instructions:**
+
+1. **Review Extracted Claims**: Examine the claims, specifically focusing on the energy infrastructure and corresponding adjectives that represent moral judgments.
+
+2. **Identify Dimensions**: For each claim, determine whether the primary dimension of evaluation is:
+   - **Economic**: Concerns related to costs, investments, economic benefits, financial viability, etc.
+   - **Externality**: Concerns related to environmental impact, social consequences, health effects, etc.
+
+3. **Assign Valence Score**: Assign a valence score between -1 and 1 to each claim based on the level of approval or disapproval expressed:
+   - **-1**: Strong disapproval (e.g., "severely harmful")
+   - **0**: Neutral or ambivalent (e.g., "unremarkable")
+   - **+1**: Strong approval (e.g., "highly beneficial")
 
 
-class ClaimList(BaseModel):
-  claims: list[ClaimModel]
-
-class EvaluationModel(BaseModel):
-    judgment: str = Field(..., description="An evaluative statement or judgment regarding the subject.")
-    dimension: Literal['economic', 'externalities']
-    valence: float = Field(..., description="A float between -1 and 1 indicating the sentiment of the judgment.")
-    
-    # Validator to ensure the valence is within the specified range
-    @field_validator('valence')
-    def valence_must_be_in_range(cls, v):
-        if not -1 <= v <= 1:
-            raise ValueError('valence must be between -1 and 1')
-        return v
+**Additional Tips:**
+- **Combine Perspectives**: If a claim touches on both dimensions, prioritize the one with a stronger emphasis.
+- **Subjectivity Awareness**: Recognize that these evaluations rely on interpretation; aim to provide interpretations that capture the prevailing sentiment.
+"""
