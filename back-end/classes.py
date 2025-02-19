@@ -3,6 +3,10 @@ from newspaper import Article as base_article
 from newspaper import Config
 from tqdm import tqdm
 import dill
+from models import ClaimList, EvaluationModel, SYSTEM_EXTRACTOR
+from openai import OpenAI
+
+client = OpenAI()
 
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
 config = Config()
@@ -16,8 +20,34 @@ class Text:
 
     def analyze(self):
         if not self.analysed:
-            # Perform some kind of text analysis here
+            completion = client.beta.chat.completions.parse(
+                model="gpt-4o-2024-08-06",
+                messages=[
+                    {"role": "system", "content": SYSTEM_EXTRACTOR},
+                    {"role": "user", "content": self.text},
+                ],
+                response_format=ClaimList,
+            )
+
+            claimlist_model = completion.choices[0].message.parsed
+            self.claims = Claim.list_from_models(claimlist_model)
             self.analysed = True
+
+class Claim:
+    def __init__(self, quote, infrustructure, judgment):
+        self.quote=  quote
+        self.infrustructue = infrustructure
+        self.judgment = judgment
+        self.evaluated = False
+
+    @classmethod
+    def from_model(cls, claim_model):
+        return cls(claim_model.quote, claim_model.infrastructure, claim_model.judgement)
+
+    @classmethod
+    def list_from_models(cls, claimlist_model):
+        return [cls.from_model(model) for model in claimlist_model.claims]
+
 
 class Article(Text):
     def __init__(self, url: str):
@@ -39,9 +69,6 @@ class Article(Text):
         self.publish_date = article.publish_date
         self.fetched = True
 
-class Claim:
-    def __init__(self):
-        pass
 
 class Corpus:
     def __init__(self):
@@ -78,8 +105,8 @@ class Corpus:
         return corpus
 
 if __name__ == '__main__':
-    with open('urls.txt', 'r') as f:
+    with open('../urls.txt', 'r') as f:
         urls = f.read().split('\n')
-        corpus = Corpus.from_urls(urls)
-        corpus.fetch_all()
-        corpus.to_pickle('corpus.pkl')
+    corpus = Corpus.from_urls(urls)
+    corpus.fetch_all()
+    corpus.to_pickle('corpus.pkl')
