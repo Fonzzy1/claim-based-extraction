@@ -94,3 +94,7 @@ You are tasked with evaluating a claim that has been made about a peice of energ
 - **Combine Perspectives**: If a claim touches on both dimensions, prioritize the one with a stronger emphasis.
 - **Subjectivity Awareness**: Recognize that these evaluations rely on interpretation; aim to provide interpretations that capture the prevailing sentiment.
 """
+
+class Dimension(Enum):
+    ECONOMIC = 'economic'
+    EXTERNALITIES = 'externalities'
