@@ -5,7 +5,7 @@ from newspaper import Config
 from tqdm import tqdm
 import dill
 import json
-from constants import SYSTEM_EXTRACTOR, SYSTEM_EVALUATION, all_infrastructure_options
+from constants import SYSTEM_EXTRACTOR, SYSTEM_EVALUATION, InfrastructureType
 from openai import OpenAI
 
 # OpenAI client initialization
@@ -44,20 +44,16 @@ class Text:
             self.claims = claimlist.claims
             self.analyzed = True
 
+
+
 class Claim(BaseModel):
     """
     A model representing a claim extracted from text.
     """
     quote: str = Field(..., description="A quote from the article text that makes the claim")
-    infrastructure: str = Field(..., description=f"The infrastructure that the claim is made about. One of: {', '.join(all_infrastructure_options)}")
+    infrastructure: InfrastructureType = Field(..., description=f"The infrastructure that the claim is made about")
     judgement: str = Field(..., description="An adjective with or without qualifying information")
     evaluated: bool = Field(..., description="A field that is always False")
-
-    @field_validator('infrastructure')
-    def validate_infrastructure(cls, value: str) -> str:
-        if value not in all_infrastructure_options:
-            raise ValueError(f'Infrastructure must be one of {all_infrastructure_options}')
-        return value
 
     @field_validator('evaluated')
     def validate_evaluated(cls, value: bool) -> bool:
@@ -74,13 +70,30 @@ class Claim(BaseModel):
                 model="gpt-4o-2024-08-06",
                 messages=[
                     {"role": "system", "content": SYSTEM_EVALUATION},
-                    {"role": "user", "content": json.dumps(self.__dict__)},
+                    {"role": "user", "content": json.dumps({
+        "quote": self.quote,
+        "infrastructure": self.infrastructure.value,  # Access the enum value
+        "judgement": self.judgement
+    })},
                 ],
                 response_format=Evaluation,
             )
             evaluation: Evaluation = completion.choices[0].message.parsed
             self.__dict__.update(evaluation.__dict__)
             self.evaluated = True
+
+    def __getstate__(self):
+           state = self.__dict__.copy()
+           # Convert enum to string for serialization
+           state['infrastructure'] = state['infrastructure'].value if isinstance(state['infrastructure'], InfrastructureType) else state['infrastructure']
+           return state
+
+    def __setstate__(self, state):
+           # Restore enum from string
+           if isinstance(state.get('infrastructure'), str):
+               state['infrastructure'] = InfrastructureType(state['infrastructure'])
+           self.__dict__.update(state)
+
 
 class Evaluation(BaseModel):
     """
@@ -211,6 +224,9 @@ class Corpus:
 if __name__ == '__main__':
     with open('../urls.txt', 'r') as f:
         urls = f.read().split('\n')
+    urls = urls[0:5]
     corpus = Corpus.from_urls(urls)
     corpus.process_all_articles()
     corpus.to_pickle('../corpus.pkl')
+
+    corpus2 = Corpus.from_pickle('../corpus.pkl')
