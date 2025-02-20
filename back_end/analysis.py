@@ -1,6 +1,7 @@
 from models import Corpus
 from constants import InfrastructureType, Dimension, reverse_map
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 
 class Distribution():
@@ -31,16 +32,29 @@ if __name__ == '__main__':
             for dim, value in data.items():
                 plot_data[dim][subcategory] = value
 
+    unique_groups = set(reverse_map.values())
+    color_map = {group: color for group, color in zip(unique_groups, mcolors.TABLEAU_COLORS)}
+
     # Set up the subplot
     fig, axs = plt.subplots(nrows=len(plot_data.keys()), ncols=1, figsize=(14, 10))
 
 
-    # Plot economic data
-    for i, k in enumerate(plot_data.keys()):
-        axs[i].boxplot(plot_data[k].values, tick_labels = plot_data[k].keys() vert=False)
-        axs[i].set_title(k)
+    for i, dim in enumerate(plot_data.keys()):
+        subcategories = list(plot_data[dim].keys())
+        data = list(plot_data[dim].values())
+        
+        # Colors based on group membership via reverse_map
+        colors = [color_map[reverse_map[subcategory]] for subcategory in subcategories]
+
+        bplot = axs[i].boxplot(data, patch_artist=True, vert=False)
+        
+        for patch, color in zip(bplot['boxes'], colors):
+            patch.set_facecolor(color)
+        
+        axs[i].set_title(dim)
         axs[i].set_xlabel('Score')
         axs[i].set_ylabel('Energy Subcategory')
+        axs[i].set_yticklabels(subcategories)
 
     # Adjust layout
     plt.tight_layout()
