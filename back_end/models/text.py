@@ -1,10 +1,10 @@
-from openai import OpenAI
+from models.ai_client import Ai
 from typing import List
 from models.claim import ClaimList
 from constants import SYSTEM_EXTRACTOR
 
 # OpenAI client initialization
-client: OpenAI = OpenAI()
+client: Ai = Ai()
 
 class Text:
     """
@@ -20,16 +20,14 @@ class Text:
         Analyze the text to extract claims using OpenAI's service.
         """
         if not self.analyzed or redo:
-            completion = client.beta.chat.completions.parse(
-                model="gpt-4o-2024-08-06",
+            claimlist = client.structured_complete(
                 messages=[
                     {"role": "system", "content": SYSTEM_EXTRACTOR},
                     {"role": "user", "content": self.text},
                 ],
-                response_format=ClaimList,
+                structure=ClaimList,
             )
 
-            claimlist: ClaimList = completion.choices[0].message.parsed
             self.claims = claimlist.claims
             self.analyzed = True
 
