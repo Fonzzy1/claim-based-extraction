@@ -7,23 +7,20 @@ from models.ai_client import Ai
 # OpenAI client initialization
 client: Ai = Ai()
 
-# User agent configuration for newspaper
-class Claim(BaseModel):
-    """
-    A model representing a claim extracted from text.
-    """
+class ClaimStruct(BaseModel):
     quote: str = Field(..., description="A quote from the article text that makes the claim")
     infrastructure: InfrastructureType = Field(..., description=f"The infrastructure that the claim is made about")
     judgement: str = Field(..., description="An adjective with or without qualifying information")
-    evaluated: bool = Field(False, description="A field that is always False")
-    dimension: Optional[Dimension] = Field(None, description="A feild tha is always Empty")
-    valence: float = Field(0, description="A field that is always 0")
 
-    @field_validator('evaluated')
-    def validate_evaluated(cls, value: bool) -> bool:
-        if value != False:
-            raise ValueError('Evaluated must be set as false')
-        return value
+
+# User agent configuration for newspaper
+class Claim(ClaimStruct):
+    """
+    A model representing a claim extracted from text.
+    """
+    evaluated: bool = False
+    dimension: Optional[Dimension] = Field(None, description="A feild tha is always Empty")
+    valence: float = 0
 
     def evaluate_claim(self, redo: bool = False) -> None:
         """
@@ -78,5 +75,12 @@ class ClaimList(BaseModel):
     """
     A model for holding a list of claims.
     """
-    claims: List[Claim]
+    claims: List[ClaimStruct]
+
+    def transform_to_claims(self) -> List[Claim]:
+        """
+        Convert all ClaimStruct instances in the list to Claim instances.
+        """
+        return [Claim(**claim_struct.dict()) for claim_struct in self.claims]
+
 

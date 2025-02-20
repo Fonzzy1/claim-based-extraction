@@ -28,6 +28,6 @@ class Text:
                 structure=ClaimList,
             )
 
-            self.claims = claimlist.claims
+            self.claims = claimlist.transform_to_claims()
             self.analyzed = True
 
