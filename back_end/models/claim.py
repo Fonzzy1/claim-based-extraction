@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 import json
 from constants import SYSTEM_EVALUATION, InfrastructureType, Dimension
-from openai import OpenAI
+from models.ai_client import Ai
 
 # OpenAI client initialization
-client: OpenAI = OpenAI()
+client: Ai = Ai()
 
 # User agent configuration for newspaper
 class Claim(BaseModel):
@@ -15,9 +15,9 @@ class Claim(BaseModel):
     quote: str = Field(..., description="A quote from the article text that makes the claim")
     infrastructure: InfrastructureType = Field(..., description=f"The infrastructure that the claim is made about")
     judgement: str = Field(..., description="An adjective with or without qualifying information")
-    evaluated: bool = Field(..., description="A field that is always False")
+    evaluated: bool = Field(False, description="A field that is always False")
     dimension: Optional[Dimension] = Field(None, description="A feild tha is always Empty")
-    valence: float = Field(..., description="A field that is always 0")
+    valence: float = Field(0, description="A field that is always 0")
 
     @field_validator('evaluated')
     def validate_evaluated(cls, value: bool) -> bool:
@@ -30,19 +30,17 @@ class Claim(BaseModel):
         Evaluate the claim using OpenAI's service.
         """
         if not self.evaluated or redo:
-            completion = client.beta.chat.completions.parse(
-                model="gpt-4o-2024-08-06",
+            evaluation: Evaluation = client.structured_complete(
                 messages=[
                     {"role": "system", "content": SYSTEM_EVALUATION},
                     {"role": "user", "content": json.dumps({
-        "quote": self.quote,
-        "infrastructure": self.infrastructure.value,  # Access the enum value
-        "judgement": self.judgement
-    })},
+                        "quote": self.quote,
+                        "infrastructure": self.infrastructure.value,  # Access the enum value
+                        "judgement": self.judgement
+                    })},
                 ],
-                response_format=Evaluation,
+                structure=Evaluation,
             )
-            evaluation: Evaluation = completion.choices[0].message.parsed
             self.dimension = evaluation.dimension
             self.valence = evaluation.valence
             self.evaluated = True
