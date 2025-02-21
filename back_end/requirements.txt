@@ -7,3 +7,4 @@ lxml_html_clean
 dill
 ollama
 openai
+scipy

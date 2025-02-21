@@ -7,10 +7,10 @@ T = TypeVar('T')
 class Ai():
     def __init__(self):
         # Check if ollama is running
-        check = requests.get('http://localhost:11434')
+        check = requests.get('http://ollama:11434')
         if check.status_code == 200:
             self.client = OpenAI(
-                base_url = 'http://localhost:11434/v1',
+                base_url = 'http://ollama:11434/v1',
                 api_key='ollama', # required, but unused
             )
             self.default_model = "deepseek-r1:14b"
