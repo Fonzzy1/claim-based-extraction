@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    networks:
+      - ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
