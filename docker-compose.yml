@@ -9,34 +9,18 @@ services:
     volumes:
       - ${SYS_DIR}/front_end:/usr/share/nginx/html
   back-end:
-      build:
-        context: ./back_end
-        dockerfile: Dockerfile  # Adjust if your Dockerfile is not within the `ack-end` directory
-      ports:
-        - "5000:5000"  # Adjust if your Flask app uses a different port
-      volumes:
-        - ${SYS_DIR}/back_end:/app
-        - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
-      networks: 
-      - ollama
-  ollama:
+    build:
+      context: ./back_end
+      dockerfile: Dockerfile  # Adjust if your Dockerfile is not within the `back-end` directory
+    ports:
+      - "5000:5000"  # Adjust if your Flask app uses a different port
     volumes:
-      - ollama:/root/.ollama
-    pull_policy: always
-    tty: true
-    restart: unless-stopped
-    image: ollama/ollama:latest
+      - ${SYS_DIR}/back_end:/app
+      - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
     environment:
-      - OLLAMA_KEEP_ALIVE=24h
-    networks:
+      - OPENAI_API_KEY={OPENAI_API_KEY}
+    networks: 
       - ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
 volumes:
   ollama:
