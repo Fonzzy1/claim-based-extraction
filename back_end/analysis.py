@@ -4,16 +4,24 @@ import numpy as np
 from scipy.stats import ks_2samp
 from models import Corpus
 from scipy.stats import combine_pvalues
+from copy import deepcopy
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+
 
 class Distribution():
     def __init__(self, corpus):
         self.corpus = corpus
         self.claims =  [claim for article in self.corpus.articles for claim in article.claims]
-        self.fig = None 
         self.distribution = { (z,y):[] for z in (i.value for i in Dimension) for y in (j.value for j in InfrastructureType)}
-         
+
         for claim in self.claims:
             self.distribution[(claim.dimension.value, claim.infrastructure.value)].append(claim.valence)
+
+
+        self.fig = None 
+        self.create_base_plot()
 
     def compare_article(self, text):
         """
@@ -40,10 +48,48 @@ class Distribution():
 
         return combined_statistic, combined_p_value
 
+    def create_base_plot(self):
+        # Extract the data lists from the dictionary
+
+        data = [{"value": val, "dimension": dim, "infrastructure": infra} for (dim, infra), vals in self.distribution.items() for val in vals]
+        df = pd.DataFrame(data)
+
+        self.fig = px.box(df, x="value", y="infrastructure", color='dimension',notched=False)
+
+    def plot_text(self, text):
+        new_plot = deepcopy(self.fig)
+        data = [{"value": claim.valence, "dimension": claim.dimension.value, "infrastructure": claim.infrastructure.value} for claim in text.claims]
+        df = pd.DataFrame(data)
+
+        
+        # Iterate over each dimension to create separate scatter traces
+        for dimension in df['dimension'].unique():
+            dimension_data = df[df['dimension'] == dimension]
+            scatter = go.Scatter(
+                x=dimension_data['value'],
+                y=dimension_data['infrastructure'],
+                mode='markers',
+                marker=dict(
+                    size=10  # Set the size of the markers here
+                ),
+                name=f'Claims - {dimension}',  # Display name for legend
+                showlegend=True
+            )
+            new_plot.add_trace(scatter)
+        new_plot.write_html('test2.html')
+
+        return new_plot
+
+
+
+
+
 
 if __name__=='__main__':
     corpus= Corpus.from_pickle('corpus.pkl')
     self= Distribution(corpus)
+    self.fig.write_html("interactive_plot.html")
+
     most_contrarian = 1
     index = -1
     for i,text in enumerate(corpus.articles):
@@ -51,6 +97,7 @@ if __name__=='__main__':
         if p < most_contrarian:
             most_contrarian = p
             index= i
+    self.plot_text(text)
         
 
 
