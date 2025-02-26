@@ -1,32 +1,24 @@
-import matplotlib.pyplot as plt
-import numpy as np
 from flask import Flask, Response
 import io
+from models import Corpus
+from analysis import Distribution
+import plotly.io as pio
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+corpus= Corpus.from_pickle('corpus.pkl')
+dist = Distribution(corpus)
+
 
 @app.route('/base-distribution')
-def base_distribution():
-    # Generating random data
-    np.random.seed(0)
-    data = np.random.normal(0, 1, 100)  # Generate 100 random numbers from a normal distribution
+def get_base_dist():
+    fig_html = pio.to_html(dist.fig, full_html=False,include_plotlyjs=False, div_id='graph-container')
 
-    # Creating the box plot
-    plt.figure(figsize=(10, 5.5))
-    plt.boxplot(data)
-
-    # Adding title and labels
-    plt.title('Box Plot Example')
-    plt.ylabel('Values')
-
-    # Save the plot to a BytesIO object in SVG format
-    output = io.BytesIO()
-    plt.savefig(output, format='svg')
-    plt.close()  # Close the figure to free memory
-    output.seek(0)  # Rewind the data
-
-    # Return the SVG image as a response
-    return Response(output.getvalue(), mimetype='image/svg+xml')
-
+    # Return the HTML div directly
+    return Response(fig_html, mimetype='text/html')
+    
+    return
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
