@@ -31,3 +31,10 @@ class Text:
             self.claims = claimlist.transform_to_claims()
             self.analyzed = True
 
+    def evaluate_all(self,redo: bool=False):
+        if not self.analyzed:
+            raise Exception('Text has not been analyzed yet')
+        for claim in self.claims:
+            claim.evaluate_claim(redo=redo)
+
+

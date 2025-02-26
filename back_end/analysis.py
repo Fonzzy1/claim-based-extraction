@@ -28,10 +28,12 @@ class Distribution():
         Compare the valence distributions of the article to the
         corpus distribution using KS test for each dimension and 
         infrastructure pair.
+        If there are no claims return 1
         """
         text_dist = { k:[] for k in self.distribution.keys()}
         for claim in text.claims:
             text_dist[(claim.dimension.value, claim.infrastructure.value)].append(claim.valence)
+
 
         individual_p_values = []
 
@@ -46,7 +48,10 @@ class Distribution():
 
         combined_statistic, combined_p_value = combine_pvalues(individual_p_values, method='fisher')
 
-        return combined_statistic, combined_p_value
+        if combine_pvalues == np.nan:
+            return 1,1
+        else:
+            return combined_statistic , combined_p_value
 
     def create_base_plot(self):
         # Extract the data lists from the dictionary
@@ -58,25 +63,24 @@ class Distribution():
 
     def plot_text(self, text):
         new_plot = deepcopy(self.fig)
-        data = [{"value": claim.valence, "dimension": claim.dimension.value, "infrastructure": claim.infrastructure.value} for claim in text.claims]
-        df = pd.DataFrame(data)
+        if len(text.claims):
+            data = [{"value": claim.valence, "dimension": claim.dimension.value, "infrastructure": claim.infrastructure.value} for claim in text.claims]
+            df = pd.DataFrame(data)
 
-        
-        # Iterate over each dimension to create separate scatter traces
-        for dimension in df['dimension'].unique():
-            dimension_data = df[df['dimension'] == dimension]
-            scatter = go.Scatter(
-                x=dimension_data['value'],
-                y=dimension_data['infrastructure'],
-                mode='markers',
-                marker=dict(
-                    size=10  # Set the size of the markers here
-                ),
-                name=f'Claims - {dimension}',  # Display name for legend
-                showlegend=True
-            )
-            new_plot.add_trace(scatter)
-        new_plot.write_html('test2.html')
+            # Iterate over each dimension to create separate scatter traces
+            for dimension in df['dimension'].unique():
+                dimension_data = df[df['dimension'] == dimension]
+                scatter = go.Scatter(
+                    x=dimension_data['value'],
+                    y=dimension_data['infrastructure'],
+                    mode='markers',
+                    marker=dict(
+                        size=10  # Set the size of the markers here
+                    ),
+                    name=f'Claims - {dimension}',  # Display name for legend
+                    showlegend=True
+                )
+                new_plot.add_trace(scatter)
 
         return new_plot
 
@@ -86,18 +90,14 @@ class Distribution():
 
 
 if __name__=='__main__':
+    from models import Text
+    t = Text('Windfarms are dangerous')
+    t.analyze_text()
+    t.evaluate_all()
+    t.claims
     corpus= Corpus.from_pickle('corpus.pkl')
     self= Distribution(corpus)
-    self.fig.write_html("interactive_plot.html")
-
-    most_contrarian = 1
-    index = -1
-    for i,text in enumerate(corpus.articles):
-        stat, p = self.compare_article(text)
-        if p < most_contrarian:
-            most_contrarian = p
-            index= i
-    self.plot_text(text)
+    self.compare_article(t)
         
 
 

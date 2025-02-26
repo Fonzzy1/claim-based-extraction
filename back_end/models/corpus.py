@@ -42,10 +42,7 @@ class Corpus:
         Evaluate all claims in the corpus.
         """
         for text in tqdm(self.articles, total=len(self.articles), desc='Evaluating Claims'):
-            if not text.analyzed:
-                raise Exception('Text has not been analyzed yet')
-            for claim in text.claims:
-                claim.evaluate_claim(redo=redo)
+            text.evaluate_all(redo=redo)
 
     def to_pickle(self, path: str) -> None:
         """
