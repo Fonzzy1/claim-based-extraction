@@ -33,8 +33,10 @@ async function handleSubmit(event) {
 
     const messageTextarea = document.getElementById('message');
     const messageText = messageTextarea.value;
+    const spinner = document.getElementById('loading-spinner');
 
     try {
+        spinner.classList.add('loading'); // Show spinner
         const response = await fetch('http://localhost:5000/analyze', {
             method: 'POST',
             headers: {
@@ -83,6 +85,8 @@ async function handleSubmit(event) {
 
     } catch (error) {
         console.error('Error analyzing text:', error);
+    } finally {
+        spinner.classList.remove('loading'); // Hide spinner
     }
 }
 
