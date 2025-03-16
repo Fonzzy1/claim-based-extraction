@@ -8,6 +8,7 @@ pydantic==2.10.6
 Requests==2.32.3
 scipy==1.15.2
 tqdm==4.67.1
+yt_dlp==2025.02.19
 lxml_html_clean 
 pandas
 plotly
