@@ -82,6 +82,7 @@ class NewsCorpMegaSource(TextSource,VideoSource,AudioSource):
 
         results = res['results'][0]['hits']
         objects=[x['canonical']['link'] for x in results]
+        #youtube-dl seems to be able to pull out the links
 
 
         
