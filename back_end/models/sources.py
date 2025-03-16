@@ -21,7 +21,6 @@ class Source():
         for link in soup.find_all('a', href=True):
             self.objects.append(self.object_class(link['href']))
 
-
     def fetch_all_objects(self, redo: bool = False) -> None:
         """
         Fetch all texts in the corpus if not already fetched.
@@ -40,13 +39,17 @@ class AudioSource(Source):
     def __init__(self, url):
         super().__init__(url)
 
+class VideoSource(Source):
+    def __init__(self, url):
+        super().__init__(url)
+
 
 class TextSource(Source):
     def __init__(self, url):
         super().__init__(url)
         self.object_class = Article
 
-class ABCSource(TextSource):
+class ABCTextSource(TextSource):
     def __init__(self, url):
         super().__init__(url)
 
@@ -61,17 +64,27 @@ class ABCSource(TextSource):
         links = [ 'https://abc.net.au' + x['link'] for x in full_json['collection']]
         self.objects =  [self.object_class(link) for link in links]
 
-
-class VideoSource(Source):
+class NewsCorpMegaSource(TextSource,VideoSource,AudioSource):
     def __init__(self, url):
         super().__init__(url)
 
+    def find_objects(self):
+        url = 'https://www.news.com.au/sitesearch/1/indexes/*/queries'
+        res = requests.post(url, json=
+                      {"requests":[
+                          {
+                              "indexName":"prod_news_content_bylatest",
+                              "params":"page=1&query=Coal%20Power&tagFilters="
+                                    }
+                               ]
+                       }
+                      ).json()
+
+        results = res['results'][0]['hits']
+        objects=[x['canonical']['link'] for x in results]
 
 
-
-
-
-
+        
 
 
 
