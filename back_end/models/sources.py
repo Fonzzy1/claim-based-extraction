@@ -4,6 +4,10 @@ from models.data_objects.article import Article
 from models.data_objects.audio import Audio
 from models.data_objects.video import Video
 from models.text import Text
+import requests
+from bs4 import BeautifulSoup
+
+url = 'https://www.abc.net.au/news/topic/electricity-production-and-distribution'
 
 class Source():
     def __init__(self, url):
@@ -11,18 +15,12 @@ class Source():
         self.objects=[]
         self.object_class = Text
 
-    def get_urls(self):
-        import requests
-        from bs4 import BeautifulSoup
-
+    def find_objects(self):
         response = requests.get(self.url)
         soup = BeautifulSoup(response.text, 'html.parser')
-        links = []
-
         for link in soup.find_all('a', href=True):
-            links.append(link['href'])
+            self.objects.append(self.object_class(link['href']))
 
-        return links
 
     def fetch_all_objects(self, redo: bool = False) -> None:
         """
@@ -48,6 +46,20 @@ class TextSource(Source):
         super().__init__(url)
         self.object_class = Article
 
+class ABCSource(TextSource):
+    def __init__(self, url):
+        super().__init__(url)
+
+    def find_objects(self):
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        meta_tag = soup.find('meta', attrs={'name': 'ContentId'})
+        content_id = meta_tag['content']
+        news_api_url = f'https://www.abc.net.au/news-web/api/loader/topicstoriesmore?documentId={content_id}&future=true&offset=0'
+        total  = requests.get(news_api_url + '&size=0').json()['pagination']['total']
+        full_json = requests.get(news_api_url + f'&size={total}').json()
+        links = [ 'https://abc.net.au' + x['link'] for x in full_json['collection']]
+        self.objects =  [self.object_class(link) for link in links]
 
 
 class VideoSource(Source):
