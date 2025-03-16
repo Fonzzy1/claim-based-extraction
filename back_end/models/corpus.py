@@ -2,7 +2,7 @@ from typing import List
 from tqdm import tqdm
 import dill
 from models.text  import Text
-from models.sources import Source
+from models.sources import Source, TextSource
 
 class Corpus:
     """
@@ -10,23 +10,16 @@ class Corpus:
     """
     def __init__(self) -> None:
         self.texts: List[Text] = []
+        self.sources = []
     
-    def process_all_articles(self, redo: bool = False) -> None:
+    def process_all_texts(self, redo: bool = False) -> None:
         """
         Fetch, analyze, and evaluate all articles in the corpus.
         """
-        self.fetch_all_objects(redo)
-        self.analyze_all_articles(redo)
+        self.analyze_all_texts(redo)
         self.evaluate_all_claims(redo)
 
-    def fetch_all_objects(self, redo: bool = False) -> None:
-        """
-        Fetch all texts in the corpus if not already fetched.
-        """
-        for text in tqdm(self.texts, total=len(self.texts), desc='Fetching Texts'):
-                text.fetch(redo)
-
-    def analyze_all_articles(self, redo: bool = False) -> None:
+    def analyze_all_texts(self, redo: bool = False) -> None:
         """
         Analyze all texts in the corpus to extract claims.
         """
@@ -70,12 +63,18 @@ class Corpus:
 
     @classmethod
     def from_sources(cls, sources: List[Source])  -> 'Corpus':
+        corpus = cls()
+        corpus.sources = sources
+        corpus.texts = [obj for source in sources for obj in source.objects]
+        return corpus
 
 
 if __name__ == '__main__':
     with open('../urls.txt', 'r') as f:
         urls = f.read().split('\n')
     urls =urls[0:5]
-    corpus = corpus.from_urls(urls)
-    corpus.process_all_articles()
+    source = TextSource.from_urls(urls)
+    source.fetch_all_objects()
+    corpus = Corpus.from_sources([source])
+    corpus.process_all_texts()
     corpus.to_pickle('../corpus.pkl')

@@ -21,7 +21,7 @@ class Article(Text):
         self.publish_date: Optional[str] = None
         self.fetched: bool = False
 
-    def fetch_article(self, redo: bool = True) -> None:
+    def fetch(self, redo: bool = True) -> None:
         """
         Fetch and parse the article content from the given URL.
         """
