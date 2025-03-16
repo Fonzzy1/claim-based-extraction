@@ -14,6 +14,7 @@ class Text:
         self.text: str = text
         self.analyzed: bool = False
         self.claims: List[Claim] = []
+        self.fetched = True
 
     def analyze_text(self, redo: bool = False) -> None:
         """
@@ -36,5 +37,8 @@ class Text:
             raise Exception('Text has not been analyzed yet')
         for claim in self.claims:
             claim.evaluate_claim(redo=redo)
+
+    def fetch(self,redo=False):
+        pass
 
 
