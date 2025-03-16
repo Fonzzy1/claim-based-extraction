@@ -1,6 +1,8 @@
 from typing import List
 from tqdm import tqdm
 from models.data_objects.article import Article
+from models.data_objects.audio import Audio
+from models.data_objects.video import Video
 from models.text import Text
 
 class Source():
@@ -10,7 +12,17 @@ class Source():
         self.object_class = Text
 
     def get_urls(self):
-        pass
+        import requests
+        from bs4 import BeautifulSoup
+
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        links = []
+
+        for link in soup.find_all('a', href=True):
+            links.append(link['href'])
+
+        return links
 
     def fetch_all_objects(self, redo: bool = False) -> None:
         """
@@ -35,6 +47,8 @@ class TextSource(Source):
     def __init__(self, url):
         super().__init__(url)
         self.object_class = Article
+
+
 
 class VideoSource(Source):
     def __init__(self, url):
