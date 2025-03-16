@@ -2,46 +2,44 @@ from typing import List
 from tqdm import tqdm
 import dill
 from models.text  import Text
-from models.article import Article
+from models.sources import Source
 
 class Corpus:
     """
     A class to manage and process a collection of articles.
     """
     def __init__(self) -> None:
-        self.articles: List[Text] = []
+        self.texts: List[Text] = []
     
     def process_all_articles(self, redo: bool = False) -> None:
         """
         Fetch, analyze, and evaluate all articles in the corpus.
         """
-        self.fetch_all_articles(redo)
+        self.fetch_all_objects(redo)
         self.analyze_all_articles(redo)
         self.evaluate_all_claims(redo)
 
-    def fetch_all_articles(self, redo: bool = False) -> None:
+    def fetch_all_objects(self, redo: bool = False) -> None:
         """
-        Fetch all articles in the corpus if not already fetched.
+        Fetch all texts in the corpus if not already fetched.
         """
-        for article in tqdm(self.articles, total=len(self.articles), desc='Fetching Articles'):
-            if isinstance(article, Article):
-                article.fetch_article(redo)
+        for text in tqdm(self.texts, total=len(self.texts), desc='Fetching Texts'):
+                text.fetch(redo)
 
     def analyze_all_articles(self, redo: bool = False) -> None:
         """
-        Analyze all articles in the corpus to extract claims.
+        Analyze all texts in the corpus to extract claims.
         """
-        for text in tqdm(self.articles, total=len(self.articles), desc='Analyzing Texts'):
-            if isinstance(text, Article):
-                if not text.fetched:
-                    raise Exception('Article has not been fetched yet')
+        for text in tqdm(self.texts, total=len(self.texts), desc='Analyzing Texts'):
+            if not text.fetched:
+                raise Exception('Text has not been fetched yet')
             text.analyze_text(redo=redo)
 
     def evaluate_all_claims(self, redo: bool = False) -> None:
         """
         Evaluate all claims in the corpus.
         """
-        for text in tqdm(self.articles, total=len(self.articles), desc='Evaluating Claims'):
+        for text in tqdm(self.texts, total=len(self.texts), desc='Evaluating Claims'):
             text.evaluate_all(redo=redo)
 
     def to_pickle(self, path: str) -> None:
@@ -60,26 +58,19 @@ class Corpus:
             return dill.load(f)
 
     @classmethod
-    def from_urls(cls, urls: List[str]) -> 'Corpus':
-        """
-        Create a corpus from a list of URLs.
-        """
-        corpus = cls()
-        for url in tqdm(urls, total=len(urls), desc='Creating corpus from URLs'):
-            article = Article(url)
-            corpus.articles.append(article)
-        return corpus
-
-    @classmethod
-    def from_texts(cls, texts: List[str]) -> 'Corpus':
+    def from_strings(cls, texts: List[str]) -> 'Corpus':
         """
         Create a corpus from a list of text strings.
         """
         corpus = cls()
         for text in tqdm(texts, total=len(texts), desc='Creating corpus from texts'):
             text_article = Text(text)
-            corpus.articles.append(text_article)
+            corpus.texts.append(text_article)
         return corpus
+
+    @classmethod
+    def from_sources(cls, sources: List[Source])  -> 'Corpus':
+
 
 if __name__ == '__main__':
     with open('../urls.txt', 'r') as f:
