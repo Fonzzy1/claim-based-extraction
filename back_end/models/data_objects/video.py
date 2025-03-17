@@ -1,10 +1,13 @@
 #! docker compose run -it --build back-end python
-from models.text import Text
+from models.data_objects.audio import Audio
 import yt_dlp
 import tempfile
+from models.ai_client import Ai
 
 
-class Video(Text):
+client = Ai()
+
+class Video(Audio):
     def __init__(self, url: str) -> None:
         self.url= url 
         self.fetched = False
@@ -21,24 +24,12 @@ class Video(Text):
                         'preferredcodec': 'mp3',
                     }]
                     }
-
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download(self.url)
 
             with open(f'{tmp_file}.mp3', 'rb') as f:
-                self.audio_data = f.read()
+                self.audio = f.read()
 
-    def transcribe(self):
-            # Initialize the Whisper model
-            model = whisper.load_model("base", device = 'cpu')
-            # Load the audio data into a temporary file
-            with tempfile.NamedTemporaryFile(delete=True) as temp_audio_file:
-                temp_audio_file.write(self.audio_data)
-                temp_audio_file.flush()
-                # Transcribe the audio using Whisper
-                result = model.transcribe(temp_audio_file.name)
-            # Return the transcribed text
-            return result['text']
 
 if __name__=='__main__':
     self = Video('https://www.skynews.com.au/opinion/outsiders/germany-to-enshrine-climate-neutrality-by-2045-into-its-constitution/video/6ec4eac5cc7bc329b835f26eb809f0eb')
