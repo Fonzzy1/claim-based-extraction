@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 
-RUN apt-get update && apt-get install -y wget tar xz-utils
+RUN apt-get update && apt-get install -y wget tar xz-utils llvm
 RUN wget https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz -O /tmp/ffmpeg.tar.xz 
 RUN tar -xf /tmp/ffmpeg.tar.xz -C /tmp 
 RUN mv /tmp/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg /usr/local/bin/ 
@@ -19,6 +19,7 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install  --no-cache-dir -r requirements.txt
+RUN pip install  --no-deps openai-whisper
 
 # Copy the current directory contents into the container at /app
 COPY . .
