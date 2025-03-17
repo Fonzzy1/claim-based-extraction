@@ -17,6 +17,7 @@ services:
     volumes:
       - ${SYS_DIR}/back_end:/app
       - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
+      - ${SYS_DIR}/urls.txt:/app/urls.txt
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks: 

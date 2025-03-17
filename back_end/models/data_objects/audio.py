@@ -7,6 +7,8 @@ client = Ai()
 
 class Audio(Text):
     def __init__(self, url: str) -> None:
+        super().__init__("")
+        self.text = None
         self.url= url 
         self.fetched = False
         self.audio = None

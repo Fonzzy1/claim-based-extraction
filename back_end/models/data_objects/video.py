@@ -9,8 +9,7 @@ client = Ai()
 
 class Video(Audio):
     def __init__(self, url: str) -> None:
-        self.url= url 
-        self.fetched = False
+        super().__init__(url)
 
     def fetch(self, redo=False):
         if not self.fetched or redo:
