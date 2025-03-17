@@ -11,7 +11,7 @@ services:
     environment:
       - OLLAMA_KEEP_ALIVE=24h
     networks:
-      - ollama
+      - ai_inferance
     deploy:
       resources:
         reservations:
@@ -20,6 +20,8 @@ services:
               count: 1
               capabilities: [gpu]
   whisper:
+    environment:
+      ASR_MODEL: turbo
     deploy:
       resources:
         reservations:
