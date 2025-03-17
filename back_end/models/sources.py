@@ -8,6 +8,7 @@ from models.text import Text
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
+import pandas as pd
 
 
 class Source():
@@ -30,8 +31,8 @@ class Source():
                 text.fetch(redo)
 
     @classmethod
-    def from_urls(cls, urls: List):
-        s = cls(None)
+    def from_urls(cls,site_url, urls: List):
+        s = cls(site_url)
         s.objects = [s.object_class(url) for url in urls]
         return s
 
@@ -39,10 +40,12 @@ class Source():
 class AudioSource(Source):
     def __init__(self, url):
         super().__init__(url)
+        self.object_class = Audio
 
 class VideoSource(Source):
     def __init__(self, url):
         super().__init__(url)
+        self.object_class = Video
 
 
 class TextSource(Source):
@@ -66,50 +69,48 @@ class ABCTextSource(TextSource):
         self.objects =  [self.object_class(link) for link in links]
 
 
-class NewsCorpMegaSource(TextSource,VideoSource,AudioSource):
-    def __init__(self, url):
-        super().__init__(url)
+def query_newscorp(query):
+    url = 'https://www.heraldsun.com.au/sitesearch/1/indexes/*/queries'
 
-    def query_newscorp(self, query):
-        url = 'https://www.heraldsun.com.au/sitesearch/1/indexes/*/queries'
-
-        results = []
-         
-        i = 0
-        nb_pages = 100
-        
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0',
-            'Origin': 'https://www.heraldsun.com.au',
-            'Cookie': 'nk=gimmeyourdata',  
+    results = []
+     
+    i = 0
+    nb_pages = 100
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0',
+        'Origin': 'https://www.heraldsun.com.au',
+        'Cookie': 'nk=gimmeyourdata',  
+    }
+    while i < nb_pages:
+        print(i)
+        data = {
+            'requests': [{
+                'indexName': 'prod_plnn_content_bylatest',
+                'params': urllib.parse.urlencode({
+                    'page': i,
+                    'query': str(query).lower(),
+                })
+            }]
         }
-        while i < nb_pages:
-            print(i)
-            data = {
-                'requests': [{
-                    'indexName': 'prod_plnn_content_bylatest',
-                    'params': urllib.parse.urlencode({
-                        'page': i,
-                        'query': str(query).lower(),
-                    })
-                }]
-            }
 
-            response = requests.post(url, headers=headers, json=data, allow_redirects=False)
-            results += response.json()['results'][0]['hits']
-            nb_pages = response.json()['results'][-1]['nbPages']
-            i+=1
-        
-            links = [
-                        (x['canonical']['link'] if 'canonical' in x else 
-                         x.get(x.get('seoOwner'), {}).get('link'), 
-                         x['type'], 
-                         x.get('seoOwner')) 
-                        for x in results
-                        ]
+        response = requests.post(url, headers=headers, json=data, allow_redirects=False)
+        results += response.json()['results'][0]['hits']
+        nb_pages = response.json()['results'][-1]['nbPages']
+        i+=1
+    
+    links = [
+                (x['canonical']['link'] if 'canonical' in x else 
+                 x.get(x.get('seoOwner'), {}).get('link'), 
+                 x['type'], 
+                 x.get('seoOwner')) 
+                for x in results
+                ]
 
+    return links
+
+links  = query_newscorp('Gas Power')
+df = pd.DataFrame(links, columns = ['url','type','owner'])
+df.groupby(['owner','type']).count()
 
         
-
-
-
