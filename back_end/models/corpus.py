@@ -66,4 +66,4 @@ if __name__ == '__main__':
     source.fetch_all_objects()
     corpus = Corpus.from_sources([source])
     corpus.process_all_texts()
-    corpus.to_pickle('../corpus.pkl')
+    corpus.to_pickle('corpus.pkl')
