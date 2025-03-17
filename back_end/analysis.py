@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 class Distribution():
     def __init__(self, corpus):
         self.corpus = corpus
-        self.claims =  [claim for article in self.corpus.articles for claim in article.claims]
+        self.claims =  [claim for text in self.corpus.texts for claim in text.claims]
         self.distribution = { (z,y):[] for z in (i.value for i in Dimension) for y in (j.value for j in InfrastructureType)}
 
         for claim in self.claims:
