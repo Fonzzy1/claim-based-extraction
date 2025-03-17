@@ -1,3 +1,4 @@
+#! docker compose run -it --build back-end python
 from typing import List
 from tqdm import tqdm
 import dill
@@ -51,17 +52,6 @@ class Corpus:
             return dill.load(f)
 
     @classmethod
-    def from_strings(cls, texts: List[str]) -> 'Corpus':
-        """
-        Create a corpus from a list of text strings.
-        """
-        corpus = cls()
-        for text in tqdm(texts, total=len(texts), desc='Creating corpus from texts'):
-            text_article = Text(text)
-            corpus.texts.append(text_article)
-        return corpus
-
-    @classmethod
     def from_sources(cls, sources: List[Source])  -> 'Corpus':
         corpus = cls()
         corpus.sources = sources
@@ -70,9 +60,8 @@ class Corpus:
 
 
 if __name__ == '__main__':
-    with open('../urls.txt', 'r') as f:
+    with open('urls.txt', 'r') as f:
         urls = f.read().split('\n')
-    urls =urls[0:5]
     source = TextSource.from_urls(urls)
     source.fetch_all_objects()
     corpus = Corpus.from_sources([source])
