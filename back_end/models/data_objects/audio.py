@@ -22,4 +22,6 @@ class Audio(Text):
 
 if __name__=='__main__':
     self = Audio('https://cdn.theconversation.com/audio/1566/nimbin-mixdownfinalllll.mp3')
+    self.fetch()
+    self.transcribe()
 
