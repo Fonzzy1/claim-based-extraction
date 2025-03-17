@@ -1,3 +1,4 @@
+#! docker compose run -it --build back-end python
 from typing import List
 from tqdm import tqdm
 from models.data_objects.article import Article
@@ -6,8 +7,8 @@ from models.data_objects.video import Video
 from models.text import Text
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 
-url = 'https://www.abc.net.au/news/topic/electricity-production-and-distribution'
 
 class Source():
     def __init__(self, url):
@@ -64,24 +65,48 @@ class ABCTextSource(TextSource):
         links = [ 'https://abc.net.au' + x['link'] for x in full_json['collection']]
         self.objects =  [self.object_class(link) for link in links]
 
+
 class NewsCorpMegaSource(TextSource,VideoSource,AudioSource):
     def __init__(self, url):
         super().__init__(url)
 
-    def find_objects(self):
-        url = 'https://www.news.com.au/sitesearch/1/indexes/*/queries'
-        res = requests.post(url, json=
-                      {"requests":[
-                          {
-                              "indexName":"prod_news_content_bylatest",
-                              "params":"page=1&query=Coal%20Power&tagFilters="
-                                    }
-                               ]
-                       }
-                      ).json()
+    def query_newscorp(self, query):
+        url = 'https://www.heraldsun.com.au/sitesearch/1/indexes/*/queries'
 
-        results = res['results'][0]['hits']
-        objects=[x['canonical']['link'] for x in results]
+        results = []
+         
+        i = 0
+        nb_pages = 100
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0',
+            'Origin': 'https://www.heraldsun.com.au',
+            'Cookie': 'nk=gimmeyourdata',  
+        }
+        while i < nb_pages:
+            print(i)
+            data = {
+                'requests': [{
+                    'indexName': 'prod_plnn_content_bylatest',
+                    'params': urllib.parse.urlencode({
+                        'page': i,
+                        'query': str(query).lower(),
+                    })
+                }]
+            }
+
+            response = requests.post(url, headers=headers, json=data, allow_redirects=False)
+            results += response.json()['results'][0]['hits']
+            nb_pages = response.json()['results'][-1]['nbPages']
+            i+=1
+        
+            links = [
+                        (x['canonical']['link'] if 'canonical' in x else 
+                         x.get(x.get('seoOwner'), {}).get('link'), 
+                         x['type'], 
+                         x.get('seoOwner')) 
+                        for x in results
+                        ]
 
 
         
