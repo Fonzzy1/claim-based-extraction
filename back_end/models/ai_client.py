@@ -39,6 +39,8 @@ class Ai():
         )
         return completion.choices[0].message.parsed
 
-
-
-
+    def transcribe_audio_object(self, audio_object):
+        url = "http://whisper:9000/asr?output=json"
+        files = {'audio_file': audio_object}
+        response = requests.post(url, files=files)
+        return response.json()

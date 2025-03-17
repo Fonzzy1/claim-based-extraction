@@ -21,6 +21,15 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks: 
       - ollama
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    ports:
+      - "9000:9000"
+    environment:
+      ASR_MODEL: tiny
+      ASR_ENGINE: openai_whisper
+    networks: 
+      - ollama
 
 volumes:
   ollama:

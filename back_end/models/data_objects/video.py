@@ -2,9 +2,6 @@
 from models.text import Text
 import yt_dlp
 import tempfile
-from io import BytesIO
-import yt_dlp
-import speech_recognition as sr
 
 
 class Video(Text):
@@ -14,39 +11,39 @@ class Video(Text):
 
     def fetch(self, redo=False):
         if not self.fetched or redo:
-            tmp_file = tempfile.mktemp()[1]
+            tmp_file = tempfile.mktemp()
             ydl_opts = {
-                    'format':'ba',
-                    'outtmpl': tmp_file,
-                    'quiet': False,
+                    'verbose':True,
+                    'format': 'bestaudio/best',
+                    'outtmpl': f'{tmp_file}.%(ext)s',
+                    'postprocessors': [{  # Extract audio using ffmpeg
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                    }]
                     }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download(self.url)
 
-            with open(tmp_file,'rb') as f:
+            with open(f'{tmp_file}.mp3', 'rb') as f:
                 self.audio_data = f.read()
 
     def transcribe(self):
-        # Initialize recognizer
-        recognizer = sr.Recognizer()
+            # Initialize the Whisper model
+            model = whisper.load_model("base", device = 'cpu')
+            # Load the audio data into a temporary file
+            with tempfile.NamedTemporaryFile(delete=True) as temp_audio_file:
+                temp_audio_file.write(self.audio_data)
+                temp_audio_file.flush()
+                # Transcribe the audio using Whisper
+                result = model.transcribe(temp_audio_file.name)
+            # Return the transcribed text
+            return result['text']
 
-        # Load the audio data into an AudioFile instance using BytesIO
-        with sr.AudioFile(BytesIO(self.audio_data)) as source:
-            audio = recognizer.record(source)
-
-        # Using Google's free service to transcribe
-        try:
-            return recognizer.recognize_google(audio)
-
-        except sr.UnknownValueError:
-            return "Google Speech Recognition could not understand audio"
-        except sr.RequestError as e:
-            return f"Could not request results from Google; {e}"
-
-self = Video('https://www.skynews.com.au/opinion/outsiders/germany-to-enshrine-climate-neutrality-by-2045-into-its-constitution/video/6ec4eac5cc7bc329b835f26eb809f0eb')
-self.fetch()
-trans = self.transcribe()
+if __name__=='__main__':
+    self = Video('https://www.skynews.com.au/opinion/outsiders/germany-to-enshrine-climate-neutrality-by-2045-into-its-constitution/video/6ec4eac5cc7bc329b835f26eb809f0eb')
+    self.fetch()
+    trans = self.transcribe()
 
 
 
