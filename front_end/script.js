@@ -72,6 +72,7 @@ async function handleSubmit(event) {
                 row.innerHTML = `
                     <td>${claim.quote}</td>
                     <td>${claim.infrastructure}</td>
+                    <td>${claim.claim_type}</td>
                     <td>${claim.judgement}</td>
                     <td>${claim.dimension}</td>
                     <td>${claim.valence}</td>
