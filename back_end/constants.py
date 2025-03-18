@@ -52,7 +52,7 @@ class Dimension(Enum):
     ECONOMIC = 'Economic'
     EXTERNALITIES = 'Externalities'
 
-class JudgementType(Enum)
+class JudgementType(Enum):
         ACTION='Action'
         INHERENT='Inherent'
 
