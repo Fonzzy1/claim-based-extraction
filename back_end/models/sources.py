@@ -14,14 +14,15 @@ import pandas as pd
 class Source():
     def __init__(self, url):
         self.url = url
-        self.objects=[]
+        self.objects={}
         self.object_class = Text
 
     def find_objects(self):
         response = requests.get(self.url)
         soup = BeautifulSoup(response.text, 'html.parser')
         for link in soup.find_all('a', href=True):
-            self.objects.append(self.object_class(link['href']))
+            if link['href'] not in self.objects.keys():
+                self.objects[link['href']] = self.object_class(link['href'])
 
     def fetch_all_objects(self, redo: bool = False) -> None:
         """
@@ -33,7 +34,7 @@ class Source():
     @classmethod
     def from_urls(cls,site_url, urls: List):
         s = cls(site_url)
-        s.objects = [s.object_class(url) for url in urls]
+        s.objects = {url:s.object_class(url) for url in urls}
         return s
 
 
@@ -66,7 +67,9 @@ class ABCTextSource(TextSource):
         total  = requests.get(news_api_url + '&size=0').json()['pagination']['total']
         full_json = requests.get(news_api_url + f'&size={total}').json()
         links = [ 'https://abc.net.au' + x['link'] for x in full_json['collection']]
-        self.objects =  [self.object_class(link) for link in links]
+        for link in links:
+            if link not in self.objects.keys():
+                self.objects[link] = self.object_class(link)
 
 
 def query_newscorp(query):
