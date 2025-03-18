@@ -62,7 +62,7 @@ class Corpus:
 if __name__ == '__main__':
     with open('urls.txt', 'r') as f:
         urls = f.read().split('\n')
-    source = TextSource.from_urls(urls)
+    source = TextSource.from_urls('ABC NEWS', urls)
     source.fetch_all_objects()
     corpus = Corpus.from_sources([source])
     corpus.process_all_texts()
