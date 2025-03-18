@@ -6,13 +6,15 @@ INFRASTRUCTURE = {
         "Onshore Wind", 
         "Offshore Wind", 
         "Hydroelectric Power", 
-        "Biomass"
+        "Biomass",
+        "Renewable Energy"
     ],
     'Fossil Fuels': [
         "Coal Power", 
         "Gas Power", 
         "Oil Power", 
-        "Geothermal Power"
+        "Geothermal Power",
+        "Fossil Fuels"
     ],
     'Speculative Power Sources': [
         "Nuclear Power", 
@@ -46,6 +48,14 @@ InfrastructureType = Enum(
     {option.replace(' ', '_').upper(): option for option in all_infrastructure_options}
 )
 
+class Dimension(Enum):
+    ECONOMIC = 'Economic'
+    EXTERNALITIES = 'Externalities'
+
+class JudgementType(Enum):
+        ACTION='Action'
+        INHERENT='Inherent'
+
 SYSTEM_EXTRACTOR = f"""
 **Task Description:**
 
@@ -59,7 +69,7 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 
 3. **Identify the Energy-Producing Infrastructure**: Focus on infrastructure related to energy production methods or technologies pertinent to energy transmission and storage. Look for claims only related to the following, and don't return the the rest: {", ".join(all_infrastructure_options)}. 
 
-4. **Identify Claims and Adjectives**: Look for statements with explicit or implicit claims about the identified energy infrastructure. For each claim, determine the single adjective that best captures the essence of the moral judgment, such as "expensive," "beneficial," "harmful," etc. You may include qualifying information with these adjectives, e.g., 'harmful to birds', 'environmentally beneficial', 'emission-reducing'.
+4. **Identify Claims**: Look for statements with explicit or implicit claims about the identified energy infrastructure. For each they will either be an 'action', or an 'inherent'. For actions, determine, what type of action the infrustructure is making, eg: kills birds. For inherent, determine the single adjective that best captures the essence of the moral judgment, such as "expensive," "beneficial," "harmful," etc. You may include qualifying information with these adjectives, e.g., 'harmful to birds', 'environmentally beneficial', 'emission-reducing'.
 
 5. **Extract and Summarize**: For each identified claim, provide the specific energy infrastructure mentioned and the corresponding adjective representing the moral judgment.
 
@@ -67,6 +77,7 @@ You are tasked with analyzing a peice of text to identify and extract moral judg
 - **Focus on Subtext**: Look for language suggesting approval or disapproval, such as metaphors, comparisons, or rhetorical questions.
 - **Adjective Selection**: Ensure that the selected adjectives reflect both explicit and implicit moral evaluations of the claims.
 - **Multiple Claims**: A single piece of infrastructure may have multiple claims associated with it.
+- **Multiple Claims per Quote**: A single quote or sentence can have multiple claims associated with it.
 - **Implicit Claims**: Many claims may be implicit, where the moral judgment is implied. Be attentive to these subtle expressions.
 - **Non-Relevant Claims**: Only return claims that reference one of the technologies listed above. Do not return any claims about technology that is not in the list.
 """
@@ -84,17 +95,14 @@ You are tasked with evaluating a claim that has been made about a peice of energ
    - **Economic**: Concerns related to costs, investments, economic benefits, financial viability, etc.
    - **Externality**: Concerns related to environmental impact, social consequences, health effects, etc.
 
-3. **Assign Valence Score**: Assign a valence score between -1 and 1 to each claim based on the level of approval or disapproval expressed:
+3. **Assign Valence Score**: Assign a valence score between which is continuous between -1 and 1 to each claim based on the level of approval or disapproval expressed:
    - **-1**: Strong disapproval (e.g., "severely harmful")
    - **0**: Neutral or ambivalent (e.g., "unremarkable")
    - **+1**: Strong approval (e.g., "highly beneficial")
 
-
 **Additional Tips:**
 - **Combine Perspectives**: If a claim touches on both dimensions, prioritize the one with a stronger emphasis.
 - **Subjectivity Awareness**: Recognize that these evaluations rely on interpretation; aim to provide interpretations that capture the prevailing sentiment.
+- **Continuous Valence**: Dont feel like the valence needs to be quantised.
 """
 
-class Dimension(Enum):
-    ECONOMIC = 'economic'
-    EXTERNALITIES = 'externalities'
