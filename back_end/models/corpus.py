@@ -5,6 +5,7 @@ import dill
 from models.text  import Text
 from models.sources import Source, TextSource
 
+
 class Corpus:
     """
     A class to manage and process a collection of articles.
@@ -55,15 +56,21 @@ class Corpus:
     def from_sources(cls, sources: List[Source])  -> 'Corpus':
         corpus = cls()
         corpus.sources = sources
-        corpus.texts = [obj for source in sources for obj in source.objects]
+        corpus.texts = [obj for source in sources for obj in
+                        source.objects.values()]
         return corpus
 
 
 if __name__ == '__main__':
-    with open('urls.txt', 'r') as f:
-        urls = f.read().split('\n')
-    source = TextSource.from_urls('ABC NEWS', urls)
-    source.fetch_all_objects()
+    import pandas as pd
+    from models.sources import ABCTextSource
+    from tqdm import tqdm
+
+    df = pd.read_csv('urls.csv')
+    df = df[(df['News Source']=='ABC News Australia') & (df['MediaType']=='Text')]
+    sources = [ABCTextSource(x) for x in df.Source]
+    _ = [ source.find_objects() for source in tqdm(sources,total=len(sources)) ]
+    _ = [ source.fetch_all_objects() for source in sources ]
     corpus = Corpus.from_sources([source])
     corpus.process_all_texts()
     corpus.to_pickle('corpus.pkl')

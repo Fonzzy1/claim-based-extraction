@@ -28,7 +28,8 @@ class Source():
         """
         Fetch all texts in the corpus if not already fetched.
         """
-        for text in tqdm(self.objects, total=len(self.objects), desc='Fetching Texts'):
+        for text in tqdm(self.objects.values(), total=len(self.objects),
+                         desc=f'Fetching Texts for {self.url}'):
                 text.fetch(redo)
 
     @classmethod
