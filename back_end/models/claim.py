@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 import json
-from constants import SYSTEM_EVALUATION, InfrastructureType, Dimension
+from constants import SYSTEM_EVALUATION, InfrastructureType, Dimension, JudgementType
 from models.ai_client import Ai
 
 # OpenAI client initialization
@@ -10,6 +10,7 @@ client: Ai = Ai()
 class ClaimStruct(BaseModel):
     quote: str = Field(..., description="A quote from the article text that makes the claim")
     infrastructure: InfrastructureType = Field(..., description=f"The infrastructure that the claim is made about")
+    claim_type: JudgementType = Field(..., description="The type of claim that is being made")
     judgement: str = Field(..., description="An adjective with or without qualifying information")
 
 
@@ -33,6 +34,7 @@ class Claim(ClaimStruct):
                     {"role": "user", "content": json.dumps({
                         "quote": self.quote,
                         "infrastructure": self.infrastructure.value,  # Access the enum value
+                        "claim_type": self.claim_type.value,
                         "judgement": self.judgement
                     })},
                 ],
@@ -47,6 +49,7 @@ class Claim(ClaimStruct):
            # Convert enum to string for serialization
            state['infrastructure'] = state['infrastructure'].value if isinstance(state['infrastructure'], InfrastructureType) else state['infrastructure']
            state['dimension'] = state['dimension'].value if isinstance(state['dimension'], Dimension) else state['dimension']
+           state['claim_type'] = state['claim_type'].value if isinstance(state['claim_type'], JudgementType) else state['claim_type']
            return state
 
     def __setstate__(self, state):
@@ -55,6 +58,8 @@ class Claim(ClaimStruct):
                state['infrastructure'] = InfrastructureType(state['infrastructure'])
            if isinstance(state.get('dimension'), str):
                state['dimension'] = Dimension(state['dimension'])
+           if isinstance(state.get('claim_type'), str):
+               state['claim_type'] = JudgementType(state['claim_type'])
            self.__dict__.update(state)
 
 
