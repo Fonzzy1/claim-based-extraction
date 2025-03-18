@@ -109,8 +109,9 @@ def query_newscorp(query):
 
     return links
 
-links  = query_newscorp('Gas Power')
-df = pd.DataFrame(links, columns = ['url','type','owner'])
-df.groupby(['owner','type']).count()
+if __name__=='__main__':
+    links  = query_newscorp('Gas Power')
+    df = pd.DataFrame(links, columns = ['url','type','owner'])
+    df.groupby(['owner','type']).count()
 
         
