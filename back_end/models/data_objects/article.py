@@ -26,12 +26,15 @@ class Article(Text):
         Fetch and parse the article content from the given URL.
         """
         if not self.fetched or redo:
-            article = BaseArticle(self.url, config=config)
-            article.download()
-            article.parse()
+            try:
+                article = BaseArticle(self.url, config=config)
+                article.download()
+                article.parse()
 
-            self.title = article.title
-            self.text = article.text
-            self.authors = article.authors
-            self.publish_date = article.publish_date
-            self.fetched = True
+                self.title = article.title
+                self.text = article.text
+                self.authors = article.authors
+                self.publish_date = article.publish_date
+                self.fetched = True
+            except:
+                print(f'Failed to fetch Text for {self.url}')

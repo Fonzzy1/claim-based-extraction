@@ -1,6 +1,6 @@
 from models.ai_client import Ai
 from typing import List
-from models.claim import ClaimList
+from models.claim import ClaimList, Claim
 from constants import SYSTEM_EXTRACTOR
 
 # OpenAI client initialization
@@ -20,23 +20,27 @@ class Text:
         """
         Analyze the text to extract claims using OpenAI's service.
         """
-        if not self.analyzed or redo:
-            claimlist = client.structured_complete(
-                messages=[
-                    {"role": "system", "content": SYSTEM_EXTRACTOR},
-                    {"role": "user", "content": self.text},
-                ],
-                structure=ClaimList,
-            )
+        if not self.fetched:
+            print(f'Text has not been fetched yet')
+        else:
+            if not self.analyzed or redo:
+                claimlist = client.structured_complete(
+                    messages=[
+                        {"role": "system", "content": SYSTEM_EXTRACTOR},
+                        {"role": "user", "content": self.text},
+                    ],
+                    structure=ClaimList,
+                )
 
-            self.claims = claimlist.transform_to_claims()
-            self.analyzed = True
+                self.claims = claimlist.transform_to_claims()
+                self.analyzed = True
 
     def evaluate_all(self,redo: bool=False):
         if not self.analyzed:
-            raise Exception('Text has not been analyzed yet')
-        for claim in self.claims:
-            claim.evaluate_claim(redo=redo)
+            print(f'Text has not been analyzed yet')
+        else:
+            for claim in self.claims:
+                claim.evaluate_claim(redo=redo)
 
     def fetch(self,redo=False):
         pass

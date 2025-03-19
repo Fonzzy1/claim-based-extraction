@@ -1,5 +1,5 @@
 #! docker compose run -it --build back-end python
-from typing import List
+from typing import List, Dict
 from tqdm import tqdm
 from models.data_objects.article import Article
 from models.data_objects.audio import Audio
@@ -14,7 +14,7 @@ import pandas as pd
 class Source():
     def __init__(self, url):
         self.url = url
-        self.objects={}
+        self.objects: Dict[str, Text] = {}
         self.object_class = Text
 
     def find_objects(self):

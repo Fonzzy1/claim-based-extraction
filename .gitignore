@@ -1,1 +1,6 @@
+.gitignore:
 .env
+/back_end/corpus.pkl
+/back_end/sources.csv
+/back_end/urls.csv
+__pycache__/
