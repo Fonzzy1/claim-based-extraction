@@ -62,15 +62,18 @@ class Corpus:
 
 
 if __name__ == '__main__':
-    import pandas as pd
-    from models.sources import ABCTextSource
-    from tqdm import tqdm
+    # import pandas as pd
+    # from models.sources import ABCTextSource
+    # from tqdm import tqdm
 
-    df = pd.read_csv('urls.csv')
-    df = df[(df['News Source']=='ABC News Australia') & (df['MediaType']=='Text')]
-    sources = [ABCTextSource(x) for x in df.Source]
-    _ = [ source.find_objects() for source in tqdm(sources,total=len(sources)) ]
-    _ = [ source.fetch_all_objects() for source in sources ]
-    corpus = Corpus.from_sources([source])
-    corpus.process_all_texts()
+    # df = pd.read_csv('urls.csv')
+    # df = df[(df['News Source']=='ABC News Australia') & (df['MediaType']=='Text')]
+    # sources = [ABCTextSource(x) for x in df.Source]
+    # _ = [ source.find_objects() for source in tqdm(sources,total=len(sources)) ]
+    # _ = [ source.fetch_all_objects() for source in sources ]
+    # corpus = Corpus.from_sources(sources)
+    # corpus.to_pickle('corpus.pkl')
+    corpus = Corpus.from_pickle('corpus.pkl')
+    corpus.analyze_all_texts()
+    corpus.evaluate_all_claims()
     corpus.to_pickle('corpus.pkl')

@@ -20,7 +20,7 @@ class Claim(ClaimStruct):
     A model representing a claim extracted from text.
     """
     evaluated: bool = False
-    dimension: Optional[Dimension] = Field(None, description="A feild tha is always Empty")
+    dimension: Optional[Dimension] = None
     valence: float = 0
 
     def evaluate_claim(self, redo: bool = False) -> None:
