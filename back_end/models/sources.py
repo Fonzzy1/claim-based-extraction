@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 import urllib.parse
 import pandas as pd
 
-
 class Source():
     def __init__(self, url):
         self.url = url
@@ -48,7 +47,6 @@ class VideoSource(Source):
     def __init__(self, url):
         super().__init__(url)
         self.object_class = Video
-
 
 class TextSource(Source):
     def __init__(self, url):

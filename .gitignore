@@ -4,3 +4,5 @@
 /back_end/sources.csv
 /back_end/urls.csv
 __pycache__/
+dev.db-journal
+*.db-journal
