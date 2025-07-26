@@ -4,7 +4,7 @@ return {
         builder = function(_)
             local cmd_str = table.concat({
                 "pip install prisma lxml wget",
-                "prisama generate",
+                "prisma generate",
                 "python3 scrapers/scrapers/hansard.py ",
                 "python3 scrapers/parsers/hansard.py "
             }, " && ")
