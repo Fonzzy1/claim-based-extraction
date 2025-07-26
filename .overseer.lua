@@ -3,7 +3,7 @@ return {
         name ="Update Hansard",
         builder = function(_)
             local cmd_str = table.concat({
-                "pip install prisama lxml",
+                "pip install prisama lxml wget",
                 "prisama generate",
                 "python3 scrapers/scrapers/hansard.py "
                 "python3 scrapers/parsers/hansard.py "
