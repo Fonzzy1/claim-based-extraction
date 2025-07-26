@@ -5,8 +5,8 @@ return {
             local cmd_str = table.concat({
                 "pip install prisma lxml wget",
                 "prisma generate",
-                "python3 scrapers/scrapers/hansard.py ",
-                "python3 scrapers/parsers/hansard.py "
+                "python3 scrapers/hansard.py ",
+                "python3 parsers/hansard.py "
             }, " && ")
             return {
                 cwd = "database",
@@ -31,17 +31,19 @@ return {
             }
         end,
     },
-    name = "Prisma Studio",
-    builder = function(_)
-        local cmd_str = table.concat({
-            "pip install prisma",
-            "prisma studio"
-        }, " && ")
-        return {
-            cwd = "database",
-            cmd = { "sh", "-c", cmd_str },
-            components = { "default" },
-            name = 'Prisma Studio'
-        }
-    end,
+    {
+        name = "Prisma Studio",
+        builder = function(_)
+            local cmd_str = table.concat({
+                "pip install prisma",
+                "prisma studio"
+            }, " && ")
+            return {
+                cwd = "database",
+                cmd = { "sh", "-c", cmd_str },
+                components = { "default" },
+                name = 'Prisma Studio'
+            }
+        end,
+    }
 }
