@@ -1,18 +1,20 @@
 return {
     {
-        name = "Update Hansard",
+        name = "Update Dataset",
         builder = function(_)
             local cmd_str = table.concat({
                 "pip install prisma lxml wget",
                 "prisma generate",
                 "python3 scrapers/hansard.py ",
+                "python3 scrapers/politicians.py ",
                 "python3 parsers/hansard.py "
+                "python3 parsers/politicians.py "
             }, " && ")
             return {
                 cwd = "database",
                 cmd = { "sh", "-c", cmd_str },
                 components = { "default" },
-                name = 'Update Hansard'
+                name = 'Update Dataset'
             }
         end,
     },
