@@ -7,7 +7,7 @@ return {
                 "prisma generate",
                 "python3 scrapers/hansard.py ",
                 "python3 scrapers/politicians.py ",
-                "python3 parsers/hansard.py "
+                "python3 parsers/hansard.py ",
                 "python3 parsers/politicians.py "
             }, " && ")
             return {
