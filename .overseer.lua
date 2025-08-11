@@ -3,7 +3,7 @@ return {
         name = "Update Dataset",
         builder = function(_)
             local cmd_str = table.concat({
-                "pip install prisma lxml wget",
+                "pip install prisma lxml wget fuzzywuzzy",
                 "prisma generate",
                 "python3 scrapers/hansard.py ",
                 "python3 scrapers/politicians.py ",
