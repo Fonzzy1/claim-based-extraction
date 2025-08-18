@@ -35,7 +35,7 @@ return {
         builder = function(_)
             local cmd_str = table.concat({
                 "pip install prisma",
-                "prisma migrate dev"
+                "prisma migrate reset"
             }, " && ")
             return {
                 cwd = "database",
