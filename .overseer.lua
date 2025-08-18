@@ -3,12 +3,9 @@ return {
         name = "Update Dataset",
         builder = function(_)
             local cmd_str = table.concat({
-                "pip install prisma lxml wget fuzzywuzzy",
+                "pip install -r requirements.txt",
                 "prisma generate",
-                "python3 scrapers/hansard.py ",
-                "python3 scrapers/politicians.py ",
-                "python3 parsers/hansard.py ",
-                "python3 parsers/politicians.py "
+                "python3 update.py",
             }, " && ")
             return {
                 cwd = "database",
@@ -30,6 +27,21 @@ return {
                 cmd = { "sh", "-c", cmd_str },
                 components = { "default" },
                 name = 'Update Database Structure'
+            }
+        end,
+    },
+    {
+        name = "Reset Database",
+        builder = function(_)
+            local cmd_str = table.concat({
+                "pip install prisma",
+                "prisma migrate dev"
+            }, " && ")
+            return {
+                cwd = "database",
+                cmd = { "sh", "-c", cmd_str },
+                components = { "default" },
+                name = 'Reset Database'
             }
         end,
     },
