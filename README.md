@@ -13,6 +13,7 @@ claim-analysis/
 ├── docker-compose.yml      # Compose file for CPU based work
 ├── docker-compose-gpu.yml  # Compose file for GPU based work
 ├── Dockerfile              # Docker file for experiment runner
+├── run.sh                  # Autodetector for upping background utilities
 ├── .gitignore              # Ignore data, outputs, checkpoints
 │
 ├── db/                     # Submodule: https://github.com/Fonzzy1/federal-hansard-db
