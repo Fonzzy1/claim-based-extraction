@@ -16,3 +16,4 @@ Requests==2.32.5
 rich==14.2.0
 scipy==1.15.3
 tqdm==4.67.1
+boolean-query-parser==1.0.1
