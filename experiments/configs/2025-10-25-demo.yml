@@ -1,0 +1,26 @@
+data:
+  # Can be DB or file
+  #path: "input.csv"
+  query: "Select id, test from 'Document'"
+
+filter:
+  QueryStringFilter:
+    qs: "'renewable energy' OR 'renewable power' OR 'clean energy' OR 'sustainable energy'"
+
+processor:
+  context_size: 3
+  sentence_splitting_function: nltk.tokenize
+
+extractor:
+  ZeroShotExtractor:
+    model_key: "gpt-4-mii"
+    endpoint: "https://api.openai.com/v1/chat/completions"
+    system_prompt: "You are ChatGPT, a helpful assistant."
+    message_prompt_format_string: "{string}: {content}"
+
+deconstructor:
+  ZeroShotDeconstructor:
+    model_key: "gpt-4-mii"
+    endpoint: "https://api.openai.com/v1/chat/completions"
+    system_prompt: "You are ChatGPT, a helpful assistant."
+    message_prompt_format_string: "{string}"

@@ -34,7 +34,7 @@ claim-analysis/
 │   ├── filter/             # Train / inferance for filter
 │   ├── extraction/         # Train / inferance for extraction
 │   ├── deconstruction/     # Train / inferance for deconstruction
-│   └── run_pipeline.py     # Full inference across the dataset with eval
+│   └── inferance.py        # Full inference across the dataset with eval
 │
 ├── experiments/            # Training & analysis experiments
 │   ├── configs/            # YAML configs for reproducibility
@@ -46,4 +46,3 @@ claim-analysis/
 ```
 
 ---
-
