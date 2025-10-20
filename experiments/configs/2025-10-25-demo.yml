@@ -1,7 +1,7 @@
 data:
   # Can be DB or file
   #path: "input.csv"
-  query: "Select id, test from 'Document'"
+  query: "Select id, test from 'Document' limit 2"
 
 filter:
   QueryStringFilter:
@@ -9,7 +9,7 @@ filter:
 
 processor:
   context_size: 3
-  sentence_splitting_function: nltk.tokenize
+  sentence_splitting_function: nltk.tokenize.sent_tokenize
 
 extractor:
   ZeroShotExtractor:
@@ -24,3 +24,4 @@ deconstructor:
     endpoint: "https://api.openai.com/v1/chat/completions"
     system_prompt: "You are ChatGPT, a helpful assistant."
     message_prompt_format_string: "{string}"
+
