@@ -121,7 +121,3 @@ class BaseModel:
         obj = dill.load(fh)
         return obj
 
-
-model = BaseModel()
-model.save_to_file('aaa')
-model_2 = BaseModel.load_from_file('aaa')
