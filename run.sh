@@ -1,5 +1,6 @@
 #! /bin/bash
 
+git submodule update
 # Bash script to check if there is an NVIDIA GPU using nvidia-smi.
 if command -v nvidia-smi > /dev/null; then
     docker compose -f ./db/docker-compose.yml -f docker-compose.yml -f docker-compose-gpu.yml up --build -d db ollama whisper
