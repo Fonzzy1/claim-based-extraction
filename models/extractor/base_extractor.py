@@ -9,6 +9,9 @@ class BaseExtractor(BaseModel):
         pass
 
     def infer(self, string, context) -> list[str]:
+        """
+        for a single sentence in a documents, extract all the claims from it
+        """
         return []
 
     def train(self, X, y) -> None:
