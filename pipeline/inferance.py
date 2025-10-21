@@ -4,6 +4,8 @@ import importlib
 from prisma import Client
 from models.extractor import Processor
 import os
+from models.data_structure import Document, Corpus
+
 
 
 if len(sys.argv) < 2:
@@ -11,10 +13,14 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 config_file = sys.argv[1]
+
+config_file = "experiments/configs/2025-10-25-demo.yml"
 with open(config_file, "r") as file:
     config = yaml.safe_load(file)
 
-out_folder = os.path.join("experiments", "results", os.path.splitext(config_file.split("/")[-1])[0])
+out_folder = os.path.join(
+    "experiments", "results", os.path.splitext(config_file.split("/")[-1])[0]
+)
 
 if os.path.exists(out_folder):
     raise Exception("Config has already been run")
@@ -26,7 +32,9 @@ data_config = config["data"]
 if "query" in data_config.keys():
     db = Client()
     await db.connect()
-    data = await db.query_raw(data_config["query"])
+    raw_data = await db.query_raw(data_config["query"])
+    data = Corpus([Document(**x) for x in raw_data])
+
 
 ## Filter the data
 filter_config = config["filter"]
@@ -41,7 +49,7 @@ elif "drive" in filter_config.keys():
 else:
     filter = filter_class(**filter_config[filter_class_name])
 
-data = filter.filter(data)
+data = filter.transform(data)
 
 # Preprocess the data
 processor_config = config["processor"]
@@ -53,7 +61,7 @@ sentence_splitting_function = importlib.import_module(module).__getattribute__(
     function
 )
 processor = Processor(context_size, sentence_splitting_function)
-data = processor.transform_list(data)
+data = processor.transform(data)
 
 # Extract the data into sentences
 extractor_config = config["extractor"]
@@ -68,7 +76,7 @@ elif "drive" in extractor_config.keys():
 else:
     extractor = extractor_class(**extractor_config[extractor_class_name])
 
-data = extractor.infer_list(data)
+data = extractor.transform(data)
 
 # Deconstruct these
 deconstructor_config = config["deconstructor"]
@@ -89,6 +97,6 @@ else:
         **deconstructor_config[deconstructor_class_name]
     )
 
-data = deconstructor.infer_list(data)
+data = deconstructor.transform(data)
 
 print(data)
