@@ -1,14 +1,9 @@
 return {
     {
-        name = "Update Dataset",
+        name = "Docker Compose Up",
         builder = function(_)
-            local cmd_str = table.concat({
-                "pip install -r requirements.txt",
-                "prisma generate",
-                "python3 update.py",
-            }, " && ")
+            local cmd_str = "sh run.sh up"
             return {
-                cwd = "database",
                 cmd = { "sh", "-c", cmd_str },
                 components = { "default" },
                 name = 'Update Dataset'
@@ -16,48 +11,25 @@ return {
         end,
     },
     {
-        name = "Update Database",
+        name = "Docker Compose Down",
         builder = function(_)
-            local cmd_str = table.concat({
-                "pip install prisma",
-                "prisma migrate dev"
-            }, " && ")
+            local cmd_str = "sh run.sh down"
             return {
-                cwd = "database",
                 cmd = { "sh", "-c", cmd_str },
                 components = { "default" },
-                name = 'Update Database Structure'
+                name = 'Update Dataset'
             }
         end,
     },
     {
-        name = "Reset Database",
+        name = "Docker Compose Logs",
         builder = function(_)
-            local cmd_str = table.concat({
-                "pip install prisma",
-                "prisma migrate reset"
-            }, " && ")
+            local cmd_str = "sh run.sh logs"
             return {
-                cwd = "database",
                 cmd = { "sh", "-c", cmd_str },
                 components = { "default" },
-                name = 'Reset Database'
+                name = 'Update Dataset'
             }
         end,
     },
-    {
-        name = "Prisma Studio",
-        builder = function(_)
-            local cmd_str = table.concat({
-                "pip install prisma",
-                "prisma studio"
-            }, " && ")
-            return {
-                cwd = "database",
-                cmd = { "sh", "-c", cmd_str },
-                components = { "default" },
-                name = 'Prisma Studio'
-            }
-        end,
-    }
 }

@@ -1,7 +1,7 @@
 data:
   # Can be DB or file
   #path: "input.csv"
-  query: "Select id, test from 'Document' where test like '%renewable energy%' limit 2"
+  query: 'Select id, text from "Document" where text like ''%renewable energy%'' limit 2'
 
 filter:
   QueryStringFilter:

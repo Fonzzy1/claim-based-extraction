@@ -5,8 +5,6 @@ from prisma import Client
 from models.extractor import Processor
 import os
 
-import sys
-import yaml
 
 if len(sys.argv) < 2:
     print("Error: Config file not specified.")
@@ -16,7 +14,7 @@ config_file = sys.argv[1]
 with open(config_file, "r") as file:
     config = yaml.safe_load(file)
 
-out_folder = os.path.join("experiments", "results", config_file.split("/")[-1])
+out_folder = os.path.join("experiments", "results", os.path.splitext(config_file.split("/")[-1])[0])
 
 if os.path.exists(out_folder):
     raise Exception("Config has already been run")
@@ -28,7 +26,7 @@ data_config = config["data"]
 if "query" in data_config.keys():
     db = Client()
     await db.connect()
-    data = db.query_raw(data_config["query"])
+    data = await db.query_raw(data_config["query"])
 
 ## Filter the data
 filter_config = config["filter"]
