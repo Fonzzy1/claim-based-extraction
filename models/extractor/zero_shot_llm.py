@@ -40,6 +40,3 @@ class ZeroShotExtractor(BaseExtractor):
         # The content should be a dict with a "result" key holding list[str]
         content = response.choices[0].message.parsed
         return content
-
-
-

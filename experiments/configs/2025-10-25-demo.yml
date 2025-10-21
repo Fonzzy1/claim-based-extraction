@@ -1,6 +1,7 @@
 data:
   # Can be DB or file
   #path: "input.csv"
+  # will needs id and text
   query: 'Select id, text from "Document" where text like ''%renewable energy%'' limit 2'
 
 filter:
@@ -13,14 +14,14 @@ processor:
 
 extractor:
   ZeroShotExtractor:
-    model_key: "gpt-4-mini"
+    model_key: "gpt-4o-mini"
     endpoint: "https://api.openai.com/v1/chat/completions"
     system_prompt: "You are ChatGPT, a helpful assistant."
-    message_prompt_format_string: "{string}: {content}"
+    message_prompt_format_string: "{string}: {context}"
 
 deconstructor:
   ZeroShotDeconstructor:
-    model_key: "gpt-4-mini"
+    model_key: "gpt-4o-mini"
     endpoint: "https://api.openai.com/v1/chat/completions"
     system_prompt: "You are ChatGPT, a helpful assistant."
     message_prompt_format_string: "{string}"

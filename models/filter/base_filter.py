@@ -1,5 +1,8 @@
 from models.base_model import BaseModel
+from models.data_structure import *
 from multiprocessing import Pool
+import pandas as pd
+
 
 class Filter(BaseModel):
     def __init__(self) -> None:
@@ -10,15 +13,15 @@ class Filter(BaseModel):
 
     def train(self, X, y) -> None:
         pass
- 
-    def infer_list(self, ls) -> list[bool]:
+
+    def infer_corpus(self, corpus: Corpus) -> list:
         with Pool() as pool:
-            return pool.map(self.infer, ls)
+            results = pool.map(self.infer, [d.text for d in corpus.documents])
+        return results
 
-    def filter(self, ls) -> list:
-        with Pool() as pool:
-            keys = pool.map(self.infer, ls)
-        return [item for item, key in zip(ls, keys) if key]
-
-
-
+    def transform(self, corpus: Corpus) -> Corpus:
+        keys: dict = self.infer_corpus(corpus)
+        corpus.documents = [
+            x for i, x in enumerate(corpus.documents) if keys[i]
+        ]
+        return corpus
