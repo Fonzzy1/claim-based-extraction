@@ -92,3 +92,5 @@ else:
     )
 
 data = deconstructor.infer_list(data)
+
+print(data)

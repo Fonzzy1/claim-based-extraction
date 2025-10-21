@@ -1,0 +1,10 @@
+services:
+  db_manager:
+    build:
+      context: ./db
+  download:
+    build:
+      context: ./db
+  studio:
+    build:
+      context: ./db

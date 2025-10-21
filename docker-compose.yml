@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -7,31 +7,31 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ${SYS_DIR}/front_end:/usr/share/nginx/html
-  back-end:
-    build:
-      context: ./back_end
-      dockerfile: Dockerfile  # Adjust if your Dockerfile is not within the `back-end` directory
-    ports:
-      - "5000:5000"  # Adjust if your Flask app uses a different port
-    volumes:
-      - ${SYS_DIR}/back_end:/app
-      - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
-      - ${SYS_DIR}/urls.csv:/app/urls.csv
-      - ${SYS_DIR}/sources.csv:/app/sources.csv
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    networks: 
-      - ai_inferance
-  whisper:
-    image: onerahmet/openai-whisper-asr-webservice:latest
-    ports:
-      - "9000:9000"
-    environment:
-      ASR_MODEL: tiny
-      ASR_ENGINE: openai_whisper
-    networks: 
-      - ai_inferance
+      - ${SYS_DIR}/dashboard/front_end:/usr/share/nginx/html
+#   back-end:
+#     build:
+#       context: ./back_end
+#       dockerfile: Dockerfile # Adjust if your Dockerfile is not within the `back-end` directory
+#     ports:
+#       - "5000:5000" # Adjust if your Flask app uses a different port
+#     volumes:
+#       - ${SYS_DIR}/back_end:/app
+#       - ${SYS_DIR}/corpus.pkl:/app/corpus.pkl
+#       - ${SYS_DIR}/urls.csv:/app/urls.csv
+#       - ${SYS_DIR}/sources.csv:/app/sources.csv
+#     environment:
+#       - OPENAI_API_KEY=${OPENAI_API_KEY}
+#     networks:
+#       - ai_inferance
+#   whisper:
+#     image: onerahmet/openai-whisper-asr-webservice:latest
+#     ports:
+#       - "9000:9000"
+#     environment:
+#       ASR_MODEL: tiny
+#       ASR_ENGINE: openai_whisper
+#     networks:
+#       - ai_inferance
 
 volumes:
   ollama:
