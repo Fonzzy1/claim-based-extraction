@@ -1,13 +1,12 @@
-from models.base_model import BaseModel
-from models.deconstructor.codebook import Label
+from models.base_model import ClaimLevel, Claim, Label
 from multiprocessing import Pool
 
 
-class BaseDeconstructor(BaseModel):
+class BaseDeconstructor(ClaimLevel):
     def __init__(self) -> None:
         pass
 
-    def infer(self, string) -> Label | None:
+    def infer(self, claim: Claim) -> Label | None:
         """
         for a single extracted claim
         """
@@ -16,24 +15,10 @@ class BaseDeconstructor(BaseModel):
     def train(self, X, y) -> None:
         pass
 
-    def infer_string(self, data):
-        for claim in data:
-            pass
-
-    def infer_document(self, data: dict) -> list[Label | None]:
-        with Pool() as pool:
-            results = pool.starmap(self.infer, data["claims"])
-        return results
-
-    def infer_dict(self, data: dict) -> list:
-        out = []
-        for k, v in data.items():
-            out.append(self.infer_document(v))
-        return out
-
-    def transform(self, data: dict) -> dict:
-        inferred = self.infer_dict(data)
-        keys = list(data.keys())
-        for i in range(len(keys)):
-            data[keys[i]]["claims"] = inferred[i]
-        return data
+    def _data_join_func(self, corpus, data):
+        for i, document in enumerate(corpus.documents):
+            for j, element in enumerate(document.elements):
+                if len(element.claims):
+                    for k, claim in enumerate(element.claims):
+                        claim.deconstruction = data[i][j][k]
+        return corpus

@@ -1,10 +1,8 @@
-from models.base_model import BaseModel
-from models.data_structure import *
+from models.base_model import DocumentLevel, Document
 from multiprocessing import Pool
-import pandas as pd
 
 
-class Filter(BaseModel):
+class Filter(DocumentLevel):
     def __init__(self) -> None:
         pass
 
@@ -14,14 +12,11 @@ class Filter(BaseModel):
     def train(self, X, y) -> None:
         pass
 
-    def infer_corpus(self, corpus: Corpus) -> list:
-        with Pool() as pool:
-            results = pool.map(self.infer, [d.text for d in corpus.documents])
-        return results
+    def infer_document(self, document: Document) -> bool:
+        return self.infer(document.text)
 
-    def transform(self, corpus: Corpus) -> Corpus:
-        keys: dict = self.infer_corpus(corpus)
+    def _data_join_func(self, corpus, data):
         corpus.documents = [
-            x for i, x in enumerate(corpus.documents) if keys[i]
+            x for i, x in enumerate(corpus.documents) if data[i]
         ]
         return corpus

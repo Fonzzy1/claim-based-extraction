@@ -1,7 +1,9 @@
-from typing import List
 from openai import OpenAI
-from models.deconstructor.base_deconstructor import BaseDeconstructor
-from models.deconstructor.codebook import Label
+from models.deconstructor.base_deconstructor import (
+    BaseDeconstructor,
+    Claim,
+    Label,
+)
 
 
 class ZeroShotDeconstructor(BaseDeconstructor):
@@ -18,10 +20,10 @@ class ZeroShotDeconstructor(BaseDeconstructor):
         self.message_prompt_format_string = message_prompt_format_string
         self.client = OpenAI()
 
-    def infer(self, string: str) -> Label:
+    def infer(self, claim: Claim):
         # Format the prompt string with context
         formatted_message = self.message_prompt_format_string.format(
-            string=string
+            string=claim.text
         )
 
         messages = [

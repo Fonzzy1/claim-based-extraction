@@ -1,6 +1,12 @@
 from typing import List
 from openai import OpenAI
-from models.extractor.base_extractor import BaseExtractor, ExtractionOutput
+from models.extractor.base_extractor import BaseExtractor
+from pydantic import BaseModel as PyBaseModel
+from models.base_model import DocumentElement, Claim
+
+
+class ReturnClass(PyBaseModel):
+    extracted_claims: List[str]
 
 
 class ZeroShotExtractor(BaseExtractor):
@@ -17,10 +23,10 @@ class ZeroShotExtractor(BaseExtractor):
         self.message_prompt_format_string = message_prompt_format_string
         self.client = OpenAI()
 
-    def infer(self, string: str, context: list[str]) -> ExtractionOutput:
+    def infer(self, element: DocumentElement):
         # Format the prompt string with context
         formatted_message = self.message_prompt_format_string.format(
-            string=string, context="\n".join(context)
+            string=element.text, context="\n".join(element.context)
         )
 
         messages = [
@@ -28,15 +34,13 @@ class ZeroShotExtractor(BaseExtractor):
             {"role": "user", "content": formatted_message},
         ]
 
-        # Define the expected JSON schema for structured output
-
         response = self.client.chat.completions.parse(
             model=self.model_key,
             messages=messages,
-            response_format=ExtractionOutput,  # or "json" depending on SDK
+            response_format=ReturnClass,
         )
 
         # Parse the structured output using Pydantic
-        # The content should be a dict with a "result" key holding list[str]
-        content = response.choices[0].message.parsed
-        return content
+        content: List[str] = response.choices[0].message.parsed.extracted_claims
+        claim_content = [Claim(x) for x in content]
+        return claim_content

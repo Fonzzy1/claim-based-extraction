@@ -4,9 +4,7 @@ import importlib
 from prisma import Client
 from models.extractor import Processor
 import os
-from models.data_structure import Document, Corpus
-
-
+from models.base_model import Document, Corpus
 
 if len(sys.argv) < 2:
     print("Error: Config file not specified.")
@@ -14,18 +12,18 @@ if len(sys.argv) < 2:
 
 config_file = sys.argv[1]
 
-config_file = "experiments/configs/2025-10-25-demo.yml"
 with open(config_file, "r") as file:
     config = yaml.safe_load(file)
 
-out_folder = os.path.join(
-    "experiments", "results", os.path.splitext(config_file.split("/")[-1])[0]
+out_file = os.path.join(
+    "experiments",
+    "results",
+    os.path.splitext(config_file.split("/")[-1])[0] + ".pkl",
 )
 
-if os.path.exists(out_folder):
-    raise Exception("Config has already been run")
+if os.path.exists(out_file):
+    raise Exception("Outfile allready exists on disk")
 
-os.mkdir(out_folder)
 
 ## Pull in the data
 data_config = config["data"]
@@ -99,4 +97,4 @@ else:
 
 data = deconstructor.transform(data)
 
-print(data)
+data.save_to_file(out_file)
