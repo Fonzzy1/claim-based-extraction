@@ -18,3 +18,4 @@ scipy==1.15.3
 tqdm==4.67.1
 boolean-query-parser==1.0.1
 nltk==3.9.2
+questionary==2.1.1
