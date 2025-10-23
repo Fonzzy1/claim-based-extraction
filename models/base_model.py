@@ -170,27 +170,41 @@ TECH_TAXONOMY = {
 
 ISSUE_TAXONOMY = {
     "Economic": {
-        "Affordability / Cost",
-        "Jobs & Industry",
-        "Innovation & Growth",
-        "Opportunity Cost",
+        "Low Government Revenues",
+        "High Government Expenditure",
+        "Unemployment",
+        "Low Economic Growth",
+        "High Energy Costs",
+        "Reduced Economic Competitiveness",
     },
     "Security": {
-        "Reliability",
-        "Infrastructure Resilience",
-        "Resource Scarcity",
-        "Resource Control",
-        "Achievability",
+        "Inconsistent Energy Availability",
+        "Energy Infrastructure Vulnerability",
+        "Resource Depletion",
+        "International Resource Dependency",
+        "Plan Viability",
     },
     "Green / Environmental Sustainability": {
         "Climate Change",
-        "Ecology",
-        "Natural Beauty",
+        "Destruction of Ecology",
+        "Destruction of Natural Beauty",
+        "Air Pollution",
+        "Water Resource Stress",
+        "Biodiversity Loss",
     },
-    "Justice": {"Fairness", "Consent", "Health Impacts"},
+    "Justice": {
+        "Inequity",
+        "Lack of Public Consent",
+        "Adverse Health Impacts",
+        "Regional Decline",
+        "Social Displacement",
+        "Energy Access Inequality",
+    },
     "National Standing": {
-        "International Obligations",
-        "Keeping up internationally",
+        "A Failure to Meet International Obligations",
+        "Reputation with Trade Partners",
+        "Weak Leadership in Clean Energy Transition",
+        "Declining Global Influence on Energy Policy",
     },
 }
 
@@ -276,7 +290,7 @@ class EvaluationLabel(PyBaseModel):
         issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
         return (
             f"Policies that support the use of {tech} {tech_parent} "
-            f"will {self.impact} the {self.issue_level_1} issue{issue2}."
+            f"will {self.impact} the {self.issue_level_1} issue of {issue2}."
         )
 
 
@@ -300,7 +314,7 @@ class IssueDeclarationLabel(PyBaseModel):
         issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
         return (
             f"Policies affecting Australia’s energy generation "
-            f"should address the {self.issue_level_1} issue{issue2}."
+            f"should address the {self.issue_level_1} issue of {issue2}."
         )
 
 
