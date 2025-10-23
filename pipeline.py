@@ -7,6 +7,7 @@ from models.extractor import Processor
 import os
 from models.base_model import Document, Corpus
 import asyncio
+from models.filter import make_element_filter
 
 if len(sys.argv) < 2:
     print("Error: Config file not specified.")
@@ -63,6 +64,28 @@ def main(config_file):
     ).__getattribute__(function)
     processor = Processor(context_size, sentence_splitting_function)
     data = processor.transform(data)
+
+    # Run the element filter to remove unneeded content
+    elementfilter_config = config["elementfilter"]
+    elementfilter_class_name = list(elementfilter_config.keys())[0]
+    module = importlib.import_module("models.filter")
+    elementfilter_base_class = getattr(module, elementfilter_class_name)
+    elementfilter_class = make_element_filter(elementfilter_base_class)
+
+    if "file" in elementfilter_config.keys():
+        elementfilter = elementfilter_class.load_from_file(
+            elementfilter_config["file"]
+        )
+    elif "drive" in elementfilter_config.keys():
+        elementfilter = elementfilter_class.load_from_drive(
+            elementfilter_config["drive"]
+        )
+    else:
+        elementfilter = elementfilter_class(
+            **elementfilter_config[elementfilter_class_name]
+        )
+
+    data = elementfilter.transform(data)
 
     # Extract the data into sentences
     extractor_config = config["extractor"]

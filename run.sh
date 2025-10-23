@@ -15,7 +15,7 @@ setup_dc() {
 
 # --- Run initial setup tasks (one-time) ---
 setup_once() {
-  [ -z "$SYS_DIR" ] && export SYS_DIR=$(pwd)
+  [ "$SYS_DIR" = "" ] && export SYS_DIR=$PWD
   echo "Checking for client.json..."
   if [ -f client.json ]; then
     echo "✅ client.json exists"
@@ -39,7 +39,10 @@ auto_up() {
   dc up -d
 
   # Check if Document table is empty
-  COUNT=$(dc exec -T db psql -U prisma_user -d prisma_db -t -c 'SELECT count(*) FROM "Document";' | xargs)
+  COUNT=$(dc exec -T db psql -U prisma_user -d prisma_db -t -c 'SELECT count(*) FROM "Document";' 2>/dev/null | xargs)
+  if [ $? -ne 0 ] || [ "$COUNT" = "" ]; then
+    COUNT=0
+  fi
 
   if [ "$COUNT" -eq 0 ]; then
     echo "⬇️  Database is empty, downloading..."
@@ -58,3 +61,4 @@ else
   echo "❌ Please source this script: 'source $0'"
   exit 1
 fi
+

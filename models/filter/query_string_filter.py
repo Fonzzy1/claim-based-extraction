@@ -7,5 +7,5 @@ class QueryStringFilter(Filter):
         self.qs = qs
         self.query = parse_query(qs)
 
-    def infer(self, string) -> bool:
-        return apply_query(self.query, string)
+    def infer(self, document) -> bool:
+        return apply_query(self.query, document.text)

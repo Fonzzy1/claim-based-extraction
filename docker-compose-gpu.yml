@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   ollama:
     volumes:
@@ -19,13 +17,13 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-  whisper:
-    environment:
-      ASR_MODEL: turbo
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+  # whisper:
+  #   environment:
+  #     ASR_MODEL: turbo
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]

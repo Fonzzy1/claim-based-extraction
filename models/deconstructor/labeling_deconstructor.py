@@ -3,6 +3,8 @@ from models.base_model import (
     Claim,
     ISSUE_TAXONOMY,
     TECH_TAXONOMY,
+    EvaluationLabel,
+    IssueDeclarationLabel,
     Label,
     Corpus,
     DocumentElement,
@@ -11,6 +13,7 @@ from models.base_model import (
 import questionary
 
 
+# --- Flatten the taxonomy structures for easy user selection ---
 flat_tech_options = []
 tech_backmap = {}
 
@@ -39,45 +42,73 @@ for l1, l2s in ISSUE_TAXONOMY.items():
     issue_backmap[l1] = (l1, None)
 
     for l2 in l2s:
-        # Level 2
         flat_issue_options.append(l2)
         issue_backmap[l2] = (l1, l2)
 
 
+# --- Manual input flow for either Evaluation or Issue Declaration ---
+
 def manual_label_input_flat() -> Label:
+    """Prompt user to create either an EvaluationLabel or IssueDeclarationLabel."""
+    label_type = questionary.select(
+        "Select the type of label:",
+        choices=["Evaluation", "Issue Declaration"],
+    ).ask()
+
+    # --- ISSUE declaration (simpler case) ---
+    if label_type == "Issue Declaration":
+        issue_choice = questionary.autocomplete(
+            "Select an issue label (any level):",
+            choices=flat_issue_options,
+        ).ask()
+
+        issue_l1, issue_l2 = issue_backmap[issue_choice]
+
+        return IssueDeclarationLabel(
+            issue_level_1=issue_l1,
+            issue_level_2=issue_l2,
+        )
+
+    # --- EVALUATION label ---
     tech_choice = questionary.autocomplete(
-        "Select a technology label (any level):", choices=flat_tech_options
+        "Select a technology label (any level):",
+        choices=flat_tech_options,
     ).ask()
 
     issue_choice = questionary.autocomplete(
-        "Select an issue label (any level):", choices=flat_issue_options
+        "Select an issue label (any level):",
+        choices=flat_issue_options,
     ).ask()
 
-    sentiment = questionary.autocomplete(
-        "Select the sentiment (impact):",
+    impact = questionary.autocomplete(
+        "Select the impact:",
         choices=["Alleviates", "Exacerbates", "Does Not Impact"],
     ).ask()
 
-    # Backfill
+    # Backfill taxonomy hierarchy
     tech_l1, tech_l2, tech_l3 = tech_backmap[tech_choice]
     issue_l1, issue_l2 = issue_backmap[issue_choice]
 
-    return Label(
+    return EvaluationLabel(
         tech_level_1=tech_l1,
         tech_level_2=tech_l2,
         tech_level_3=tech_l3,
         issue_level_1=issue_l1,
         issue_level_2=issue_l2,
-        sentiment=sentiment,
+        impact=impact,
     )
 
+
+# --- Deconstructor class ---
 
 class LabelingDeconstructor(BaseDeconstructor):
     def infer(self, claim: Claim):
         print("Claim text:\n")
         print(claim.text)
         print("\n--- Label the claim ---\n")
-        return manual_label_input_flat()
+        label = manual_label_input_flat()
+        print("\nCreated Label:\n", label)
+        return label
 
     def infer_corpus(self, corpus: Corpus):
         return list(map(self.infer_document, corpus.documents))

@@ -10,8 +10,8 @@ import os
 import io
 from io import BytesIO
 from multiprocessing.dummy import Pool as ThreadPool
-from typing import Literal, Optional, List
-from pydantic import BaseModel as BaseModelType
+from typing import Literal, Optional, List, Union
+from pydantic import BaseModel as PyBaseModel, model_validator
 from dataclasses import dataclass, field
 
 # --- Google Drive Auth ---
@@ -31,8 +31,6 @@ folder_id = "1splKDhcBuy1p_OAJTCTuIbx6t5o6yURi"
 
 
 class BaseModel:
-    def __init__(self) -> None:
-        pass
 
     def save_to_file(self, filepath):
         if os.path.exists(filepath):
@@ -196,7 +194,6 @@ ISSUE_TAXONOMY = {
     },
 }
 
-# --- Literals
 
 Impact = Literal["Alleviates", "Exacerbates", "Does Not Impact"]
 tech_level_1 = []
@@ -223,65 +220,93 @@ for k, v in ISSUE_TAXONOMY.items():
 IssueLevel1 = Literal.__getitem__(tuple(issue_level_1))
 IssueLevel2 = Literal.__getitem__(tuple(issue_level_2))
 
-# --- Main Model with validation ---
 
-
-class Label(BaseModelType):
-    tech_level_1: TechLevel1
-    tech_level_2: Optional[TechLevel2] = (
-        None  # Will validate later as Enum dynamically
-    )
+class EvaluationLabel(PyBaseModel):
+    tech_level_1: Optional[TechLevel1]
+    tech_level_2: Optional[TechLevel2] = None
     tech_level_3: Optional[TechLevel3] = None
 
     issue_level_1: IssueLevel1
     issue_level_2: Optional[IssueLevel2] = None
 
-    sentiment: Impact
+    impact: Impact  # same as old sentiment
 
-    # @model_validator(mode="after")
-    # @classmethod
-    # def check_tech_hierarchy(cls, values):
-    #     lvl1 = values.tech_level_1
-    #     lvl2 = values.tech_level_2
-    #     lvl3 = values.tech_level_3
+    @model_validator(mode="after")
+    def check_tech_hierarchy(self, values):
+        lvl1, lvl2, lvl3 = (
+            values.tech_level_1,
+            values.tech_level_2,
+            values.tech_level_3,
+        )
 
-    #     # Check level 2 is valid under level 1
-    #     if lvl2:
-    #         if lvl1 not in TECH_TAXONOMY or lvl2 not in TECH_TAXONOMY[lvl1]:
-    #             raise ValueError(
-    #                 f"tech_level_2 '{lvl2}' is not a valid child of tech_level_1 '{lvl1}'"
-    #             )
+        if lvl2 and (
+            lvl1 not in TECH_TAXONOMY or lvl2 not in TECH_TAXONOMY[lvl1]
+        ):
+            raise ValueError(
+                f"tech_level_2 '{lvl2}' is not a valid child of tech_level_1 '{lvl1}'"
+            )
 
-    #     # Check level 3 is valid under level 2 of level 1
-    #     if lvl3:
-    #         if (
-    #             not lvl2
-    #             or lvl1 not in TECH_TAXONOMY
-    #             or lvl2 not in TECH_TAXONOMY[lvl1]
-    #         ):
-    #             raise ValueError(
-    #                 f"Cannot validate tech_level_3 '{lvl3}' without a valid tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
-    #             )
-    #         elif lvl3 not in TECH_TAXONOMY[lvl1][lvl2]:
-    #             raise ValueError(
-    #                 f"tech_level_3 '{lvl3}' is not a valid child of tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
-    #             )
+        if lvl3:
+            if not lvl2 or lvl2 not in TECH_TAXONOMY.get(lvl1, {}):
+                raise ValueError(
+                    f"Cannot validate tech_level_3 '{lvl3}' without valid lvl2 '{lvl2}' under lvl1 '{lvl1}'"
+                )
+            if lvl3 not in TECH_TAXONOMY[lvl1][lvl2]:
+                raise ValueError(
+                    f"tech_level_3 '{lvl3}' is not a valid child of tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
+                )
+        return values
 
-    #     return values
+    @model_validator(mode="after")
+    def check_issue_hierarchy(self, values):
+        lvl1, lvl2 = values.issue_level_1, values.issue_level_2
 
-    # @model_validator(mode="after")
-    # @classmethod
-    # def check_issue_hierarchy(cls, values):
-    #     lvl1 = values.issue_level_1
-    #     lvl2 = values.issue_level_2
+        if lvl2 and (
+            lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
+        ):
+            raise ValueError(
+                f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
+            )
+        return values
 
-    #     if lvl2:
-    #         if lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]:
-    #             raise ValueError(
-    #                 f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
-    #             )
+    def __repr__(self):
+        """Natural-language sentence form."""
+        tech = self.tech_level_3 or self.tech_level_2 or "a technology"
+        tech_parent = f"({self.tech_level_1})" if self.tech_level_1 else ""
+        issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
+        return (
+            f"Policies that support the use of {tech} {tech_parent} "
+            f"will {self.impact} the {self.issue_level_1} issue{issue2}."
+        )
 
-    #     return values
+
+class IssueDeclarationLabel(PyBaseModel):
+    issue_level_1: IssueLevel1
+    issue_level_2: Optional[IssueLevel2] = None
+
+    @model_validator(mode="after")
+    def check_issue_hierarchy(self, values):
+        lvl1, lvl2 = values.issue_level_1, values.issue_level_2
+        if lvl2 and (
+            lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
+        ):
+            raise ValueError(
+                f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
+            )
+        return values
+
+    def __repr__(self):
+        """Natural-language sentence form."""
+        issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
+        return (
+            f"Policies affecting Australia’s energy generation "
+            f"should address the {self.issue_level_1} issue{issue2}."
+        )
+
+
+# --- Unified Label Union Type ---
+
+Label = Union[EvaluationLabel, IssueDeclarationLabel]
 
 
 @dataclass
