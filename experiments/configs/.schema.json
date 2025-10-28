@@ -111,6 +111,60 @@
           "required": [
             "QueryStringFilter"
           ]
+        },
+        {
+          "properties": {
+            "VectorFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model",
+                    "endpoint",
+                    "query_strings"
+                  ],
+                  "properties": {
+                    "model": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "query_strings": {
+                      "type": "array"
+                    },
+                    "threshold": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "VectorFilter"
+          ]
         }
       ]
     },
@@ -193,6 +247,60 @@
           },
           "required": [
             "QueryStringFilter"
+          ]
+        },
+        {
+          "properties": {
+            "VectorFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model",
+                    "endpoint",
+                    "query_strings"
+                  ],
+                  "properties": {
+                    "model": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "query_strings": {
+                      "type": "array"
+                    },
+                    "threshold": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "VectorFilter"
           ]
         }
       ]
