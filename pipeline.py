@@ -3,7 +3,7 @@ import asyncio
 import sys
 import importlib
 from prisma import Client
-from models.extractor import Processor
+from models.extractor.base_extractor import Processor
 import os
 from models.base_model import Document, Corpus
 import asyncio

@@ -1,0 +1,477 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Auto-generated Media Pipeline Schema",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "description": "Data source configuration.",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to input file."
+        },
+        "query": {
+          "type": "string",
+          "description": "SQL query to fetch data."
+        }
+      }
+    },
+    "processor": {
+      "type": "object",
+      "description": "Fixed text processor configuration.",
+      "properties": {
+        "context_size": {
+          "type": "integer",
+          "description": "Number of surrounding sentences to include as context."
+        },
+        "sentence_splitting_function": {
+          "type": "string",
+          "description": "Python function used for sentence tokenization."
+        }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "description": "Filter stage configuration.",
+      "oneOf": [
+        {
+          "properties": {
+            "DummyFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "DummyFilter"
+          ]
+        },
+        {
+          "properties": {
+            "QueryStringFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "qs"
+                  ],
+                  "properties": {
+                    "qs": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "QueryStringFilter"
+          ]
+        }
+      ]
+    },
+    "elementfilter": {
+      "type": "object",
+      "description": "Elementfilter stage configuration.",
+      "oneOf": [
+        {
+          "properties": {
+            "DummyFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "DummyFilter"
+          ]
+        },
+        {
+          "properties": {
+            "QueryStringFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "qs"
+                  ],
+                  "properties": {
+                    "qs": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "QueryStringFilter"
+          ]
+        }
+      ]
+    },
+    "extractor": {
+      "type": "object",
+      "description": "Extractor stage configuration.",
+      "oneOf": [
+        {
+          "properties": {
+            "DummyExtractor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "DummyExtractor"
+          ]
+        },
+        {
+          "properties": {
+            "LabelingExtractor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "LabelingExtractor"
+          ]
+        },
+        {
+          "properties": {
+            "ZeroShotExtractor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model_key",
+                    "endpoint",
+                    "system_prompt",
+                    "message_prompt_format_string"
+                  ],
+                  "properties": {
+                    "model_key": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "system_prompt": {
+                      "type": "string"
+                    },
+                    "message_prompt_format_string": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "ZeroShotExtractor"
+          ]
+        }
+      ]
+    },
+    "deconstructor": {
+      "type": "object",
+      "description": "Deconstructor stage configuration.",
+      "oneOf": [
+        {
+          "properties": {
+            "DummyDeconstructor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "DummyDeconstructor"
+          ]
+        },
+        {
+          "properties": {
+            "LabelingDeconstructor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {}
+              ]
+            }
+          },
+          "required": [
+            "LabelingDeconstructor"
+          ]
+        },
+        {
+          "properties": {
+            "ZeroShotDeconstructor": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model_key",
+                    "endpoint",
+                    "system_prompt",
+                    "message_prompt_format_string"
+                  ],
+                  "properties": {
+                    "model_key": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "system_prompt": {
+                      "type": "string"
+                    },
+                    "message_prompt_format_string": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "ZeroShotDeconstructor"
+          ]
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "dependencies": {
+    "filter": [
+      "data"
+    ],
+    "processor": [
+      "filter"
+    ],
+    "elementfilter": [
+      "processor"
+    ],
+    "extractor": [
+      "elementfilter"
+    ],
+    "deconstructor": [
+      "extractor"
+    ]
+  }
+}
