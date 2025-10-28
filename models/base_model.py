@@ -1,7 +1,7 @@
 from tqdm import tqdm
+from multiprocessing.dummy import Pool as ThreadPool
 import dill
 import os
-from tqdm import tqdm
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
@@ -13,6 +13,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 from typing import Literal, Optional, List, Union
 from pydantic import BaseModel as PyBaseModel, model_validator
 from dataclasses import dataclass, field
+from tqdm.contrib.concurrent import thread_map
 
 # --- Google Drive Auth ---
 SCOPES = ["https://www.googleapis.com/auth/drive"]
@@ -82,8 +83,6 @@ class BaseModel:
     def load_from_file(cls, filepath):
         with open(filepath, "rb") as f:
             obj = dill.load(f)
-        if type(obj) != cls:
-            raise Exception("Incompatible Object")
         return obj
 
     @classmethod
@@ -126,44 +125,78 @@ class BaseModel:
 TECH_TAXONOMY = {
     "Renewable Energy": {
         "Solar Power": {
-            "Small Scale Solar",
-            "Large Scale Solar",
-            "Concentrated Solar",
+            "small-scale solar",
+            "large-scale solar",
+            "concentrated solar power",
         },
-        "Wind Power": {"Offshore Wind", "Onshore Wind"},
-        "Hydro Power": {"Small Scale Hydro", "Large Scale Hydro"},
+        "Wind Power": {
+            "offshore wind",
+            "onshore wind",
+        },
+        "Hydro Power": {
+            "small-scale hydro",
+            "large-scale hydro",
+        },
     },
     "Fossil Fuels": {
-        "Coal": {"Brown Coal", "Black Coal", "Peat"},
-        "Gas": {"Conventional Gas", "Non-Conventional Gas"},
-        "Oil": {"Oil"},
+        "Coal": {
+            "brown coal",
+            "black coal",
+            "peat",
+        },
+        "Gas": {
+            "conventional gas",
+            "non-conventional gas",
+            "LNG",
+        },
+        "Oil": {
+            "oil",
+        },
     },
     "Non-Viable Alternatives": {
-        "Biomass": {"Waste Fermentation", "Farmed Biomass", "BioFuels"},
-        "Nuclear": {"Large Scale Fission", "Small Modular Fission", "Fusion"},
-        "CCS": {"post-combustion", "pre-combustion", "Direct Air Capture"},
-        "Ocean Energy": {"Wave", "Tidal", "Thermal"},
-        "Geothermal": {"Geothermal Energy"},
+        "Biomass": {
+            "waste fermentation",
+            "farmed biomass",
+            "biofuel",
+        },
+        "Nuclear": {
+            "large-scale fission",
+            "small modular fission",
+            "fusion",
+        },
+        "CCS": {
+            "post-combustion carbon capture",
+            "pre-combustion carbon capture",
+            "direct air carbon capture",
+        },
+        "Ocean Energy": {
+            "wave energy",
+            "tidal energy",
+            "ocean thermal energy",
+        },
+        "Geothermal": {
+            "geothermal energy",
+        },
     },
     "Storage and Transportation": {
         "Long-Term Storage": {
-            "Gravity Storage",
-            "Pumped Hydro Storage",
-            "Compressed Air Energy Storage (CAES)",
-            "Large-Scale Batteries",
-            "Hydrogen Storage",
+            "gravity storage",
+            "pumped hydro storage",
+            "compressed air energy storage",
+            "large-scale batteries",
+            "hydrogen storage",
         },
         "Peaking Supply": {
-            "Battery Energy Storage Systems (BESS)",
-            "Home Battery",
-            "Flywheels",
-            "Thermal Storage",
+            "battery energy storage system",
+            "home batteries",
+            "flywheel storage",
+            "thermal storage",
         },
         "Transport": {
-            "Electrical Transmission Lines",
-            "Gas Pipelines",
-            "Hydrogen Pipelines",
-            "Oil Pipelines",
+            "electrical transmission lines",
+            "gas pipelines",
+            "hydrogen pipelines",
+            "oil pipelines",
         },
     },
 }
@@ -184,7 +217,7 @@ ISSUE_TAXONOMY = {
         "International Resource Dependency",
         "Plan Viability",
     },
-    "Green / Environmental Sustainability": {
+    "Environmental Sustainability": {
         "Climate Change",
         "Destruction of Ecology",
         "Destruction of Natural Beauty",
@@ -245,43 +278,43 @@ class EvaluationLabel(PyBaseModel):
 
     impact: Impact  # same as old sentiment
 
-    @model_validator(mode="after")
-    def check_tech_hierarchy(self, values):
-        lvl1, lvl2, lvl3 = (
-            values.tech_level_1,
-            values.tech_level_2,
-            values.tech_level_3,
-        )
+    # @model_validator(mode="after")
+    # def check_tech_hierarchy(self, values):
+    #     lvl1, lvl2, lvl3 = (
+    #         values.tech_level_1,
+    #         values.tech_level_2,
+    #         values.tech_level_3,
+    #     )
 
-        if lvl2 and (
-            lvl1 not in TECH_TAXONOMY or lvl2 not in TECH_TAXONOMY[lvl1]
-        ):
-            raise ValueError(
-                f"tech_level_2 '{lvl2}' is not a valid child of tech_level_1 '{lvl1}'"
-            )
+    #     if lvl2 and (
+    #         lvl1 not in TECH_TAXONOMY or lvl2 not in TECH_TAXONOMY[lvl1]
+    #     ):
+    #         raise ValueError(
+    #             f"tech_level_2 '{lvl2}' is not a valid child of tech_level_1 '{lvl1}'"
+    #         )
 
-        if lvl3:
-            if not lvl2 or lvl2 not in TECH_TAXONOMY.get(lvl1, {}):
-                raise ValueError(
-                    f"Cannot validate tech_level_3 '{lvl3}' without valid lvl2 '{lvl2}' under lvl1 '{lvl1}'"
-                )
-            if lvl3 not in TECH_TAXONOMY[lvl1][lvl2]:
-                raise ValueError(
-                    f"tech_level_3 '{lvl3}' is not a valid child of tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
-                )
-        return values
+    #     if lvl3:
+    #         if not lvl2 or lvl2 not in TECH_TAXONOMY.get(lvl1, {}):
+    #             raise ValueError(
+    #                 f"Cannot validate tech_level_3 '{lvl3}' without valid lvl2 '{lvl2}' under lvl1 '{lvl1}'"
+    #             )
+    #         if lvl3 not in TECH_TAXONOMY[lvl1][lvl2]:
+    #             raise ValueError(
+    #                 f"tech_level_3 '{lvl3}' is not a valid child of tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
+    #             )
+    #     return values
 
-    @model_validator(mode="after")
-    def check_issue_hierarchy(self, values):
-        lvl1, lvl2 = values.issue_level_1, values.issue_level_2
+    # @model_validator(mode="after")
+    # def check_issue_hierarchy(self, values):
+    #     lvl1, lvl2 = values.issue_level_1, values.issue_level_2
 
-        if lvl2 and (
-            lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
-        ):
-            raise ValueError(
-                f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
-            )
-        return values
+    #     if lvl2 and (
+    #         lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
+    #     ):
+    #         raise ValueError(
+    #             f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
+    #         )
+    #     return values
 
     def __repr__(self):
         """Natural-language sentence form."""
@@ -298,16 +331,16 @@ class IssueDeclarationLabel(PyBaseModel):
     issue_level_1: IssueLevel1
     issue_level_2: Optional[IssueLevel2] = None
 
-    @model_validator(mode="after")
-    def check_issue_hierarchy(self, values):
-        lvl1, lvl2 = values.issue_level_1, values.issue_level_2
-        if lvl2 and (
-            lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
-        ):
-            raise ValueError(
-                f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
-            )
-        return values
+    # @model_validator(mode="after")
+    # def check_issue_hierarchy(self, values):
+    #     lvl1, lvl2 = values.issue_level_1, values.issue_level_2
+    #     if lvl2 and (
+    #         lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
+    #     ):
+    #         raise ValueError(
+    #             f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
+    #         )
+    #     return values
 
     def __repr__(self):
         """Natural-language sentence form."""
@@ -319,8 +352,9 @@ class IssueDeclarationLabel(PyBaseModel):
 
 
 # --- Unified Label Union Type ---
-
-Label = Union[EvaluationLabel, IssueDeclarationLabel]
+class Label(PyBaseModel):
+    evaluation: Optional[EvaluationLabel] = None
+    issue: Optional[IssueDeclarationLabel] = None
 
 
 @dataclass
@@ -355,7 +389,7 @@ class DocumentLevel(BaseModel):
 
     def infer_corpus(self, corpus: Corpus):
         with ThreadPool() as pool:
-            return pool.map(self.infer_document, corpus.documents)
+            return thread_map(self.infer_document, corpus.documents)
 
     def infer_document(self, document: Document):
         return self.infer(document)

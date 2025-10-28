@@ -4,7 +4,7 @@ from models.base_model import (
     ElementLevel,
     DocumentElement,
 )
-from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
 
 
 class Filter(DocumentLevel):
@@ -30,7 +30,14 @@ def make_element_filter(base_filter_cls):
     It overrides `infer` and `_data_join_func` to work on elements.
     """
 
-    class ElementFilter(ElementLevel, base_filter_cls):
+    class ElementFilter(base_filter_cls):
+
+        def infer_document(self, document: Document):
+            with ThreadPool() as pool:
+                return pool.map(self.infer_element, document.elements)
+
+        def infer_element(self, element: DocumentElement):
+            return self.infer(element)
 
         def _data_join_func(self, corpus, data):
             for i, document in enumerate(corpus.documents):

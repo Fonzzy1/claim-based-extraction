@@ -18,15 +18,15 @@ config_file = sys.argv[1]
 
 def main(config_file):
 
+    print("Loading Config ...")
+
     with open(config_file, "r") as file:
         config = yaml.safe_load(file)
-
     out_file = os.path.join(
         "experiments",
         "results",
         os.path.splitext(config_file.split("/")[-1])[0] + ".pkl",
     )
-
     if os.path.exists(out_file):
         raise Exception("Outfile allready exists on disk")
 
@@ -44,6 +44,7 @@ def main(config_file):
     module = importlib.import_module("models.filter")
     filter_class = getattr(module, filter_class_name)
 
+    print("Loading Filter ...")
     if "file" in filter_config.keys():
         filter = filter_class.load_from_file(filter_config["file"])
     elif "drive" in filter_config.keys():
@@ -51,6 +52,7 @@ def main(config_file):
     else:
         filter = filter_class(**filter_config[filter_class_name])
 
+    print("Filtering Documents ...")
     data = filter.transform(data)
 
     # Preprocess the data
@@ -63,8 +65,10 @@ def main(config_file):
         module
     ).__getattribute__(function)
     processor = Processor(context_size, sentence_splitting_function)
+    print("Preprocessing Documents ...")
     data = processor.transform(data)
 
+    print("Constructing Element Filter")
     # Run the element filter to remove unneeded content
     elementfilter_config = config["elementfilter"]
     elementfilter_class_name = list(elementfilter_config.keys())[0]
@@ -85,8 +89,10 @@ def main(config_file):
             **elementfilter_config[elementfilter_class_name]
         )
 
+    print("Filtering Elements ...")
     data = elementfilter.transform(data)
 
+    print("Contructing Extractor")
     # Extract the data into sentences
     extractor_config = config["extractor"]
     extractor_class_name = list(extractor_config.keys())[0]
@@ -100,9 +106,11 @@ def main(config_file):
     else:
         extractor = extractor_class(**extractor_config[extractor_class_name])
 
+    print("Extracting Sentences ...")
     data = extractor.transform(data)
 
     # Deconstruct these
+    print("Contructing Deconstructor")
     deconstructor_config = config["deconstructor"]
     deconstructor_class_name = list(deconstructor_config.keys())[0]
     module = importlib.import_module("models.deconstructor")
@@ -121,6 +129,7 @@ def main(config_file):
             **deconstructor_config[deconstructor_class_name]
         )
 
+    print("Deconstructing Claims ...")
     data = deconstructor.transform(data)
 
     data.save_to_file(out_file)

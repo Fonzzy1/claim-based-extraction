@@ -21,7 +21,7 @@ class ZeroShotExtractor(BaseExtractor):
         self.endpoint = endpoint
         self.system_prompt = system_prompt
         self.message_prompt_format_string = message_prompt_format_string
-        self.client = OpenAI()
+        self.client = OpenAI(base_url=endpoint)
 
     def infer(self, element: DocumentElement):
         # Format the prompt string with context
