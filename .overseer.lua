@@ -43,4 +43,15 @@ return {
         }
     end,
 },
+    {
+        name = "Generate Synthetic Data for Semantic Filter",
+        builder = function(_)
+            local cmd_str = "PYTHONPATH=$(pwd) python3 ./data/synthetic/semantic_filter/generate_data.py"
+            return {
+                cmd = { "sh", "-c", cmd_str },
+                components = { "default" },
+                name = 'Generate Data in for the Semantic Filter'
+            }
+        end,
+    },
 }

@@ -11,6 +11,7 @@ RUN python -m nltk.downloader punkt_tab
 # Bring In the fixed stuff
 COPY ./models ./models
 COPY ./pipeline.py ./pipeline.py
+COPY ./data ./data
 
 
 ENTRYPOINT ["python3", "pipeline.py"]

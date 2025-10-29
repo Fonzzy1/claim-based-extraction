@@ -114,6 +114,60 @@
         },
         {
           "properties": {
+            "SemanticFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model",
+                    "endpoint",
+                    "data_file"
+                  ],
+                  "properties": {
+                    "model": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "data_file": {
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "SemanticFilter"
+          ]
+        },
+        {
+          "properties": {
             "VectorFilter": {
               "type": "object",
               "description": "",
@@ -247,6 +301,60 @@
           },
           "required": [
             "QueryStringFilter"
+          ]
+        },
+        {
+          "properties": {
+            "SemanticFilter": {
+              "type": "object",
+              "description": "",
+              "anyOf": [
+                {
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "drive"
+                  ],
+                  "properties": {
+                    "drive": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "model",
+                    "endpoint",
+                    "data_file"
+                  ],
+                  "properties": {
+                    "model": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "data_file": {
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "SemanticFilter"
           ]
         },
         {

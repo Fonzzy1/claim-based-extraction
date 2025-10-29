@@ -1,0 +1,62 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+#
+data:
+  query: 'Select id, text from "Document" order by date desc limit 1000'
+
+filter:
+  QueryStringFilter:
+    qs: >
+      ("policy" or "regulation" or "strategy" or "planning" or "investment" or "subsidy" or "funding" or "governance" or "roadmap" or "plan")
+      and
+      ("renewable energy" or "solar" or "wind" or "hydro" or "fossil fuels" or
+      "coal" or "peat" or "gas" or "lng" or "oil" or "non-viable alternatives"
+      or "nuclear" or "fission" or "fusion" or "carbon capture" or "geothermal"
+      or "biofuels" or "wave" or "tidal" or "ocean energy" or "battery" or "batteries" or "storage" or "transmission
+      line"  or "pipeline")
+      and
+      ("power" or "electricity" or 'energy')
+
+processor:
+  context_size: 3
+  sentence_splitting_function: nltk.tokenize.sent_tokenize
+
+elementfilter:
+  SemanticFilter:
+    model: text-embedding-3-small
+    endpoint: https://api.openai.com/v1/
+    data_file: ./data/synthetic/semantic_filter/embeddings_text-embedding-3-small.txt
+    threshold: 0.5
+
+extractor:
+  ZeroShotExtractor:
+    model_key: "gpt-4o-mini"
+    endpoint: "https://api.openai.com/v1/"
+    system_prompt: |
+      You are a machine tasked with a text to text job of extracting claims about energy policy from the Australian Federal Hansard
+      You will be given a sentence and in it, extract any claims that are made about energy policy in a string form. 
+      These claims either say what the impact of an energy policy or energy infrustucture is, or what issues policy should be evaluated on.
+      Each claim should only have one technology and one issue maximum, if there are multiple listed in the sentence, then retrun a comma seperated list.
+      You will be provided a senetenc plus the context. Dont extract claims from the context, instead use it to better understand the pronouns and references used in the text
+
+      If someone says: renewable energy is driving up power prices, this is a claim you would extract and then return in a string "Renewable energy is driving up power prices"  
+      If someone says: Energy needs to support our economy, this is a claim you would extract and then return in a string "Energy needs to support our economy"
+      If someone says: Climate change is a pressing issue, this is not a claim, because it is not specifically about energy policy
+      If someone says: Climate change is a pressing issue that our energy policy should adress, this is a claim
+      If someone says: Wind and solar are renewable souces of energy, this is two claims, "Wind is renewable, Solar is renewable"
+
+    message_prompt_format_string: |
+      text:{string}
+      context:{context}"
+
+deconstructor:
+  ZeroShotDeconstructor:
+    model_key: "gpt-4o-mini"
+    endpoint: "https://api.openai.com/v1/"
+    system_prompt: |
+      You are a machine tasked with deconstructing claims made about the energy transition.
+      There are two types of claims you will be tasked with deconstructing; Issues and Evaluations
+      Evaluation claims take the form: Policies that support the use of {Energy Infrastructure} will {Exacerbate/Alleviate/have no impact} on the issue of {issue}.  
+      Issue claims take the form: Policies affecting Australia’s energy generation should address the issue of {issue}.
+      Take the string given to you and then return a single deconstruction using the class outline provided
+    message_prompt_format_string: "{string}"

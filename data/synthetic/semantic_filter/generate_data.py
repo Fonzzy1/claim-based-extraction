@@ -2,6 +2,7 @@ from models.base_model import ISSUE_TAXONOMY, TECH_TAXONOMY
 import itertools
 from openai import OpenAI
 from tqdm import tqdm
+import numpy as np
 
 client = OpenAI()
 model = "text-embedding-3-small"
@@ -43,10 +44,16 @@ with open("data/synthetic/semantic_filter/sentences.txt", "w") as f:
     for sentence in sentences:
         f.write(sentence + "\n")
 
-with open(f"data/synthetic/semantic_filter/embeddings_{model}.txt", "w") as f:
-    for i in tqdm(range(0, len(sentences), 50)):
-        chunk = sentences[i : i + 50]
-        response = client.embeddings.create(input=chunk, model=model)
-        for row in response.data:
-            string = ", ".join([str(x) for x in row.embedding])
-            f.write(string + "\n")
+all_embeddings = []
+for i in tqdm(range(0, len(sentences), 50)):
+    chunk = sentences[i : i + 50]
+    response = client.embeddings.create(input=chunk, model=model)
+    embeddings = [row.embedding for row in response.data]
+    all_embeddings.append(np.array(embeddings))
+all_embeddings = np.vstack(all_embeddings)
+rowwise_avg = np.mean(all_embeddings, axis=1)
+np.savetxt(
+    f"data/synthetic/semantic_filter/embeddings_{model}.txt",
+    rowwise_avg,
+    delimiter=",",
+)
