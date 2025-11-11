@@ -23,9 +23,14 @@ def main(config_file):
     with open(config_file, "r") as file:
         config = yaml.safe_load(file)
 
+    print("Pulling Data")
     data_config = config["data"]
     if "query" in data_config.keys():
-        db = Client()
+        db = Client(
+            http={
+                "timeout": None,
+            },
+        )
         loop = asyncio.get_event_loop()
         loop.run_until_complete(db.connect())
         raw_data = loop.run_until_complete(db.query_raw(data_config["query"]))
