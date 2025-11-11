@@ -17,6 +17,9 @@ class Filter(DocumentLevel):
     def train(self, X, y) -> None:
         pass
 
+    def _get_feature(self, obj):
+        return obj.title
+
     def _data_join_func(self, corpus, data):
         corpus.documents = [
             x for i, x in enumerate(corpus.documents) if data[i]
@@ -38,6 +41,9 @@ def make_element_filter(base_filter_cls):
 
         def infer_element(self, element: DocumentElement):
             return self.infer(element)
+
+        def _get_feature(self, obj):
+            return obj.text
 
         def _data_join_func(self, corpus, data):
             for i, document in enumerate(corpus.documents):

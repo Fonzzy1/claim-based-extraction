@@ -8,4 +8,4 @@ class QueryStringFilter(Filter):
         self.query = parse_query(qs)
 
     def infer(self, document) -> bool:
-        return apply_query(self.query, document.text.lower())
+        return apply_query(self.query, self._get_feature(document).lower())

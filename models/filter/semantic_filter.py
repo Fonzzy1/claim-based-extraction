@@ -25,7 +25,7 @@ class SemanticFilter(VectorFilter):
         Returns True if any similarity exceeds the threshold.
         """
         response = self.client.embeddings.create(
-            model=self.model, input=document.text
+            model=self.model, input=self._get_feature(document)
         )
         doc_embedding = np.array(response.data[0].embedding)
 
