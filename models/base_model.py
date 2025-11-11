@@ -374,6 +374,7 @@ class DocumentElement:
 class Document:
     id: int
     text: str
+    title: Optional[str]
     elements: Optional[List[DocumentElement]] = None
 
 
