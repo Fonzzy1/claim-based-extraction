@@ -22,13 +22,6 @@ def main(config_file):
 
     with open(config_file, "r") as file:
         config = yaml.safe_load(file)
-    out_file = os.path.join(
-        "experiments",
-        "results",
-        os.path.splitext(config_file.split("/")[-1])[0] + ".pkl",
-    )
-    if os.path.exists(out_file):
-        raise Exception("Outfile allready exists on disk")
 
     data_config = config["data"]
     if "query" in data_config.keys():
@@ -37,9 +30,18 @@ def main(config_file):
         loop.run_until_complete(db.connect())
         raw_data = loop.run_until_complete(db.query_raw(data_config["query"]))
         data = Corpus([Document(**x) for x in raw_data])
+    elif "file" in data_config.keys():
+        data = Corpus.load_from_file(data_config["file"])
+    elif "drive" in data_config.keys():
+        data = Corpus.load_from_drive(data_config["drive"])
+    else:
+        raise Exception("No valid datasouce")
 
     ## Filter the data
-    filter_config = config["filter"]
+    filter_config = config.get("filter")
+    if not filter_config:
+        return data
+
     filter_class_name = list(filter_config.keys())[0]
     module = importlib.import_module("models.filter")
     filter_class = getattr(module, filter_class_name)
@@ -56,7 +58,9 @@ def main(config_file):
     data = filter.transform(data)
 
     # Preprocess the data
-    processor_config = config["processor"]
+    processor_config = config.get("processor")
+    if not processor_config:
+        return data
     context_size = processor_config["context_size"]
     parts = processor_config["sentence_splitting_function"].split(".")
     module = ".".join(parts[:-1])
@@ -70,7 +74,9 @@ def main(config_file):
 
     print("Constructing Element Filter")
     # Run the element filter to remove unneeded content
-    elementfilter_config = config["elementfilter"]
+    elementfilter_config = config.get("elementfilter")
+    if not elementfilter_config:
+        return data
     elementfilter_class_name = list(elementfilter_config.keys())[0]
     module = importlib.import_module("models.filter")
     elementfilter_base_class = getattr(module, elementfilter_class_name)
@@ -94,7 +100,9 @@ def main(config_file):
 
     print("Contructing Extractor")
     # Extract the data into sentences
-    extractor_config = config["extractor"]
+    extractor_config = config.get("extractor")
+    if not extractor_config:
+        return data
     extractor_class_name = list(extractor_config.keys())[0]
     module = importlib.import_module("models.extractor")
     extractor_class = getattr(module, extractor_class_name)
@@ -111,7 +119,9 @@ def main(config_file):
 
     # Deconstruct these
     print("Contructing Deconstructor")
-    deconstructor_config = config["deconstructor"]
+    deconstructor_config = config.get("deconstructor")
+    if not deconstructor_config:
+        return data
     deconstructor_class_name = list(deconstructor_config.keys())[0]
     module = importlib.import_module("models.deconstructor")
     deconstructor_class = getattr(module, deconstructor_class_name)
@@ -132,7 +142,7 @@ def main(config_file):
     print("Deconstructing Claims ...")
     data = deconstructor.transform(data)
 
-    data.save_to_file(out_file)
+    return data
 
 
 if __name__ == "__main__":
@@ -141,4 +151,14 @@ if __name__ == "__main__":
         sys.exit(1)
 
     config_file = sys.argv[1]
-    main(config_file)
+
+    out_file = os.path.join(
+        "experiments",
+        "results",
+        os.path.splitext(config_file.split("/")[-1])[0] + ".pkl",
+    )
+    if os.path.exists(out_file):
+        raise Exception("Outfile allready exists on disk")
+
+    data = main(config_file)
+    data.save_to_file(out_file)
