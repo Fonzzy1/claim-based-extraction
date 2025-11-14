@@ -15,20 +15,23 @@ from pydantic import BaseModel as PyBaseModel, model_validator
 from dataclasses import dataclass, field
 from tqdm.contrib.concurrent import thread_map
 
-# --- Google Drive Auth ---
-SCOPES = ["https://www.googleapis.com/auth/drive"]
-SERVICE_ACCOUNT_FILE = "/root/client.json"
-
-# Make sure /root/client.json exists
-credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    SERVICE_ACCOUNT_FILE, SCOPES
-)
-
-gauth = GoogleAuth()
-gauth.credentials = credentials
-drive = GoogleDrive(gauth)
 
 folder_id = "1splKDhcBuy1p_OAJTCTuIbx6t5o6yURi"
+
+def google_auth():
+    # --- Google Drive Auth ---
+    SCOPES = ["https://www.googleapis.com/auth/drive"]
+    SERVICE_ACCOUNT_FILE = "/root/client.json"
+
+    # Make sure /root/client.json exists
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        SERVICE_ACCOUNT_FILE, SCOPES
+    )
+
+    gauth = GoogleAuth()
+    gauth.credentials = credentials
+    drive = GoogleDrive(gauth)
+    return drive
 
 
 class BaseModel:
@@ -39,7 +42,9 @@ class BaseModel:
         with open(filepath, "wb") as f:
             dill.dump(self, f)
 
+
     def save_to_drive(self, filename):
+        drive = google_auth()
         # Serialize current object to bytes
         data_bytes = dill.dumps(self)
         file_size = len(data_bytes)
@@ -87,6 +92,8 @@ class BaseModel:
 
     @classmethod
     def load_from_drive(cls, filename):
+
+        drive = google_auth()
 
         file_list = drive.ListFile(
             {
