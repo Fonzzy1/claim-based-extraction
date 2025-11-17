@@ -40,7 +40,7 @@ def class_to_schema(cls: type) -> dict:
     """
     sig = inspect.signature(cls.__init__)
     hints = get_type_hints(cls.__init__)
-    
+
     # Build schema for constructor parameters (skip self)
     param_props = {}
     required_params = []
@@ -51,16 +51,23 @@ def class_to_schema(cls: type) -> dict:
         param_props[name] = {"type": python_type_to_json_type(annotation)}
         if param.default is inspect._empty:
             required_params.append(name)
-    
+
     # Schemas for the three mutually exclusive options
     return {
         "type": "object",
         "description": (cls.__doc__ or "").strip(),
         "anyOf": [
             {"required": ["file"], "properties": {"file": {"type": "string"}}},
-            {"required": ["drive"], "properties": {"drive": {"type": "string"}}},
-            {"required": required_params, "properties": param_props} if param_props else {}
-        ]
+            {
+                "required": ["drive"],
+                "properties": {"drive": {"type": "string"}},
+            },
+            (
+                {"required": required_params, "properties": param_props}
+                if param_props
+                else {}
+            ),
+        ],
     }
 
 
@@ -83,7 +90,11 @@ def generate_pipeline_schema():
                 "type": "object",
                 "description": "Data source configuration.",
                 "properties": {
-                    "path": {
+                    "drive": {
+                        "type": "string",
+                        "description": "Path to input file.",
+                    },
+                    "file": {
                         "type": "string",
                         "description": "Path to input file.",
                     },
