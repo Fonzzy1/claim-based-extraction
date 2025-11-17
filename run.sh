@@ -20,8 +20,8 @@ setup_once() {
   if [ -f client.json ]; then
     echo "✅ client.json exists"
   else
-    echo "❌ client.json does not exist"
-    exit 1
+    echo "❌ client.json does not exist, creating dummy. No drive features availiable"
+    touch client.json
   fi
 
   echo "🔄 Updating git submodules..."
@@ -61,4 +61,3 @@ else
   echo "❌ Please source this script: 'source $0'"
   exit 1
 fi
-

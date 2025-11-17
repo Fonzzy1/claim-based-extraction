@@ -17,6 +17,7 @@ services:
         source: ${SYS_DIR}/client.json
         target: /root/client.json
       - ${SYS_DIR}/experiments:/app/experiments
+      - ${SYS_DIR}/data:/app/data
 
 #   back-end:
 #     build:
