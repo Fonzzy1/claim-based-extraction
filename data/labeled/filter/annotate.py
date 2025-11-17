@@ -1,5 +1,4 @@
 from models.base_model import Corpus
-import questionary
 import os
 
 data = Corpus.load_from_file("./data/labeled/filter/labeled_examples.pkl")
