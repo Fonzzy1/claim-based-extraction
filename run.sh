@@ -36,6 +36,7 @@ auto_up() {
   setup_dc
 
   # Run 'dc up -d' first (in case containers aren't started yet)
+  dc build
   dc up -d
 
   # Check if Document table is empty

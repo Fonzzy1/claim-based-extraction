@@ -1,0 +1,18 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  QueryStringFilter:
+    qs: |
+      energy OR (power AND NOT powers) OR electricity OR fuel
+      OR
+      renewable OR fossil OR transmission
+      OR
+      wind OR turbine OR hydro OR ((dam AND NOT damage)) OR (coal OR mining) OR (gas OR lng) OR (oil OR petrol) OR biomass OR
+      biofuel OR ((nuclear OR uranium) AND NOT weapon AND NOT test AND NOT terror AND NOT attack) OR fusion OR fission OR (carbon AND capture)
+      OR css OR wave OR tidal OR thermal
+      OR
+      battery OR batteries OR flywheel OR gravity OR hydro OR compressed OR hydrogen
+      OR pipeline OR pipelines OR transmission OR storage
+      OR 'critical infrastructure' OR 'critical minerals' OR 'rare earth'

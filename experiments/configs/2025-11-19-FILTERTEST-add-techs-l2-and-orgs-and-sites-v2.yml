@@ -1,0 +1,943 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+# Mines from
+#https://portal.ga.gov.au/persona/minesatlas
+#
+#Basins from: https://www.ga.gov.au/aecr2024/gas
+#Power Sites from: https://digital.atlas.gov.au/datasets/major-power-stations-1/about
+# Company list from:  https://www.climatecouncil.org.au/wp-content/uploads/2023/02/CC_MVSA0344-CC-Report-Introducing-the-Dirty-Dozen_Evergreen-Version_V12-FA-Screen-Single.pdf + Power sites list
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+
+filter:
+  QueryStringFilter:
+    qs: |
+      energy OR (power AND NOT powers) OR electricity OR fuel
+      OR
+      renewable OR fossil OR transmission
+      OR
+      wind OR turbine OR hydro OR ((dam AND NOT damage)) OR (coal OR mining) OR (gas OR lng) OR (oil OR petrol) OR biomass OR
+      biofuel OR ((nuclear OR uranium) AND NOT weapon AND NOT test AND NOT terror AND NOT attack) OR fusion OR fission OR (carbon AND capture)
+      OR css OR wave OR tidal OR thermal
+      OR
+      battery OR batteries OR flywheel OR gravity OR hydro OR compressed OR hydrogen
+      OR pipeline OR pipelines OR transmission OR storage
+      OR 'critical infrastructure' OR 'critical minerals' OR 'rare earth'
+
+      OR
+
+      "bp" OR
+      "british petrolium" OR
+      "chevron" OR
+      "anglo american" OR
+      "bhp" OR
+      "glencore" OR
+      "inpex" OR
+      "shell" OR
+      "conocophillips" OR
+      "south32" OR
+      "esso australia" OR
+      "centennial coal" OR
+      "exon" OR
+      "hydro-electric corporation" OR
+      "aurora energy" OR
+      "energy pacific" OR
+      "agl" OR
+      "origin energy" OR
+      "acciona energy" OR
+      "pacific hydro" OR
+      "diamond energy" OR
+      "pacific hydro investments" OR
+      "snowy hydro" OR
+      "energy developments lfg" OR
+      "lms energy generation" OR
+      "truenergy" OR
+      "ecogen holdings" OR
+      "great energy alliance corporation" OR
+      "ipm" OR
+      "alinta" OR
+      "eraring energy" OR
+      "suez australia" OR
+      "synergen power" OR
+      "infratil energy" OR
+      "anz energy infrastructure trust" OR
+      "verve energy" OR
+      "transfield" OR
+      "griffin energy" OR
+      "alinta energy" OR
+      "mitsui" OR
+      "synergy" OR
+      "newmount" OR
+      "rio tinto" OR
+      "infigen" OR
+      "tilt renewables" OR
+      "ergon energy" OR
+      "country energy" OR
+      "veolia environmental" OR
+      "ratch-australia" OR
+      "csr" OR
+      "stanwell" OR
+      "hydro-electric corp tasmania" OR
+      "meridian energy australia" OR
+      "lms energy" OR
+      "sucrogen" OR
+      "energy brix" OR
+      "hazelwood power" OR
+      "lms generation" OR
+      "symex holding" OR
+      "alcoa of australia" OR
+      "cs energy" OR
+      "arrow energy" OR
+      "queensland gas company" OR
+      "energy infrastructure investments" OR
+      "energy developments csm" OR
+      "gps joint venture" OR
+      "intergen" OR
+      "energy developments ltd" OR
+      "oakey power pty ltd" OR
+      "environgen" OR
+      "tarong energy" OR
+      "woodside" OR
+      "infrastructure capital group" OR
+      "atco power" OR
+      "newgen power kwinana partnership" OR
+      "western energy" OR
+      "newgen neerabup partnership" OR
+      "first quantum minerals" OR
+      "southern cross energy" OR
+      "worsley alumina" OR
+      "barrick gold" OR
+      "contract power holdings" OR
+      "newmount australia" OR
+      "minara resources" OR
+      "ashanti" OR
+      "apex minerals" OR
+      "newcrest mining" OR
+      "energy response" OR
+      "central energy power" OR
+      "cosmo power" OR
+      "delta electricity" OR
+      "macquarie generation" OR
+      "nsw sugar milling" OR
+      "earthpower technologies" OR
+      "visy pulp" OR
+      "envirogen" OR
+      "delta" OR
+      "essential energy" OR
+      "biogreen energy" OR
+      "marubeni australia " OR
+      "santos" OR
+      "stapylton green energy" OR
+      "energy developments" OR
+      "horizon power" OR
+      "vibe energy" OR
+      "bhp" OR
+      "bango wind farm pty ltd" OR
+      "edl lfg act pty ltd" OR
+      "gpt re limited" OR
+      "ausgrid" OR
+      "citic pacific mining" OR
+      "apa" OR
+      "adani" OR
+      "goldwind australia" OR
+      "foresight solar" OR
+      "cefc" OR
+      "res australia" OR
+      "neoen" OR
+      "hancock prospecting" OR
+      "energy australia" 
+
+      OR
+
+      (("hume" OR
+      "white mountain" OR
+      "cornwall" OR
+      "byerwen" OR
+      "jax" OR
+      "dysart east" OR
+      "orion downs" OR
+      "drake" OR
+      "abel" OR
+      "springsure creek" OR
+      "newstan lochiel" OR
+      "carmichael" OR
+      "broadmeadow" OR
+      "thagoona" OR
+      "colton" OR
+      "wallarah" OR
+      "canyon" OR
+      "wonthaggi" OR
+      "spring mountain" OR
+      "hazelwood" OR
+      "eastern creek" OR
+      "bayswater" OR
+      "blue mountains" OR
+      "oakleigh colliery" OR
+      "preston extended" OR
+      "harrow creek" OR
+      "smithfield" OR
+      "ewington" OR
+      "ravensworth east" OR
+      "chicken creek" OR
+      "driffield" OR
+      "loy yang" OR
+      "cooranbong" OR
+      "ravensworth narama" OR
+      "kandos" OR
+      "ensham" OR
+      "gunnedah" OR
+      "cardiff borehole" OR
+      "south blackwater" OR
+      "cumnock" OR
+      "ashton" OR
+      "moolarben" OR
+      "cook and cook north" OR
+      "riverside" OR
+      "hillalong" OR
+      "oakdale" OR
+      "bulga" OR
+      "leigh creek" OR
+      "hazelwood mine" OR
+      "duralie" OR
+      "springvale" OR
+      "lake vermont" OR
+      "invincible" OR
+      "liddell" OR
+      "callide" OR
+      "goonyella riverside" OR
+      "coppabella" OR
+      "bluff" OR
+      "wilpinjong" OR
+      "moranbah north" OR
+      "coal cliff" OR
+      "mount arthur" OR
+      "muja" OR
+      "cordeaux" OR
+      "new oakleigh" OR
+      "mangoola" OR
+      "maxwell" OR
+      "anglesea" OR
+      "wilkie creek" OR
+      "westside" OR
+      "baal bone" OR
+      "duncan" OR
+      "mount pleasant" OR
+      "rocglen" OR
+      "daunia" OR
+      "jeebropilly" OR
+      "mannering" OR
+      "collinsville" OR
+      "crinum" OR
+      "berrima" OR
+      "stratford" OR
+      "tasman" OR
+      "mount thorley" OR
+      "curragh" OR
+      "warkworth" OR
+      "capcoal underground" OR
+      "blair athol" OR
+      "avon" OR
+      "grosvenor" OR
+      "cullen valley" OR
+      "ulan" OR
+      "kogan creek" OR
+      "awaba" OR
+      "north cliff" OR
+      "united" OR
+      "wambo" OR
+      "premier" OR
+      "teralba" OR
+      "nattai" OR
+      "newlands" OR
+      "poitrel" OR
+      "cullenswood" OR
+      "foxleigh" OR
+      "bengalla" OR
+      "rolleston" OR
+      "west wallsend" OR
+      "minyango" OR
+      "yarrabee" OR
+      "airly" OR
+      "dawson" OR
+      "mount owen" OR
+      "dartbrook" OR
+      "phillipson" OR
+      "munmorah" OR
+      "metropolitan" OR
+      "isaac plains" OR
+      "mandalong" OR
+      "canyon mine" OR
+      "russell vale" OR
+      "blackwater" OR
+      "moorvale" OR
+      "kestrel" OR
+      "clermont" OR
+      "baralaba" OR
+      "hunter valley operations" OR
+      "myuna" OR
+      "jellinbah east" OR
+      "charbon" OR
+      "tower" OR
+      "peak downs" OR
+      "angus place" OR
+      "newstan" OR
+      "brimstone" OR
+      "bloomfield" OR
+      "maules creek" OR
+      "muswellbrook" OR
+      "millennium" OR
+      "integra" OR
+      "south walker creek" OR
+      "minerva" OR
+      "burton" OR
+      "saraji" OR
+      "ravensworth ug" OR
+      "rixs creek" OR
+      "middlemount" OR
+      "maddingley" OR
+      "dendrobium" OR
+      "ironbark"  OR
+      "ellensfeild" OR
+      "ravensworth north" OR
+      "great greta" OR
+      "cameby downs" OR
+      "ivanhoe north" OR
+      "west cliff" OR
+      "gregory" OR
+      "bloodwood creek" OR
+      "maxwell" OR
+      "tahmoor" OR
+      "curragh north" OR
+      "saraji south" OR
+      "glendell" OR
+      "donaldson" OR
+      "stanhope" OR
+      "boggabri" OR
+      "wongawilli colliery" OR
+      "hail creek" OR
+      "oaky creek" OR
+      "chain valley" OR
+      "commodore" OR
+      "new acland" OR
+      "north goonyella" OR
+      "yallourn" OR
+      "clarence" OR
+      "austar" OR
+      "sonoma" OR
+      "eagle downs" OR
+      "narrabri" OR
+      "sunnyside" OR
+      "carborough downs" OR
+      "western" OR
+      "avondale" OR
+      "pine dale" OR
+      "tarrawonga" OR
+      "werris creek" OR
+      "south bulli" OR
+      "burgowan" OR
+      "moonee" OR
+      "fingal" OR
+      "new wallsend" OR
+      "washpool" OR
+      "new hill" OR
+      "tarong" OR
+      "endeavour" OR
+      "enhance place" OR
+      "capcoal" OR
+      "wollombi" OR
+      "gloucester" OR
+      "swanbank" OR
+      "appin" OR
+      "wilton" OR
+      "fairhill"
+
+      OR
+      "amadeus" OR
+      "bass" OR
+      "otway" OR
+      "bonaparte" OR
+      "browse" OR
+      "bowen" OR
+      "surat" OR
+      "canning" OR
+      "northern carnarvon" OR
+      "roebuck" OR
+      "cooper" OR
+      "eromanga" OR
+      "galilee" OR
+      "gippsland" OR
+      "gunnedah" OR
+      "mcarthur" OR
+      "perth"
+
+      OR
+      "gordon" OR
+      "john butters" OR
+      "tribute" OR
+      "bastyan" OR
+      "reece" OR
+      "mackintosh" OR
+      "cethana" OR
+      "wilmot" OR
+      "devils gate" OR
+      "paloona" OR
+      "bell bay" OR
+      "trevallyn" OR
+      "poatina" OR
+      "lake echo" OR
+      "codrington" OR
+      "yambuk" OR
+      "macarthur" OR
+      "mortlake" OR
+      "mt mercer" OR
+      "waubra" OR
+      "challicum hills" OR
+      "shepparton biogas generation plant" OR
+      "dartmouth" OR
+      "banimboola" OR
+      "lake william hovell" OR
+      "eildon" OR
+      "laverton north" OR
+      "newport" OR
+      "claytons" OR
+      "springvale" OR
+      "hallam road" OR
+      "yallourn" OR
+      "jeeralang b" OR
+      "jeeralang a" OR
+      "loy yang a" OR
+      "loy yang b" OR
+      "valley power" OR
+      "bairnsdale" OR
+      "yarrawonga" OR
+      "hume" OR
+      "canunda" OR
+      "snuggery" OR
+      "dry creek" OR
+      "torrens island a" OR
+      "torrens island b" OR
+      "osborne" OR
+      "pelican point" OR
+      "quarantine" OR
+      "angaston" OR
+      "waterloo" OR
+      "wattle point" OR
+      "mintaro" OR
+      "hallett 1 brown hill " OR
+      "hallett" OR
+      "hallett 2 hallet hill " OR
+      "port lincoln" OR
+      "cathedral rocks" OR
+      "channel island" OR
+      "weddell" OR
+      "ord river" OR
+      "muja d" OR
+      "kemerton" OR
+      "pinjar" OR
+      "emu downs" OR
+      "collie a" OR
+      "collie" OR
+      "wagerup" OR
+      "kwinana cogeneration" OR
+      "kwinana high efficiency gas turbine plant" OR
+      "kwinana a" OR
+      "kwinana c" OR
+      "cockburn" OR
+      "kalgoorlie" OR
+      "collgar" OR
+      "merredin" OR
+      "mungarra" OR
+      "geraldton" OR
+      "paraburdoo" OR
+      "dampier" OR
+      "yurralyi maya" OR
+      "wonthaggi" OR
+      "walkaway" OR
+      "cullerin range" OR
+      "snowtown north" OR
+      "cape bridgewater" OR
+      "barcaldine" OR
+      "bluff point" OR
+      "studland bay" OR
+      "the drop" OR
+      "pindari" OR
+      "nieterana" OR
+      "oakland hills" OR
+      "tatura biogas generation plant" OR
+      "jindabyne dam mini hydro" OR
+      "north brown hill " OR
+      "clements gap" OR
+      "wyangala a" OR
+      "blayney" OR
+      "woodlawn" OR
+      "woodlawn bioreactor" OR
+      "west nowra" OR
+      "tumut 3" OR
+      "summerhill" OR
+      "mugga lane" OR
+      "lucas heights ii" OR
+      "lucas heights i" OR
+      "jounama" OR
+      "jacks gully" OR
+      "gunning" OR
+      "grange avenue" OR
+      "esperance nine mile beach" OR
+      "eastern creek 2" OR
+      "eastern creek" OR
+      "crookwell" OR
+      "capital hill" OR
+      "burrinjuck power station" OR
+      "awaba" OR
+      "windy hill" OR
+      "starfish hill" OR
+      "pioneer sugar mill" OR
+      "moranbah north" OR
+      "koombooloomba" OR
+      "invicta sugar mill" OR
+      "wivenhoe" OR
+      "terminal storage" OR
+      "suncoast gold macadamia" OR
+      "rocky point sugar sugar mill" OR
+      "mount millar" OR
+      "lake bonney stage 2" OR
+      "albany" OR
+      "wyndham" OR
+      "wollert" OR
+      "whitwood road" OR
+      "toora" OR
+      "ti tree bioenergy" OR
+      "roghan road" OR
+      "rochedale" OR
+      "plane creek sugar mill" OR
+      "browns plains" OR
+      "brooklyn" OR
+      "berwick" OR
+      "broadmeadows" OR
+      "energy brix" OR
+      "lake glenmaggie" OR
+      "hazelwood" OR
+      "longford" OR
+      "mornington" OR
+      "rubicon" OR
+      "somerton" OR
+      "symex port melbourne" OR
+      "bogong" OR
+      "clover" OR
+      "mckay creek" OR
+      "west kiewa" OR
+      "murray 2" OR
+      "murray 1" OR
+      "cape sir william grant" OR
+      "cape nelson south" OR
+      "cape nelson north" OR
+      "ballarat base hospital" OR
+      "anglesea" OR
+      "remount" OR
+      "wayatinah" OR
+      "tungatinah" OR
+      "tods corner" OR
+      "tarraleah" OR
+      "meadowbank" OR
+      "liapootah" OR
+      "cluny" OR
+      "catagunya" OR
+      "butlers gorge" OR
+      "rowallan" OR
+      "lower lake margaret" OR
+      "lemonthyme" OR
+      "upper lake margaret" OR
+      "fisher" OR
+      "tamar valley" OR
+      "inkerman sugar mill" OR
+      "mackay" OR
+      "roma" OR
+      "swanbank b" OR
+      "swanbank e" OR
+      "wivenhoe hydroelectric" OR
+      "barron gorge" OR
+      "braemar 1" OR
+      "braemar 2" OR
+      "condamine a" OR
+      "daandine" OR
+      "german creek" OR
+      "gladstone" OR
+      "isis central sugar mill" OR
+      "kalamia sugar mill" OR
+      "kareeya" OR
+      "kogan creek" OR
+      "millmerran" OR
+      "moranbah" OR
+      "mount stuart" OR
+      "oakey" OR
+      "oaky creek" OR
+      "stanwell" OR
+      "tarong" OR
+      "tarong north" OR
+      "tarong" OR
+      "townsville" OR
+      "yarwun" OR
+      "macknade sugar mill" OR
+      "victoria sugar mill" OR
+      "callide c" OR
+      "callide b" OR
+      "callide a" OR
+      "collinsville" OR
+      "broome" OR
+      "burrup peninsula" OR
+      "burrup peninsula" OR
+      "esperance" OR
+      "karratha" OR
+      "kwinana" OR
+      "kwinana" OR
+      "kwinana newgen" OR
+      "kwinana swift" OR
+      "neerabup" OR
+      "newman iron ore mine" OR
+      "pinjarra bauxite mine and alumina refinery" OR
+      "ravensthorpe" OR
+      "wagerup bauxite mine and alumina refinery" OR
+      "west kalgoorlie" OR
+      "port hedland" OR
+      "mount magnet" OR
+      "kalgoorlie nickel smelter" OR
+      "kambalda" OR
+      "leinster nickel mine" OR
+      "mount keith nickel mine" OR
+      "muja c" OR
+      "worsley cogeneration" OR
+      "laverton" OR
+      "argyle diamond mine" OR
+      "christmas creek iron ore mine" OR
+      "jundee gold mine" OR
+      "murrin murrin" OR
+      "plutonic gold mine" OR
+      "sunrise dam" OR
+      "wiluna gold mine" OR
+      "paraburdoo" OR
+      "telfer gold mine" OR
+      "amcor gawler" OR
+      "lonsdale" OR
+      "pedler creek" OR
+      "wingfield i" OR
+      "wingfield ii" OR
+      "ladbroke grove" OR
+      "playford b" OR
+      "northern" OR
+      "berrimah" OR
+      "landfill management services shoal bay" OR
+      "tennant creek" OR
+      "ron goodin" OR
+      "owen springs" OR
+      "brewer" OR
+      "yulara" OR
+      "pine creek" OR
+      "katherine" OR
+      "warrego" OR
+      "condong sugar mill" OR
+      "appin" OR
+      "bayswater" OR
+      "bendeela" OR
+      "blowering" OR
+      "broadwater" OR
+      "brown mountain" OR
+      "capral" OR
+      "colongra" OR
+      "earthpower biomass plant" OR
+      "eraring" OR
+      "visy pulp and paper tumut" OR
+      "glenbawn" OR
+      "glennies creek" OR
+      "hunter" OR
+      "hunter valley" OR
+      "kangaroo valley" OR
+      "liddell" OR
+      "mt piper" OR
+      "munmorah" OR
+      "nymboida" OR
+      "oaky" OR
+      "redbank" OR
+      "smithfield energy" OR
+      "tahmoor" OR
+      "tallawarra" OR
+      "teralba" OR
+      "tomago aluminium smelter" OR
+      "tower mine" OR
+      "tumut 1" OR
+      "tumut 2" OR
+      "uranquinty" OR
+      "vales point b" OR
+      "wallerawang c" OR
+      "warragamba" OR
+      "west illawarra leagues club" OR
+      "western suburbs leagues club" OR
+      "burrendong" OR
+      "copeton" OR
+      "wilga park" OR
+      "guthega" OR
+      "lake keepit" OR
+      "broken hill" OR
+      "eraring" OR
+      "maryvale mill" OR
+      "grasmere" OR
+      "tully sugar mill" OR
+      "proserpine sugar mill" OR
+      "north sydney" OR
+      "sydney" OR
+      "north sydney" OR
+      "blackmores" OR
+      "nine network" OR
+      "revesby workers club" OR
+      "st george leagues club" OR
+      "university of new south wales" OR
+      "norseman mine" OR
+      "darlot gold mine" OR
+      "windimurra vanadium mine" OR
+      "rottnest island wind turbine" OR
+      "cloudbreak" OR
+      "port hedland" OR
+      "noranda" OR
+      "red hill" OR
+      "shenton park wmrc project" OR
+      "kalamunda" OR
+      "canning vale" OR
+      "gosnells" OR
+      "krc cogeneration plant" OR
+      "melbourne" OR
+      "carlton" OR
+      "eildon small hydro" OR
+      "corio" OR
+      "south east water hallam plant" OR
+      "lower rubicon" OR
+      "royston" OR
+      "rubicon falls" OR
+      "leonards hill" OR
+      "box hill" OR
+      "highbury" OR
+      "tea tree gully" OR
+      "port stanvac" OR
+      "maryborough" OR
+      "stapylton green energy" OR
+      "bremer bay wind turbine" OR
+      "bremer bay diesel backup" OR
+      "coral bay wind turbines" OR
+      "coral bay diesel backup" OR
+      "denham wind turbines" OR
+      "denham diesel backup" OR
+      "woodman point" OR
+      "henderson" OR
+      "tamala park" OR
+      "mandurah" OR
+      "rockingham" OR
+      "south cardup" OR
+      "cue" OR
+      "sandstone" OR
+      "nullagine" OR
+      "nullagine diesel backup" OR
+      "marble bar" OR
+      "marble bar diesel backup" OR
+      "derby" OR
+      "fitzroy crossing" OR
+      "halls creek" OR
+      "warmun" OR
+      "kununurra" OR
+      "laverton" OR
+      "exmouth" OR
+      "tableland" OR
+      "south johnstone" OR
+      "mulgrave" OR
+      "blue lake milling power plant" OR
+      "tatiara meats" OR
+      "kalumburu" OR
+      "ardyaloon" OR
+      "djarindjin" OR
+      "beagle bay" OR
+      "bidyadanga" OR
+      "gascoyne junction" OR
+      "wiluna" OR
+      "yalgoo" OR
+      "carnarvon" OR
+      "mungullah" OR
+      "exmouth advanced mini" OR
+      "worsley" OR
+      "kalbarri pv system" OR
+      "esperance ten mile lagoon" OR
+      "muja b" OR
+      "muja a" OR
+      "boco rock" OR
+      "ben lomond" OR
+      "bamarang" OR
+      "bango" OR
+      "bankstown sports club" OR
+      "belconnen" OR
+      "charlestown square" OR
+      "club merrylands" OR
+      "erskine park" OR
+      "kooragang" OR
+      "kalbarri" OR
+      "wodgina" OR
+      "savannah nickel mine" OR
+      "meekatharra" OR
+      "leonora" OR
+      "menzies" OR
+      "onslow" OR
+      "hopetoun diesel backup" OR
+      "hopetoun wind turbines" OR
+      "camballin" OR
+      "cawse nickel mine" OR
+      "buronga" OR
+      "glenorchy" OR
+      "hobart" OR
+      "musselroe" OR
+      "kings canyon" OR
+      "bodangora" OR
+      "broken hill solar plant" OR
+      "mcarthur river mine" OR
+      "university of queensland solar array" OR
+      "perth zoo" OR
+      "tulla calder interchange solar array" OR
+      "bridgewater solar" OR
+      "monash university solar array" OR
+      "queen victoria market solar array" OR
+      "bendigo solar park" OR
+      "adelaide showgrounds" OR
+      "adelaide airport" OR
+      "townsville rsl stadium solar array" OR
+      "fraser coast community" OR
+      "metricon stadium solar array" OR
+      "carnarvon" OR
+      "csiro energy centre" OR
+      "newington solar suburb" OR
+      "singleton" OR
+      "kogarah town square solar array" OR
+      "stadium australia" OR
+      "mt gambier" OR
+      "narrogin bioenergy plant" OR
+      "visy paper gibson island" OR
+      "mica creek" OR
+      "wilpena" OR
+      "karadoc" OR
+      "king island" OR
+      "west angelas mine" OR
+      "cannington mine" OR
+      "hallett 1 brown hill " OR
+      "hallet 5 - the bluff" OR
+      "hallett 2 hallet hill " OR
+      "snowtown south" OR
+      "cape preston" OR
+      "solomon iron ore mine" OR
+      "diamantina" OR
+      "leichhardt" OR
+      "bulwer island" OR
+      "cape lambert" OR
+      "ernabella" OR
+      "umuwa" OR
+      "yuendumu" OR
+      "lajamanu" OR
+      "windorah" OR
+      "doubletree by hilton hotel" OR
+      "alice springs airport" OR
+      "uterne solar" OR
+      "hermannsburg" OR
+      "ballarat solar park" OR
+      "liddell solar thermal" OR
+      "greenough river" OR
+      "mumbida" OR
+      "nyngan solar plant" OR
+      "wadeye" OR
+      "traralgon network support station" OR
+      "gullen range" OR
+      "lake bonney stage 1" OR
+      "lake bonney stage 3" OR
+      "royalla" OR
+      "timber creek" OR
+      "daly waters" OR
+      "elliott" OR
+      "ti-tree" OR
+      "roy hill" OR
+      "moree" OR
+      "gullen range" OR
+      "mortons lane" OR
+      "racecourse mill" OR
+      "ararat" OR
+      "hornsdale" OR
+      "borroloola community" OR
+      "nhulunbuy" OR
+      "angurugu" OR
+      "ranger mine" OR
+      "mugga lane solar park" OR
+      "haughton river" OR
+      "collinsville" OR
+      "daydream" OR
+      "darling downs" OR
+      "darling downs" OR
+      "clare" OR
+      "rugby run" OR
+      "lilydale" OR
+      "clermont" OR
+      "emerald" OR
+      "tailem bend" OR
+      "lincoln gap" OR
+      "bald hill" OR
+      "numurkah" OR
+      "crowlands" OR
+      "kiata" OR
+      "bulgana " OR
+      "gannawarra" OR
+      "yaloak south" OR
+      "mt gellibrand" OR
+      "moorabool north" OR
+      "moorabool south" OR
+      "taralga" OR
+      "manildra" OR
+      "white rock" OR
+      "white rock" OR
+      "sapphire" OR
+      "griffith" OR
+      "silverton" OR
+      "coleambally" OR
+      "bannerton" OR
+      "wemen" OR
+      "murra warra" OR
+      "parkes" OR
+      "hayman" OR
+      "whitsunday" OR
+      "hamilton" OR
+      "childers" OR
+      "sun metals" OR
+      "xstata x41" OR
+      "hope downs 4 iron ore mine" OR
+      "mortlake south" OR
+      "salt creek" OR
+      "dulacca" OR
+      "wandoan south" OR
+      "berrybank" OR
+      "dunndonnell" OR
+      "rye park" OR
+      "warradarge" OR
+      "yandin" OR
+      "cattle hill" OR
+      "tallawarra b" OR
+      "bungala" OR
+      "new england" OR
+      "coopers gap" OR
+      "cherry tree" OR
+      "moura" OR
+      "susan river" OR
+      "columboola" OR
+      "edenvale" OR
+      "western downs" OR
+      "metz" OR
+      "gunnedah" OR
+      "nevertire" OR
+      "beryl" OR
+      "suntop" OR
+      "west wyalong" OR
+      "avonlie" OR
+      "finley" OR
+      "limondale" OR
+      "sunraysia" OR
+      "kiamal" OR
+      "yetpool" OR
+      "winton"
+      )
+      AND ( power OR station OR feild OR mine OR basin OR farm OR wind OR solar))

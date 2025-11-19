@@ -65,7 +65,7 @@ for config, result_path in zipped:
         'Recall': rec,
         'F1': f1
     })
-df_metrics = pd.DataFrame(metric_table)
+df_metrics = pd.DataFrame(metric_table).sort_values(by='F1')
 
 ```
 
@@ -80,3 +80,31 @@ from tabulate import tabulate
 Markdown(tabulate(df_metrics, headers=["accuracy", "precision", "recall",
 "f1"]))
 ```
+
+
+```{python}
+
+# 1. Best filter with highest F1
+best_row = df_metrics.loc[df_metrics['F1'].idxmax()]
+best_config = best_row['config']
+best_result_path = best_config.replace('configs', 'results').replace('.yml',
+'.pkl')
+
+# 2. Prepare prediction/gold comparison
+trial_corpus = Corpus.load_from_file(best_result_path)
+df_pred = pd.DataFrame([{'id': doc.id} for doc in trial_corpus.documents])
+if df_pred.empty:
+    df_pred = pd.DataFrame(columns=['id'])
+df_pred['filter_pred'] = True
+
+df_comp = pd.merge(df, df_pred[['id', 'filter_pred']], on='id', how='left')
+df_comp['filter_pred'] = df_comp['filter_pred'].fillna(False)
+
+# 3. Find errors
+df_wrong = df_comp[df_comp['filter'] != df_comp['filter_pred']]
+
+from tabulate import tabulate
+
+Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
+```
+
