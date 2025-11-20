@@ -18,6 +18,8 @@ services:
         target: /root/client.json
       - ${SYS_DIR}/experiments:/app/experiments
       - ${SYS_DIR}/data:/app/data
+    profiles:
+      - runner
 
 #   back-end:
 #     build:
@@ -46,6 +48,7 @@ services:
 
 volumes:
   ollama:
+    external: true
 
 networks:
   ai_inferance:
