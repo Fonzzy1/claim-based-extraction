@@ -26,6 +26,11 @@ setup_once() {
 
   echo "🔄 Updating git submodules..."
   git submodule update --init --recursive
+
+
+  echo "Creating Docker volumes..."
+  docker volume inspect hansard_db_data || docker volume create hansard_db_data
+  docker volume inspect ollama || docker volume create ollama
 }
 
 # --- Auto-up logic ---
