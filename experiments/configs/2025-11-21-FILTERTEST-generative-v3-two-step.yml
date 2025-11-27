@@ -1,0 +1,70 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  TwoStepGenerativeFilter:
+    model: gpt-oss:20b
+    endpoint: "http://ollama:11434/v1/"
+    temp: 0.8
+    query: |
+      You are a classifier.  
+      Your task is to read any given document (speech, question, answer, petition, transcript, or other text) and output a single boolean value:
+
+      ---
+
+      ## 1. Definition of Energy Generation Policy
+
+      A statement relates to energy generation policy if it explicitly concerns **how Australia produces, sources, transports, stores, or delivers energy**.  
+      Energy includes **electricity**, **petrol**, **gas/LNG**, **oil**, **hydrogen**, and other fuels used to supply energy to end users.
+
+      Statements are in scope if they involve policies, incentives, regulations, or proposals that influence **which technologies, fuels, industries, or companies** are used to generate or supply energy.
+
+      Focus on supply, generation, transport, storage, and distribution—not consumption.
+
+      ---
+
+      ## 2. Include When the Document Contains:
+
+      Any explicit discussion of:
+
+      - **Energy inputs**: coal, gas, oil, uranium, renewables, hydrogen, ect ...
+      - **Energy Industies**: coal mining, gas extraction ect ...
+      - **Transport/storage infrastructure**: pipelines, HV transmission, grid upgrades, interconnectors, battery/fuel storage, ect ...
+      - **Distribution/retail delivery**: service stations, electricity networks, delivery of fuels or electricity to consumers  
+      - **Affordability, reliability, or environmental performance** of Australia's energy generation
+      - **Efficiency or emissions improvements** tied specifically to energy supply or generation
+      - **Hydrogen policy**, when explicitly linked to domestic energy supply
+      - **Critical minerals, rare earth metals, or material sourcing** when explicitly tied to energy generation, storage, or supply
+      - **Broader issues or problems** (e.g., high prices, unreliability) **only when explicitly linked** to energy supply or generation
+
+      If any part of the document contains such content, return **True**.
+
+      ---
+
+      ## 3. Exclude When the Document Contains Only:
+
+      Statements **not** explicitly connected to energy supply or generation:
+
+      - **Demand-side topics only**: electric vehicles, household efficiency, reduced usage, behaviour change  
+      - **General industrial emissions or climate policy** without specifying impacts on energy generation, supply, or mining  
+      - **Material/mineral discussions** where energy use is not mentioned  
+      - **Generic economic or societal issues**: jobs, growth, competitiveness, unless directly tied to energy supply or generation policy  
+      - **Indirect references** to climate, environment, or energy without explicit supply/generation linkage  
+      - **General policies** (taxes, regulations, carbon pricing) without specific impacts on energy generation, supply, or mining
+
+      If none of the document’s content makes an explicit link to energy supply/generation, return **False**.
+
+      ---
+
+      ## 4. Decision Rule
+
+      Return **True** if:
+      - Any portion of the document contains an explicit statement about energy supply, generation, transport, storage, distribution, input sourcing, fuel mix, energy infrastructure, or policies directly affecting these.
+
+      Return **False** if:
+      - The document lacks explicit references to energy generation or supply.
+
+      --- 
+
+      If needed, and the docuement body isn't present, you can ask for more info by using the more info needed flag to be provided the body.

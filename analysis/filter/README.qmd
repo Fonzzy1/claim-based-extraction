@@ -85,8 +85,7 @@ Markdown(tabulate(df_metrics, headers=["accuracy", "precision", "recall",
 ```{python}
 
 # 1. Best filter with highest F1
-best_row = df_metrics.loc[df_metrics['F1'].idxmax()]
-best_config = best_row['config']
+best_config ='experiments/results/2025-11-26-FILTERTEST-generative-v8.yml'
 best_result_path = best_config.replace('configs', 'results').replace('.yml',
 '.pkl')
 
@@ -107,4 +106,6 @@ from tabulate import tabulate
 
 Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
 ```
+
+```{python}
 

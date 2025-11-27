@@ -1,0 +1,17 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  VectorFilter:
+    query_strings:
+      - "energy supply and generation in Australia"
+      - "electricity generation technologies"
+      - "sourcing of coal, gas, oil and hydrogen for energy supply"
+      - "energy transmission, pipelines and storage infrastructure"
+      - "energy generation policy and regulation"
+      - "affordability and reliability of Australia’s energy system"
+      - "energy producers, companies and major projects"
+      - "renewable energy generation and grid integration"
+    model: embeddinggemma
+    endpoint: "http://ollama:11434/v1/"

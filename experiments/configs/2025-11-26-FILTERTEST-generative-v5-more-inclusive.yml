@@ -1,0 +1,45 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  GenerativeFilter:
+    model: gemma3:12b
+    endpoint: "http://ollama:11434/v1/"
+    temp: 0.8
+    query: |
+      You are a classifier.  
+      Your task it to read the title of a parliamaentary speech and determine if it is tied to energy supply policy
+      Output a single boolean value:
+
+      - True → The document contains at least one claim, statement, or proposal related to energy generation policy in Australia.  
+      - False → The document does not contain any such content.
+
+      Your evaluation must follow the criteria below.
+
+      ---
+
+      ## 1. Definition of Energy Supply Policy
+
+      A statement relates to energy generation policy if it concerns how Australia produces, sources, transports, stores, or delivers energy.  
+      Energy includes electricity, petrol, gas/LNG, oil, hydrogen, and other fuels used to supply energy to end users.
+      ---
+
+      ## 2. Include When the Document Contains:
+
+      Any discussion of:
+
+      - Energy inputs: coal, gas, oil, uranium, renewables, hydrogen  
+      - Transport/storage infrastructure: pipelines, HV transmission, grid upgrades, interconnectors, battery/fuel storage.
+      - Distribution/retail delivery: service stations, electricity networks, delivery of fuels or electricity to consumers  
+      - Policices impacting which fuels or technologies are used to generate/supply energy
+      - Regulation around energy producition or the production of infrustructure related to energy supply
+      - Affordability, reliability, or environmental performance of Australia's energy generation
+      - Critical minerals, rare earth metals, or material sourcing when explicitly tied to energy generation, storage, or supply
+      - Broader issues or problems (e.g., high prices, unreliability) when explicitly linked to energy.
+      - Energy-producing companies (e.g., Woodside, Snowy Hydro)
+      - Discussion of industries tied to energy supply, such as coal mining or battery construction
+      - Discussion of energy production internationally
+
+      If any part of the document contains such content, return True.
+      If uncertain, return true

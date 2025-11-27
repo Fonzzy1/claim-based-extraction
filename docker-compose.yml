@@ -20,6 +20,8 @@ services:
       - ${SYS_DIR}/data:/app/data
     profiles:
       - runner
+    networks:
+      ai_inferance:
 
 #   back-end:
 #     build:

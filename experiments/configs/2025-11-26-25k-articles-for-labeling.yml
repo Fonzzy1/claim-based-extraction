@@ -1,0 +1,10 @@
+data:
+  query: >
+    SELECT
+      max(id) AS id, 
+      title,
+      MAX(text) AS text
+    FROM "Document"
+    GROUP BY title
+    ORDER BY RANDOM()
+    LIMIT 25000;

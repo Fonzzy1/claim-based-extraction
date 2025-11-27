@@ -15,6 +15,29 @@ os.chdir('../../')
 
         git config --global --add safe.directory /claim-based-extraction/db
     fatal: Unable to find current revision in submodule path 'db'
+    Creating Docker volumes...
+    [
+        {
+            "CreatedAt": "2025-11-20T14:36:23+11:00",
+            "Driver": "local",
+            "Labels": null,
+            "Mountpoint": "/var/lib/docker/volumes/hansard_db_data/_data",
+            "Name": "hansard_db_data",
+            "Options": null,
+            "Scope": "local"
+        }
+    ]
+    [
+        {
+            "CreatedAt": "2024-12-16T21:50:44+11:00",
+            "Driver": "local",
+            "Labels": null,
+            "Mountpoint": "/var/lib/docker/volumes/ollama/_data",
+            "Name": "ollama",
+            "Options": null,
+            "Scope": "local"
+        }
+    ]
     🚀 Running auto 'up'...
     [+] Building 0.0s (0/1)                                                         
      => [internal] load local bake definitions                                 0.0s
@@ -38,9 +61,10 @@ os.chdir('../../')
      => [internal] load metadata for docker.io/library/python:3.10             0.3s
      => [internal] load .dockerignore                                          0.0s
      => => transferring context: 2B                                            0.0s
+     => [1/9] FROM docker.io/library/python:3.10@sha256:20ca17b2908b0202fc975  0.0s
+     => => resolve docker.io/library/python:3.10@sha256:20ca17b2908b0202fc975  0.0s
      => [internal] load build context                                          0.0s
-     => => transferring context: 3.05kB                                        0.0s
-     => [1/9] FROM docker.io/library/python:3.10@sha256:8b08e9b7203aec1d22b78  0.0s
+     => => transferring context: 3.23kB                                        0.0s
      => CACHED [2/9] WORKDIR /app                                              0.0s
      => CACHED [3/9] COPY requirements.txt requirements.txt                    0.0s
      => CACHED [4/9] RUN pip install --no-cache-dir -r requirements.txt        0.0s
@@ -51,7 +75,7 @@ os.chdir('../../')
      => CACHED [9/9] COPY ./pipeline.py ./pipeline.py                          0.0s
      => exporting to image                                                     0.0s
      => => exporting layers                                                    0.0s
-     => => writing image sha256:072b81ca8eab21433d2334a09839c286d9fe376a7d91b  0.0s
+     => => writing image sha256:3c1f22f098de022610d982a8494b53a1b857dca833991  0.0s
      => => naming to docker.io/library/claim-based-extraction-pipeline         0.0s
      => resolving provenance for metadata file                                 0.0s
     [+] Building 1/1
@@ -97,18 +121,12 @@ os.chdir('../../')
     [+] Running 0/1
      ⠏ ollama Pulling                                                          2.0s 
     [+] Running 1/1
-     ✔ ollama Pulled                                                           2.1s 
-    WARN[0002] Found orphan containers ([claim-based-extraction-pipeline-run-329508f9d237 claim-based-extraction-pipeline-run-22b06ecc192d claim-based-extraction-pipeline-run-1f5021321460 claim-based-extraction-pipeline-run-508fad2ae74b claim-based-extraction-pipeline-run-5a5c20fb8a8f claim-based-extraction-pipeline-run-328549ebdaf9 claim-based-extraction-pipeline-run-76a4f0ea1d54 claim-based-extraction-pipeline-run-686cb5d13ea9 claim-based-extraction-pipeline-run-c33ad085449a claim-based-extraction-pipeline-run-776330fa825e claim-based-extraction-pipeline-run-b7fed994a9c6 claim-based-extraction-pipeline-run-af3118b62155 claim-based-extraction-pipeline-run-bd908f402de8 claim-based-extraction-pipeline-run-33e06cfb46e8 claim-based-extraction-pipeline-run-65cad7459858 claim-based-extraction-pipeline-run-2c211f08d032 claim-based-extraction-pipeline-run-8902924c477e claim-based-extraction-pipeline-run-b37505dc12bf claim-based-extraction-pipeline-run-6d5becb8dd31 claim-based-extraction-pipeline-run-187704335e7f claim-based-extraction-pipeline-run-d86440976940 claim-based-extraction-pipeline-run-0662189a49c6 claim-based-extraction-pipeline-run-aad8c8444c14 claim-based-extraction-pipeline-run-7ba048b30c9d claim-based-extraction-pipeline-run-288efd5d7c61 claim-based-extraction-pipeline-run-0fd1b47ed638 claim-based-extraction-pipeline-run-94db7d74da28 claim-based-extraction-pipeline-run-0abc9c4b2b0d claim-based-extraction-pipeline-run-369e559c6d1c]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
-    [+] Running 3/4
-     ✔ Container claim-based-extraction-web-1       Running                    0.0s 
-     ✔ Container federal-hansard-db                 Running                    0.0s 
-     ✔ Container claim-based-extraction-ollama-1    Running                    0.0s 
-     ⠋ Container claim-based-extraction-pipeline-1  Starting                   0.0s 
-    [+] Running 4/4
-     ✔ Container claim-based-extraction-web-1       Running                    0.0s 
-     ✔ Container federal-hansard-db                 Running                    0.0s 
-     ✔ Container claim-based-extraction-ollama-1    Running                    0.0s 
-     ✔ Container claim-based-extraction-pipeline-1  Started                    0.1s 
+     ✔ ollama Pulled                                                           2.0s 
+    WARN[0002] Found orphan containers ([claim-based-extraction-pipeline-run-5efed69d9f60 claim-based-extraction-pipeline-run-a7ff4e240516 claim-based-extraction-pipeline-run-2fc3138e07fe claim-based-extraction-pipeline-run-1e1c0acd2689 claim-based-extraction-pipeline-run-2e69551cbfd8 claim-based-extraction-pipeline-run-9dda0c437a7a claim-based-extraction-pipeline-run-4c45cbfa5eae claim-based-extraction-pipeline-run-dd7d44f84698 claim-based-extraction-pipeline-run-07a3c29a9da8 claim-based-extraction-pipeline-run-252031f026bf claim-based-extraction-pipeline-run-717b95d46024 claim-based-extraction-pipeline-run-f31f5435f32a claim-based-extraction-pipeline-run-c8520899eb6c claim-based-extraction-pipeline-run-581738a51835 claim-based-extraction-pipeline-run-dbb6b5a20708 claim-based-extraction-pipeline-run-22522e50c1f0 claim-based-extraction-pipeline-run-0595a597ae5d claim-based-extraction-pipeline-run-b6e957cb0823 claim-based-extraction-pipeline-run-417e756c1805 claim-based-extraction-pipeline-run-f9836029faaf claim-based-extraction-pipeline-run-4604f912bc5b claim-based-extraction-pipeline-run-e10469b73abd claim-based-extraction-pipeline-run-46dda267b683 claim-based-extraction-pipeline-run-b5428f1b0019 claim-based-extraction-pipeline-run-9cbfb37c1f22 claim-based-extraction-pipeline-run-e6292a245048 claim-based-extraction-pipeline-run-d0865f994683 claim-based-extraction-pipeline-run-efb2f6dafcc9 claim-based-extraction-pipeline-run-33e914786ed4 claim-based-extraction-pipeline-run-3f62ab1cf43e claim-based-extraction-pipeline-run-fc6d57bdc3c5 claim-based-extraction-pipeline-run-651c9421ab71 claim-based-extraction-pipeline-run-1de6b47d51b4 claim-based-extraction-pipeline-run-ab9ac9bd7418 claim-based-extraction-ollama-run-326b1bfaf7dd claim-based-extraction-ollama-run-e090d9af0062 claim-based-extraction-pipeline-run-75f6c82a1a7e claim-based-extraction-pipeline-run-3b722a2cf10a claim-based-extraction-pipeline-run-0f8298262b15 claim-based-extraction-pipeline-run-c44a7aba3c9f claim-based-extraction-download-run-acbcc708aa86 claim-based-extraction-download-run-a943bd585d81 claim-based-extraction-download-run-679de1b4df37 claim-based-extraction-download-run-48141146d487]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
+    [+] Running 3/3
+     ✔ Container claim-based-extraction-web-1  Running                         0.0s 
+     ✔ Container federal-hansard-db            Running                         0.0s 
+     ✔ Container ollama                        Running                         0.0s 
     ✅ Database already filled
     experiments/configs/2025-11-17-FILTERTEST-simple.yml
     experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites-v2.yml
@@ -117,6 +135,27 @@ os.chdir('../../')
     experiments/configs/2025-11-19-FILTERTEST-add-techs-l2.yml
     experiments/configs/2025-11-19-FILTERTEST-add-techs.yml
     experiments/configs/2025-11-19-FILTERTEST-e-or-p.yml
+    experiments/configs/2025-11-20-FILTERTEST-vector-v1.yml
+    experiments/configs/2025-11-20-FILTERTEST-vector-v2-lower-threshold.yml
+    experiments/configs/2025-11-21-FILTERTEST-generative-v1.yml
+    experiments/configs/2025-11-21-FILTERTEST-generative-v2.yml
+    experiments/configs/2025-11-21-FILTERTEST-generative-v3-two-step.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v3-new-strings.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v4-rm_strings.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v5.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v6.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7-5.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7-6.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7-7.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7-8.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7-9.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v7.yml
+    experiments/configs/2025-11-21-FILTERTEST-vector-v8.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v4.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v5-more-inclusive.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v6.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v7.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v8.yml
 
 ``` python
 from models.base_model import Corpus 
@@ -141,9 +180,17 @@ df['filter'].value_counts()
     dtypes: bool(1), int64(1), object(2)
     memory usage: 24.5+ KB
 
+    /usr/local/lib/python3.10/dist-packages/google/api_core/_python_version_support.py:266: FutureWarning:
+
+    You are using a Python version (3.10.12) which Google will stop supporting in new releases of google.api_core once it reaches its end of life (2026-10-04). Please upgrade to the latest Python version, or at least Python 3.11, to continue receiving updates for google.api_core past that date.
+
+    /usr/local/lib/python3.10/dist-packages/tqdm/auto.py:21: TqdmWarning:
+
+    IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+
     filter
-    False    973
-    True      27
+    False    969
+    True      31
     Name: count, dtype: int64
 
 ``` python
@@ -192,31 +239,115 @@ for config, result_path in zipped:
 df_metrics = pd.DataFrame(metric_table).sort_values(by='F1')
 ```
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_100154/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
@@ -233,17 +364,38 @@ Markdown(tabulate(df_metrics, headers=["accuracy", "precision", "recall",
 Table 1: Astronomical object
 
 <div class="cell-output cell-output-display cell-output-markdown"
-execution_count="7">
+execution_count="4">
 
 |  |  | accuracy | precision | recall | f1 |
 |----|----|---:|---:|---:|---:|
-| 6 | experiments/configs/2025-11-19-FILTERTEST-e-or-p.yml | 0.977 | 0.75 | 0.222222 | 0.342857 |
-| 3 | experiments/configs/2025-11-17-FILTERTEST-simple.yml | 0.979 | 1 | 0.222222 | 0.363636 |
-| 1 | experiments/configs/2025-11-19-FILTERTEST-add-techs.yml | 0.977 | 0.7 | 0.259259 | 0.378378 |
-| 2 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites.yml | 0.989 | 0.710526 | 1 | 0.830769 |
-| 4 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2.yml | 0.99 | 0.742857 | 0.962963 | 0.83871 |
-| 0 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites-v2.yml | 0.99 | 0.72973 | 1 | 0.84375 |
-| 5 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs.yml | 0.99 | 0.72973 | 1 | 0.84375 |
+| 13 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-9.yml | 0.969 | 0 | 0 | 0 |
+| 18 | experiments/configs/2025-11-20-FILTERTEST-vector-v1.yml | 0.969 | 0 | 0 | 0 |
+| 26 | experiments/configs/2025-11-20-FILTERTEST-vector-v2-lower-threshold.yml | 0.949 | 0.115385 | 0.0967742 | 0.105263 |
+| 1 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-8.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 22 | experiments/configs/2025-11-21-FILTERTEST-vector-v6.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 24 | experiments/configs/2025-11-21-FILTERTEST-vector-v7.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 6 | experiments/configs/2025-11-21-FILTERTEST-vector-v8.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 8 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-5.yml | 0.721 | 0.0810811 | 0.774194 | 0.146789 |
+| 15 | experiments/configs/2025-11-21-FILTERTEST-vector-v4-rm_strings.yml | 0.892 | 0.133333 | 0.451613 | 0.205882 |
+| 11 | experiments/configs/2025-11-21-FILTERTEST-vector-v5.yml | 0.861 | 0.130137 | 0.612903 | 0.214689 |
+| 10 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-6.yml | 0.939 | 0.232143 | 0.419355 | 0.298851 |
+| 25 | experiments/configs/2025-11-19-FILTERTEST-e-or-p.yml | 0.973 | 0.75 | 0.193548 | 0.307692 |
+| 12 | experiments/configs/2025-11-21-FILTERTEST-vector-v3-new-strings.yml | 0.969 | 0.5 | 0.225806 | 0.311111 |
+| 9 | experiments/configs/2025-11-17-FILTERTEST-simple.yml | 0.975 | 1 | 0.193548 | 0.324324 |
+| 17 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-7.yml | 0.975 | 1 | 0.193548 | 0.324324 |
+| 5 | experiments/configs/2025-11-19-FILTERTEST-add-techs.yml | 0.973 | 0.7 | 0.225806 | 0.341463 |
+| 16 | experiments/configs/2025-11-21-FILTERTEST-generative-v1.yml | 0.924 | 0.277228 | 0.903226 | 0.424242 |
+| 19 | experiments/configs/2025-11-26-FILTERTEST-generative-v5-more-inclusive.yml | 0.967 | 0.481481 | 0.83871 | 0.611765 |
+| 0 | experiments/configs/2025-11-26-FILTERTEST-generative-v6.yml | 0.98 | 0.72 | 0.580645 | 0.642857 |
+| 23 | experiments/configs/2025-11-21-FILTERTEST-generative-v2.yml | 0.981 | 0.75 | 0.580645 | 0.654545 |
+| 3 | experiments/configs/2025-11-21-FILTERTEST-generative-v3-two-step.yml | 0.983 | 0.769231 | 0.645161 | 0.701754 |
+| 4 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites-v2.yml | 0.98 | 0.622222 | 0.903226 | 0.736842 |
+| 2 | experiments/configs/2025-11-26-FILTERTEST-generative-v7.yml | 0.988 | 0.913043 | 0.677419 | 0.777778 |
+| 27 | experiments/configs/2025-11-26-FILTERTEST-generative-v4.yml | 0.987 | 0.764706 | 0.83871 | 0.8 |
+| 14 | experiments/configs/2025-11-26-FILTERTEST-generative-v8.yml | 0.988 | 0.806452 | 0.806452 | 0.806452 |
+| 7 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites.yml | 0.987 | 0.736842 | 0.903226 | 0.811594 |
+| 20 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2.yml | 0.988 | 0.771429 | 0.870968 | 0.818182 |
+| 21 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs.yml | 0.988 | 0.756757 | 0.903226 | 0.823529 |
 
 </div>
 
@@ -251,8 +403,7 @@ execution_count="7">
 
 ``` python
 # 1. Best filter with highest F1
-best_row = df_metrics.loc[df_metrics['F1'].idxmax()]
-best_config = best_row['config']
+best_config ='experiments/results/2025-11-26-FILTERTEST-generative-v8.yml'
 best_result_path = best_config.replace('configs', 'results').replace('.yml',
 '.pkl')
 
@@ -274,19 +425,21 @@ from tabulate import tabulate
 Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
 ```
 
-    /tmp/ipykernel_100154/1775018809.py:15: FutureWarning:
+    /tmp/ipykernel_10831/4185210660.py:14: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
 |  | id | title | filter | filter_pred |
 |----|---:|:---|:---|:---|
-| 177 | 1814726 | BILLS, Security of Critical Infrastructure Bill 2017, Security of Critical Infrastructure (Consequential and Transitional Provisions) Bill 2017, First Reading | False | True |
-| 225 | 1570654 | MATTERS OF PUBLIC IMPORTANCE, Mining and Taxation Policies | False | True |
+| 88 | 1662001 | STATEMENTS BY MEMBERS, 25twoZERO Movement | False | True |
+| 121 | 2570478 | ANSWERS TO QUESTIONS, Light Dues | False | True |
+| 185 | 1900666 | QUESTIONS WITHOUT NOTICE, FRENCH ATOMIC ENERGY COMMISSION | True | False |
 | 241 | 1256676 | JABILUKA URANIUM MINE, COMMITTEES, Privileges Committee, Report | False | True |
-| 368 | 1561241 | CONSTITUENCY STATEMENTS, Windale Community Information and Assistance Expo | False | True |
-| 437 | 2206504 | ANSWERS TO QUESTIONS UPON NOTICE, Petrol: Lead Content (Question No. 1544) | False | True |
-| 522 | 1668043 | BILLS, Security Legislation Amendment (Critical Infrastructure) Bill 2020, Third Reading | False | True |
+| 297 | 1301272 | QUESTIONS WITHOUT NOTICE, MARALINGA NUCLEAR TESTS | False | True |
+| 391 | 2334141 | ANSWERS TO QUESTIONS, Liquid Fuels-: Production from Fruit. | True | False |
 | 524 | 1909459 | ANSWERS TO QUESTIONS UPON NOTICE, Transmission Equipment (Question 1249) | False | True |
-| 649 | 1479071 | QUESTIONS WITHOUT NOTICE, MINING AT KANMANTOO | False | True |
-| 682 | 1641466 | STATEMENTS BY MEMBERS, Beagley, Archdeacon William ‘Bill’ Alan | False | True |
-| 724 | 1525333 | QUESTIONS IN WRITING, Human Services: Electricity and Water | False | True |
+| 583 | 1678291 | PRIVATE MEMBERS’ BUSINESS, Global Methane Pledge | False | True |
+| 603 | 1610777 | CONSTITUENCY STATEMENTS, BP Australia | True | False |
+| 626 | 2486412 | ANSWERS TO QUESTIONS, Civil Aviation : Petrol Tax. | True | False |
+| 726 | 1578773 | QUESTIONS WITHOUT NOTICE, Dobell Electorate: Mining | True | False |
+| 817 | 1818012 | BILLS, Security of Critical Infrastructure Bill 2017, Security of Critical Infrastructure (Consequential and Transitional Provisions) Bill 2017, Second Reading | True | False |

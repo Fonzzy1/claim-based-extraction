@@ -1,0 +1,37 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  CleanStringVectorFilter:
+    query_strings:
+      - "energy supply"  
+      - "energy production infrastructure"  
+      - "electricity"  
+      - "liquefied natural gas"
+      - "coal"
+      - "renewables"
+      - "renewable energy"
+      - "critical infrustructure"
+      - "coal mining"
+      - "gas drilling"
+      - "gas basin"
+      - "oil drilling"
+      - "critical minerals for energy"
+    model: embeddinggemma
+    endpoint: "http://ollama:11434/v1/"
+    threshold: 0.5
+    rm_strings:
+     - 'BILLS'
+     - 'BILL'
+     - 'QUESTIONS'
+     - 'QUESTION'
+     - 'WITHOUT NOTICE'
+     - 'ON NOTICE'
+     - ': TAKE NOTE OF ANSWERS'
+     - 'UPON NOTICE'
+     - 'ANSWERS TO'
+     - 'CONSTITUENCY STATEMENTS'
+     - 'DOCUMENTS'
+     - 'STATEMENTS BY MEMBERS'
+

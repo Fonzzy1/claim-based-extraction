@@ -7,7 +7,7 @@
 #Power Sites from: https://digital.atlas.gov.au/datasets/major-power-stations-1/about
 # Company list from:  https://www.climatecouncil.org.au/wp-content/uploads/2023/02/CC_MVSA0344-CC-Report-Introducing-the-Dirty-Dozen_Evergreen-Version_V12-FA-Screen-Single.pdf + Power sites list
 data:
-  file: data/labeled/filter/labeled_examples.pkl
+  query: select id, text, title from "Document"
 
 filter:
   QueryStringFilter:
