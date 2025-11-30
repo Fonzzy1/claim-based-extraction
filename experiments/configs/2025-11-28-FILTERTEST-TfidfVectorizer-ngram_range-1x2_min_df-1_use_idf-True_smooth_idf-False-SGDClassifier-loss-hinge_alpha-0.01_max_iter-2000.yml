@@ -1,0 +1,18 @@
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  ScikitFilter:
+    training_data_path: data/synthetic/25k_generative_filter_output/training_data.csv
+    embedding_model: sklearn.feature_extraction.text.TfidfVectorizer
+    embedding_args:
+      ngram_range:
+      - 1
+      - 2
+      min_df: 1
+      use_idf: true
+      smooth_idf: false
+    classifier_model: sklearn.linear_model.SGDClassifier
+    classifier_args:
+      loss: hinge
+      alpha: 0.01
+      max_iter: 2000

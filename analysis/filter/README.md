@@ -10,11 +10,6 @@ os.chdir('../../')
     Checking for client.json...
     ✅ client.json exists
     🔄 Updating git submodules...
-    fatal: detected dubious ownership in repository at '/claim-based-extraction/db'
-    To add an exception for this directory, call:
-
-        git config --global --add safe.directory /claim-based-extraction/db
-    fatal: Unable to find current revision in submodule path 'db'
     Creating Docker volumes...
     [
         {
@@ -64,7 +59,7 @@ os.chdir('../../')
      => [1/9] FROM docker.io/library/python:3.10@sha256:20ca17b2908b0202fc975  0.0s
      => => resolve docker.io/library/python:3.10@sha256:20ca17b2908b0202fc975  0.0s
      => [internal] load build context                                          0.0s
-     => => transferring context: 3.23kB                                        0.0s
+     => => transferring context: 3.28kB                                        0.0s
      => CACHED [2/9] WORKDIR /app                                              0.0s
      => CACHED [3/9] COPY requirements.txt requirements.txt                    0.0s
      => CACHED [4/9] RUN pip install --no-cache-dir -r requirements.txt        0.0s
@@ -75,7 +70,7 @@ os.chdir('../../')
      => CACHED [9/9] COPY ./pipeline.py ./pipeline.py                          0.0s
      => exporting to image                                                     0.0s
      => => exporting layers                                                    0.0s
-     => => writing image sha256:3c1f22f098de022610d982a8494b53a1b857dca833991  0.0s
+     => => writing image sha256:11e766699215b1eb86cc64a37c88ff2d822afa6b77fde  0.0s
      => => naming to docker.io/library/claim-based-extraction-pipeline         0.0s
      => resolving provenance for metadata file                                 0.0s
     [+] Building 1/1
@@ -122,11 +117,10 @@ os.chdir('../../')
      ⠏ ollama Pulling                                                          2.0s 
     [+] Running 1/1
      ✔ ollama Pulled                                                           2.0s 
-    WARN[0002] Found orphan containers ([claim-based-extraction-pipeline-run-5efed69d9f60 claim-based-extraction-pipeline-run-a7ff4e240516 claim-based-extraction-pipeline-run-2fc3138e07fe claim-based-extraction-pipeline-run-1e1c0acd2689 claim-based-extraction-pipeline-run-2e69551cbfd8 claim-based-extraction-pipeline-run-9dda0c437a7a claim-based-extraction-pipeline-run-4c45cbfa5eae claim-based-extraction-pipeline-run-dd7d44f84698 claim-based-extraction-pipeline-run-07a3c29a9da8 claim-based-extraction-pipeline-run-252031f026bf claim-based-extraction-pipeline-run-717b95d46024 claim-based-extraction-pipeline-run-f31f5435f32a claim-based-extraction-pipeline-run-c8520899eb6c claim-based-extraction-pipeline-run-581738a51835 claim-based-extraction-pipeline-run-dbb6b5a20708 claim-based-extraction-pipeline-run-22522e50c1f0 claim-based-extraction-pipeline-run-0595a597ae5d claim-based-extraction-pipeline-run-b6e957cb0823 claim-based-extraction-pipeline-run-417e756c1805 claim-based-extraction-pipeline-run-f9836029faaf claim-based-extraction-pipeline-run-4604f912bc5b claim-based-extraction-pipeline-run-e10469b73abd claim-based-extraction-pipeline-run-46dda267b683 claim-based-extraction-pipeline-run-b5428f1b0019 claim-based-extraction-pipeline-run-9cbfb37c1f22 claim-based-extraction-pipeline-run-e6292a245048 claim-based-extraction-pipeline-run-d0865f994683 claim-based-extraction-pipeline-run-efb2f6dafcc9 claim-based-extraction-pipeline-run-33e914786ed4 claim-based-extraction-pipeline-run-3f62ab1cf43e claim-based-extraction-pipeline-run-fc6d57bdc3c5 claim-based-extraction-pipeline-run-651c9421ab71 claim-based-extraction-pipeline-run-1de6b47d51b4 claim-based-extraction-pipeline-run-ab9ac9bd7418 claim-based-extraction-ollama-run-326b1bfaf7dd claim-based-extraction-ollama-run-e090d9af0062 claim-based-extraction-pipeline-run-75f6c82a1a7e claim-based-extraction-pipeline-run-3b722a2cf10a claim-based-extraction-pipeline-run-0f8298262b15 claim-based-extraction-pipeline-run-c44a7aba3c9f claim-based-extraction-download-run-acbcc708aa86 claim-based-extraction-download-run-a943bd585d81 claim-based-extraction-download-run-679de1b4df37 claim-based-extraction-download-run-48141146d487]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
-    [+] Running 3/3
-     ✔ Container claim-based-extraction-web-1  Running                         0.0s 
-     ✔ Container federal-hansard-db            Running                         0.0s 
-     ✔ Container ollama                        Running                         0.0s 
+    WARN[0002] Found orphan containers ([claim-based-extraction-pipeline-run-ed1748583f85 claim-based-extraction-pipeline-run-9034a9d68212 claim-based-extraction-pipeline-run-9eb9b9aa38af claim-based-extraction-pipeline-run-eff65cbfc159 claim-based-extraction-pipeline-run-60bd1044355f claim-based-extraction-pipeline-run-f0db7aae1466 claim-based-extraction-db_manager-run-009107e55a24 claim-based-extraction-pipeline-run-75f23ce0f7da claim-based-extraction-pipeline-run-b042206b4340 claim-based-extraction-web-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
+    [+] Running 2/2
+     ✔ Container ollama      Running                                           0.0s 
+     ✔ Container hansard-db  Running                                           0.0s 
     ✅ Database already filled
     experiments/configs/2025-11-17-FILTERTEST-simple.yml
     experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites-v2.yml
@@ -151,11 +145,14 @@ os.chdir('../../')
     experiments/configs/2025-11-21-FILTERTEST-vector-v7-9.yml
     experiments/configs/2025-11-21-FILTERTEST-vector-v7.yml
     experiments/configs/2025-11-21-FILTERTEST-vector-v8.yml
+    experiments/configs/2025-11-22-FILTERTEST-generative-v4.yml
     experiments/configs/2025-11-26-FILTERTEST-generative-v4.yml
     experiments/configs/2025-11-26-FILTERTEST-generative-v5-more-inclusive.yml
     experiments/configs/2025-11-26-FILTERTEST-generative-v6.yml
     experiments/configs/2025-11-26-FILTERTEST-generative-v7.yml
     experiments/configs/2025-11-26-FILTERTEST-generative-v8.yml
+    experiments/configs/2025-11-26-FILTERTEST-generative-v9.yml
+    experiments/configs/2025-11-28-FILTERTEST-basic-count-beyes.yml
 
 ``` python
 from models.base_model import Corpus 
@@ -239,115 +236,127 @@ for config, result_path in zipped:
 df_metrics = pd.DataFrame(metric_table).sort_values(by='F1')
 ```
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
-    /tmp/ipykernel_10831/2248653284.py:26: FutureWarning:
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
+
+    Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+
+    /tmp/ipykernel_316379/2248653284.py:26: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 
@@ -368,34 +377,37 @@ execution_count="4">
 
 |  |  | accuracy | precision | recall | f1 |
 |----|----|---:|---:|---:|---:|
-| 13 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-9.yml | 0.969 | 0 | 0 | 0 |
-| 18 | experiments/configs/2025-11-20-FILTERTEST-vector-v1.yml | 0.969 | 0 | 0 | 0 |
-| 26 | experiments/configs/2025-11-20-FILTERTEST-vector-v2-lower-threshold.yml | 0.949 | 0.115385 | 0.0967742 | 0.105263 |
+| 21 | experiments/configs/2025-11-20-FILTERTEST-vector-v1.yml | 0.969 | 0 | 0 | 0 |
+| 16 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-9.yml | 0.969 | 0 | 0 | 0 |
+| 29 | experiments/configs/2025-11-20-FILTERTEST-vector-v2-lower-threshold.yml | 0.949 | 0.115385 | 0.0967742 | 0.105263 |
 | 1 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-8.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
-| 22 | experiments/configs/2025-11-21-FILTERTEST-vector-v6.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
-| 24 | experiments/configs/2025-11-21-FILTERTEST-vector-v7.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
-| 6 | experiments/configs/2025-11-21-FILTERTEST-vector-v8.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
-| 8 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-5.yml | 0.721 | 0.0810811 | 0.774194 | 0.146789 |
-| 15 | experiments/configs/2025-11-21-FILTERTEST-vector-v4-rm_strings.yml | 0.892 | 0.133333 | 0.451613 | 0.205882 |
-| 11 | experiments/configs/2025-11-21-FILTERTEST-vector-v5.yml | 0.861 | 0.130137 | 0.612903 | 0.214689 |
-| 10 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-6.yml | 0.939 | 0.232143 | 0.419355 | 0.298851 |
-| 25 | experiments/configs/2025-11-19-FILTERTEST-e-or-p.yml | 0.973 | 0.75 | 0.193548 | 0.307692 |
-| 12 | experiments/configs/2025-11-21-FILTERTEST-vector-v3-new-strings.yml | 0.969 | 0.5 | 0.225806 | 0.311111 |
-| 9 | experiments/configs/2025-11-17-FILTERTEST-simple.yml | 0.975 | 1 | 0.193548 | 0.324324 |
-| 17 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-7.yml | 0.975 | 1 | 0.193548 | 0.324324 |
+| 25 | experiments/configs/2025-11-21-FILTERTEST-vector-v6.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 7 | experiments/configs/2025-11-21-FILTERTEST-vector-v8.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 27 | experiments/configs/2025-11-21-FILTERTEST-vector-v7.yml | 0.971 | 1 | 0.0645161 | 0.121212 |
+| 9 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-5.yml | 0.721 | 0.0810811 | 0.774194 | 0.146789 |
+| 18 | experiments/configs/2025-11-21-FILTERTEST-vector-v4-rm_strings.yml | 0.892 | 0.133333 | 0.451613 | 0.205882 |
+| 12 | experiments/configs/2025-11-21-FILTERTEST-vector-v5.yml | 0.861 | 0.130137 | 0.612903 | 0.214689 |
+| 11 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-6.yml | 0.939 | 0.232143 | 0.419355 | 0.298851 |
+| 28 | experiments/configs/2025-11-19-FILTERTEST-e-or-p.yml | 0.973 | 0.75 | 0.193548 | 0.307692 |
+| 15 | experiments/configs/2025-11-21-FILTERTEST-vector-v3-new-strings.yml | 0.969 | 0.5 | 0.225806 | 0.311111 |
+| 20 | experiments/configs/2025-11-21-FILTERTEST-vector-v7-7.yml | 0.975 | 1 | 0.193548 | 0.324324 |
+| 10 | experiments/configs/2025-11-17-FILTERTEST-simple.yml | 0.975 | 1 | 0.193548 | 0.324324 |
 | 5 | experiments/configs/2025-11-19-FILTERTEST-add-techs.yml | 0.973 | 0.7 | 0.225806 | 0.341463 |
-| 16 | experiments/configs/2025-11-21-FILTERTEST-generative-v1.yml | 0.924 | 0.277228 | 0.903226 | 0.424242 |
-| 19 | experiments/configs/2025-11-26-FILTERTEST-generative-v5-more-inclusive.yml | 0.967 | 0.481481 | 0.83871 | 0.611765 |
+| 19 | experiments/configs/2025-11-21-FILTERTEST-generative-v1.yml | 0.924 | 0.277228 | 0.903226 | 0.424242 |
+| 13 | experiments/configs/2025-11-28-FILTERTEST-basic-count-beyes.yml | 0.979 | 0.857143 | 0.387097 | 0.533333 |
+| 22 | experiments/configs/2025-11-26-FILTERTEST-generative-v5-more-inclusive.yml | 0.967 | 0.481481 | 0.83871 | 0.611765 |
 | 0 | experiments/configs/2025-11-26-FILTERTEST-generative-v6.yml | 0.98 | 0.72 | 0.580645 | 0.642857 |
-| 23 | experiments/configs/2025-11-21-FILTERTEST-generative-v2.yml | 0.981 | 0.75 | 0.580645 | 0.654545 |
+| 26 | experiments/configs/2025-11-21-FILTERTEST-generative-v2.yml | 0.981 | 0.75 | 0.580645 | 0.654545 |
 | 3 | experiments/configs/2025-11-21-FILTERTEST-generative-v3-two-step.yml | 0.983 | 0.769231 | 0.645161 | 0.701754 |
 | 4 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites-v2.yml | 0.98 | 0.622222 | 0.903226 | 0.736842 |
 | 2 | experiments/configs/2025-11-26-FILTERTEST-generative-v7.yml | 0.988 | 0.913043 | 0.677419 | 0.777778 |
-| 27 | experiments/configs/2025-11-26-FILTERTEST-generative-v4.yml | 0.987 | 0.764706 | 0.83871 | 0.8 |
-| 14 | experiments/configs/2025-11-26-FILTERTEST-generative-v8.yml | 0.988 | 0.806452 | 0.806452 | 0.806452 |
-| 7 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites.yml | 0.987 | 0.736842 | 0.903226 | 0.811594 |
-| 20 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2.yml | 0.988 | 0.771429 | 0.870968 | 0.818182 |
-| 21 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs.yml | 0.988 | 0.756757 | 0.903226 | 0.823529 |
+| 30 | experiments/configs/2025-11-26-FILTERTEST-generative-v4.yml | 0.987 | 0.764706 | 0.83871 | 0.8 |
+| 17 | experiments/configs/2025-11-26-FILTERTEST-generative-v8.yml | 0.988 | 0.806452 | 0.806452 | 0.806452 |
+| 8 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs-and-sites.yml | 0.987 | 0.736842 | 0.903226 | 0.811594 |
+| 6 | experiments/configs/2025-11-22-FILTERTEST-generative-v4.yml | 0.988 | 0.771429 | 0.870968 | 0.818182 |
+| 23 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2.yml | 0.988 | 0.771429 | 0.870968 | 0.818182 |
+| 24 | experiments/configs/2025-11-19-FILTERTEST-add-techs-l2-and-orgs.yml | 0.988 | 0.756757 | 0.903226 | 0.823529 |
+| 14 | experiments/configs/2025-11-26-FILTERTEST-generative-v9.yml | 0.99 | 0.783784 | 0.935484 | 0.852941 |
 
 </div>
 
@@ -425,7 +437,7 @@ from tabulate import tabulate
 Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
 ```
 
-    /tmp/ipykernel_10831/4185210660.py:14: FutureWarning:
+    /tmp/ipykernel_316379/4185210660.py:14: FutureWarning:
 
     Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
 

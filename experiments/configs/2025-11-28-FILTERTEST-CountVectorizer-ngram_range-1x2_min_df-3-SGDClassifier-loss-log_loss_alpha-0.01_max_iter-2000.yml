@@ -1,0 +1,16 @@
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  ScikitFilter:
+    training_data_path: data/synthetic/25k_generative_filter_output/training_data.csv
+    embedding_model: sklearn.feature_extraction.text.CountVectorizer
+    embedding_args:
+      ngram_range:
+      - 1
+      - 2
+      min_df: 3
+    classifier_model: sklearn.linear_model.SGDClassifier
+    classifier_args:
+      loss: log_loss
+      alpha: 0.01
+      max_iter: 2000

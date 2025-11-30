@@ -5,29 +5,39 @@ from pathlib import Path
 OUTPUT_DIR = Path("experiments/configs")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
+
+def convert_tuples(obj):
+    """Recursively convert tuples to lists in any Python structure."""
+    if isinstance(obj, dict):
+        return {k: convert_tuples(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [convert_tuples(v) for v in obj]
+    if isinstance(obj, tuple):
+        return [convert_tuples(v) for v in obj]  # convert tuple to list
+    return obj
+
+
 # ------------------------------------------------------------
 # SEARCH SPACE — Add/remove entries here to scale up/down
 # ------------------------------------------------------------
 
 # Multiple n-gram configurations
 NGRAMS = [
-    (1,1),
-    (1,2),
-    (1,3),
+    (1, 1),
+    (1, 2),
+    (1, 3),
 ]
 
 VECTORISERS = [
-
     # CountVectorizer sweeps
     *[
         (
             "sklearn.feature_extraction.text.CountVectorizer",
-            {"ngram_range": ngram, "min_df": min_df}
+            {"ngram_range": ngram, "min_df": min_df},
         )
         for ngram in NGRAMS
         for min_df in [1, 2, 3, 5]
     ],
-
     # TF-IDF sweeps
     *[
         (
@@ -36,15 +46,14 @@ VECTORISERS = [
                 "ngram_range": ngram,
                 "min_df": min_df,
                 "use_idf": use_idf,
-                "smooth_idf": smooth
-            }
+                "smooth_idf": smooth,
+            },
         )
         for ngram in NGRAMS
         for min_df in [1, 2, 3]
         for use_idf in [True, False]
         for smooth in [True, False]
     ],
-
     # HashingVectorizer (no fitting)
     *[
         (
@@ -52,8 +61,8 @@ VECTORISERS = [
             {
                 "ngram_range": ngram,
                 "n_features": n_features,
-                "alternate_sign": alt_sign
-            }
+                "alternate_sign": alt_sign,
+            },
         )
         for ngram in NGRAMS
         for n_features in [2**16, 2**18, 2**20]
@@ -63,25 +72,15 @@ VECTORISERS = [
 
 
 CLASSIFIERS = [
-
     # Naive Bayes
-    ("sklearn.naive_bayes.MultinomialNB",
-        {"alpha": 0.1}),
-    ("sklearn.naive_bayes.MultinomialNB",
-        {"alpha": 0.5}),
-    ("sklearn.naive_bayes.MultinomialNB",
-        {"alpha": 1.0}),
-
+    ("sklearn.naive_bayes.MultinomialNB", {"alpha": 0.1}),
+    ("sklearn.naive_bayes.MultinomialNB", {"alpha": 0.5}),
+    ("sklearn.naive_bayes.MultinomialNB", {"alpha": 1.0}),
     # Logistic Regression
     *[
         (
             "sklearn.linear_model.LogisticRegression",
-            {
-                "max_iter": 300,
-                "C": C,
-                "penalty": penalty,
-                "solver": solver
-            }
+            {"max_iter": 300, "C": C, "penalty": penalty, "solver": solver},
         )
         for C in [0.1, 1.0, 3.0, 10.0]
         for penalty, solver in [
@@ -89,35 +88,21 @@ CLASSIFIERS = [
             ("l2", "liblinear"),
         ]
     ],
-
     # Linear SVM
     *[
-        (
-            "sklearn.svm.LinearSVC",
-            {
-                "C": C,
-                "loss": loss,
-                "max_iter": 5000
-            }
-        )
+        ("sklearn.svm.LinearSVC", {"C": C, "loss": loss, "max_iter": 5000})
         for C in [0.5, 1.0, 2.0, 5.0]
         for loss in ["hinge", "squared_hinge"]
     ],
-
     # SGDClassifier (linear models)
     *[
         (
             "sklearn.linear_model.SGDClassifier",
-            {
-                "loss": loss,
-                "alpha": alpha,
-                "max_iter": 2000
-            }
+            {"loss": loss, "alpha": alpha, "max_iter": 2000},
         )
         for loss in ["hinge", "log_loss", "modified_huber"]
         for alpha in [1e-4, 1e-3, 1e-2]
     ],
-
     # Random Forest
     *[
         (
@@ -125,33 +110,25 @@ CLASSIFIERS = [
             {
                 "n_estimators": n_est,
                 "max_depth": depth,
-            }
+            },
         )
         for n_est in [100, 200, 400]
         for depth in [None, 10, 20]
     ],
-
     # ExtraTrees
     *[
         (
             "sklearn.ensemble.ExtraTreesClassifier",
-            {
-                "n_estimators": n_est,
-                "criterion": crit
-            }
+            {"n_estimators": n_est, "criterion": crit},
         )
         for n_est in [100, 300]
         for crit in ["gini", "entropy"]
     ],
-
     # Gradient Boosting
     *[
         (
             "sklearn.ensemble.GradientBoostingClassifier",
-            {
-                "n_estimators": n_est,
-                "learning_rate": lr
-            }
+            {"n_estimators": n_est, "learning_rate": lr},
         )
         for n_est in [50, 100]
         for lr in [0.05, 0.1]
@@ -165,11 +142,18 @@ LABELED_DATA = "data/labeled/filter/labeled_examples.pkl"
 # Helper functions
 # ------------------------------------------------------------
 
+
 def sanitise(value):
     """Make dict values filesystem-safe for filenames."""
     if isinstance(value, tuple):
         return "x".join(str(v) for v in value)
-    return str(value).replace(" ", "").replace("'", "").replace("{","").replace("}","")
+    return (
+        str(value)
+        .replace(" ", "")
+        .replace("'", "")
+        .replace("{", "")
+        .replace("}", "")
+    )
 
 
 def create_config(vectoriser, classifier):
@@ -177,9 +161,7 @@ def create_config(vectoriser, classifier):
     clf_model, clf_args = classifier
 
     return {
-        "data": {
-            "file": LABELED_DATA
-        },
+        "data": {"file": LABELED_DATA},
         "filter": {
             "ScikitFilter": {
                 "training_data_path": TRAINING_DATA,
@@ -188,7 +170,7 @@ def create_config(vectoriser, classifier):
                 "classifier_model": clf_model,
                 "classifier_args": clf_args,
             }
-        }
+        },
     }
 
 
@@ -203,13 +185,20 @@ def main():
         vec_name = vec_model.split(".")[-1]
         clf_name = clf_model.split(".")[-1]
 
-        vec_args_str = "_".join([f"{k}-{sanitise(v)}" for k, v in vec_args.items()]) or "default"
-        clf_args_str = "_".join([f"{k}-{sanitise(v)}" for k, v in clf_args.items()]) or "default"
+        vec_args_str = (
+            "_".join([f"{k}-{sanitise(v)}" for k, v in vec_args.items()])
+            or "default"
+        )
+        clf_args_str = (
+            "_".join([f"{k}-{sanitise(v)}" for k, v in clf_args.items()])
+            or "default"
+        )
 
         filename = f"2025-11-28-FILTERTEST-{vec_name}-{vec_args_str}-{clf_name}-{clf_args_str}.yaml"
         filepath = OUTPUT_DIR / filename
 
         config = create_config(vec, clf)
+        config = convert_tuples(config)
         with filepath.open("w") as f:
             yaml.dump(config, f, sort_keys=False)
 

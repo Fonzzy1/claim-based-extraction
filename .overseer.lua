@@ -54,4 +54,15 @@ return {
             }
         end,
     },
+    {
+        name = "Run All Filtertest",
+        builder = function(_)
+            local cmd_str = "analysis/filter/generate_filter_results.sh"
+            return {
+                cmd = { "bash", cmd_str },
+                components = { "default" },
+                name = 'Run All Filtertest'
+            }
+        end,
+    },
 }

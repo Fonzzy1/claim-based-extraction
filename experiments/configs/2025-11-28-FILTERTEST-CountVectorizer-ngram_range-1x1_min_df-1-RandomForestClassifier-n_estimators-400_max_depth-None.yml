@@ -1,0 +1,15 @@
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  ScikitFilter:
+    training_data_path: data/synthetic/25k_generative_filter_output/training_data.csv
+    embedding_model: sklearn.feature_extraction.text.CountVectorizer
+    embedding_args:
+      ngram_range:
+      - 1
+      - 1
+      min_df: 1
+    classifier_model: sklearn.ensemble.RandomForestClassifier
+    classifier_args:
+      n_estimators: 400
+      max_depth: null
