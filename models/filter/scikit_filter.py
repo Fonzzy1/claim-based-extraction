@@ -14,6 +14,7 @@ def string_to_class(string):
     cls = getattr(module, class_name)
     return cls
 
+
 def lists_to_tuples(d):
     """
     Recursively convert all lists inside a dict into tuples.
@@ -22,9 +23,11 @@ def lists_to_tuples(d):
     for k, v in d.items():
         if isinstance(v, list):
             d[k] = tuple(
-                lists_to_tuples(x) if isinstance(x, dict) else
-                tuple(x) if isinstance(x, list) else
-                x
+                (
+                    lists_to_tuples(x)
+                    if isinstance(x, dict)
+                    else tuple(x) if isinstance(x, list) else x
+                )
                 for x in v
             )
         elif isinstance(v, dict):
@@ -52,7 +55,6 @@ class ScikitFilter(Filter):
 
         embedding_args = lists_to_tuples(embedding_args)
         classifier_args = lists_to_tuples(classifier_args)
-
 
         embedder_class = string_to_class(embedding_model)
         classifier_class = string_to_class(classifier_model)
