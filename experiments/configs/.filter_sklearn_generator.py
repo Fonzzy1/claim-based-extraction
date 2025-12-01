@@ -90,9 +90,18 @@ CLASSIFIERS = [
     ],
     # Linear SVM
     *[
-        ("sklearn.svm.LinearSVC", {"C": C, "loss": loss, "max_iter": 5000})
-        for C in [0.5, 1.0, 2.0, 5.0]
-        for loss in ["hinge", "squared_hinge"]
+(
+        "sklearn.svm.LinearSVC",
+        {
+            "C": C,
+            "loss": loss,
+            "class_weight": cw,
+            "max_iter": 10000,
+        },
+    )
+    for C in [0.5, 1, 2, 3, 5, 10]
+    for loss in ["hinge", "squared_hinge"]
+    for cw in [None, "balanced"]
     ],
     # SGDClassifier (linear models)
     *[
@@ -182,25 +191,30 @@ def main():
         vec_model, vec_args = vec
         clf_model, clf_args = clf
 
+
         vec_name = vec_model.split(".")[-1]
         clf_name = clf_model.split(".")[-1]
 
-        vec_args_str = (
-            "_".join([f"{k}-{sanitise(v)}" for k, v in vec_args.items()])
-            or "default"
-        )
-        clf_args_str = (
-            "_".join([f"{k}-{sanitise(v)}" for k, v in clf_args.items()])
-            or "default"
-        )
+        if vec_name == "HashingVectorizer" and clf_name == "MultinomialNB":
+            pass
+        else:
 
-        filename = f"2025-11-28-FILTERTEST-{vec_name}-{vec_args_str}-{clf_name}-{clf_args_str}.yml"
-        filepath = OUTPUT_DIR / filename
+            vec_args_str = (
+                "_".join([f"{k}-{sanitise(v)}" for k, v in vec_args.items()])
+                or "default"
+            )
+            clf_args_str = (
+                "_".join([f"{k}-{sanitise(v)}" for k, v in clf_args.items()])
+                or "default"
+            )
 
-        config = create_config(vec, clf)
-        config = convert_tuples(config)
-        with filepath.open("w") as f:
-            yaml.dump(config, f, sort_keys=False)
+            filename = f"2025-11-28-FILTERTEST-{vec_name}-{vec_args_str}-{clf_name}-{clf_args_str}.yml"
+            filepath = OUTPUT_DIR / filename
+
+            config = create_config(vec, clf)
+            config = convert_tuples(config)
+            with filepath.open("w") as f:
+                yaml.dump(config, f, sort_keys=False)
 
     print("Done. All experiment configs generated.")
 
