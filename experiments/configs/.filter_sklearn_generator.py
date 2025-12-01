@@ -194,7 +194,7 @@ def main():
             or "default"
         )
 
-        filename = f"2025-11-28-FILTERTEST-{vec_name}-{vec_args_str}-{clf_name}-{clf_args_str}.yaml"
+        filename = f"2025-11-28-FILTERTEST-{vec_name}-{vec_args_str}-{clf_name}-{clf_args_str}.yml"
         filepath = OUTPUT_DIR / filename
 
         config = create_config(vec, clf)
