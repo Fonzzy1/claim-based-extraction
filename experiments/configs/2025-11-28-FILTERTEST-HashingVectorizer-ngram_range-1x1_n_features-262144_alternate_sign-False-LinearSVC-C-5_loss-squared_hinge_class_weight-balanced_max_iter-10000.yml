@@ -1,0 +1,18 @@
+data:
+  file: data/labeled/filter/labeled_examples.pkl
+filter:
+  ScikitFilter:
+    training_data_path: data/synthetic/25k_generative_filter_output/training_data.csv
+    embedding_model: sklearn.feature_extraction.text.HashingVectorizer
+    embedding_args:
+      ngram_range:
+      - 1
+      - 1
+      n_features: 262144
+      alternate_sign: false
+    classifier_model: sklearn.svm.LinearSVC
+    classifier_args:
+      C: 5
+      loss: squared_hinge
+      class_weight: balanced
+      max_iter: 10000

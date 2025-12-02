@@ -107,5 +107,5 @@ from tabulate import tabulate
 Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
 ```
 
-```{python}
+```{python
 

@@ -90,18 +90,18 @@ CLASSIFIERS = [
     ],
     # Linear SVM
     *[
-(
-        "sklearn.svm.LinearSVC",
-        {
-            "C": C,
-            "loss": loss,
-            "class_weight": cw,
-            "max_iter": 10000,
-        },
-    )
-    for C in [0.5, 1, 2, 3, 5, 10]
-    for loss in ["hinge", "squared_hinge"]
-    for cw in [None, "balanced"]
+        (
+            "sklearn.svm.LinearSVC",
+            {
+                "C": C,
+                "loss": loss,
+                "class_weight": cw,
+                "max_iter": 10000,
+            },
+        )
+        for C in [0.5, 1, 2, 3, 5, 10]
+        for loss in ["hinge", "squared_hinge"]
+        for cw in [None, "balanced"]
     ],
     # SGDClassifier (linear models)
     *[
@@ -190,7 +190,6 @@ def main():
     for i, (vec, clf) in enumerate(combos):
         vec_model, vec_args = vec
         clf_model, clf_args = clf
-
 
         vec_name = vec_model.split(".")[-1]
         clf_name = clf_model.split(".")[-1]
