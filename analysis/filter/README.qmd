@@ -5,7 +5,7 @@ format: gfm
 ```{python}
 import os
 os.chdir('../../')
-! bash ./analysis/filter/generate_filter_results.sh
+#! bash ./analysis/filter/generate_filter_results.sh
 
 ```
 
@@ -48,6 +48,8 @@ for config, result_path in zipped:
     df_comp = pd.merge(df, df_pred[['id', 'filter_pred']], on='id', how='left')
     # 'filter_pred' will be NaN for those not caught by filter, i.e. predicted
     # False
+    # Ensure 'filter_pred' is boolean
+    df_comp['filter_pred'] = df_comp['filter_pred'].astype('boolean')  # pandas nullable boolean type
     df_comp['filter_pred'] = df_comp['filter_pred'].fillna(False)
 
     y_true = df_comp['filter']
@@ -71,8 +73,6 @@ df_metrics = pd.DataFrame(metric_table).sort_values(by='F1')
 
 
 ```{python}
-#| label: tbl-planet-measures
-#| tbl-cap: Astronomical object
 
 from IPython.display import Markdown
 from tabulate import tabulate
@@ -97,6 +97,7 @@ if df_pred.empty:
 df_pred['filter_pred'] = True
 
 df_comp = pd.merge(df, df_pred[['id', 'filter_pred']], on='id', how='left')
+df_comp['filter_pred'] = df_comp['filter_pred'].astype('boolean')  # pandas nullable boolean type
 df_comp['filter_pred'] = df_comp['filter_pred'].fillna(False)
 
 # 3. Find errors
@@ -106,6 +107,4 @@ from tabulate import tabulate
 
 Markdown(tabulate(df_wrong[['id', 'title', 'filter', 'filter_pred']], headers="keys"))
 ```
-
-```{python
 
