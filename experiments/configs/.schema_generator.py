@@ -97,7 +97,6 @@ def load_module_classes(module_path: str):
     return {
         name: cls
         for name, cls in inspect.getmembers(mod, inspect.isclass)
-        if cls.__module__ == mod.__name__
     }
 
 

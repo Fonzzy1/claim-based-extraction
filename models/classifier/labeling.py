@@ -1,9 +1,9 @@
-from models.extractor.base_extractor import BaseExtractor
+from models.classifier.base_classifier import BaseClassifier
 from models.base_model import DocumentElement, Claim, Corpus, Document
 import questionary
 
 
-class LabelingExtractor(BaseExtractor):
+class LabelingClassifier(BaseClassifier):
     def infer(self, element: DocumentElement):
         print("Document Element Text:\n")
         print(element.text)

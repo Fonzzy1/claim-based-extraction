@@ -1,0 +1,96 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  strings: ./data/dummy.txt
+
+processor:
+  SentenceProcessor:
+    pre_context_size: 0
+    post_context_size: 0
+
+
+classifier:
+  ZeroShotClassifier:
+    issues:
+      Economic:
+        - Bad Economy
+      Environmental Sustainability:
+        - Climate Change
+    policies:
+      Fossil:
+        - Fossil Fuels
+      Renewable:
+        - Renewables
+    model_key: gpt-5.1
+    endpoint: https://api.openai.com/v1
+
+
+    system_prompt: |
+      You are extracting structured claims from a single sentence about energy policy.
+
+      Your task is to identify every claim in the sentence that fits the ontology below and return all applicable labels.
+
+      Ontology:
+
+      Issues:
+      - Climate Change
+      - The Economy
+
+      Policies:
+      - Renewables
+      - Fossil Fuels
+
+      There are three claim types:
+
+      1. Signaling claims
+      Format:
+      (sign, issue)
+
+      Use a signaling claim when the sentence says an issue is important or unimportant when thinking about energy policy in general.
+
+      - +1 = the issue is important, relevant, or needs attention
+      - -1 = the issue is unimportant, overstated, or should carry less weight
+
+      2. Evaluation claims
+      Format:
+      (sign, policy)
+
+      Use an evaluation claim when the sentence evaluates a policy positively or negatively without linking it to a specific issue.
+
+      - +1 = positive evaluation
+      - -1 = negative evaluation
+
+      3. Impact claims
+      Format:
+      (sign, issue, policy)
+
+      Use an impact claim when the sentence says a policy affects an issue.
+
+      - +1 = the policy alleviates the issue
+      - -1 = the policy exacerbates the issue
+
+      Important rules:
+      - For impact claims, +1 means the policy helps with the issue.
+      - For impact claims, -1 means the policy worsens the issue.
+      - A sentence may contain zero, one, or multiple claims.
+      - Extract all claims supported by the sentence.
+      - Do not infer claims beyond what is expressed.
+      - Return only the set of labels, one per line.
+      - If there are no relevant claims, return an empty list
+
+    message_prompt_format_string: "{text}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,267 +12,50 @@ from dataclasses import dataclass, field
 from tqdm.contrib.concurrent import thread_map
 
 class BaseModel:
-
     def save_to_file(self, filepath):
         if os.path.exists(filepath):
             raise FileExistsError("File already exists")
         with open(filepath, "wb") as f:
             dill.dump(self, f)
-
-
-
     @classmethod
     def load_from_file(cls, filepath):
         with open(filepath, "rb") as f:
             obj = dill.load(f)
         return obj
 
-TECH_TAXONOMY = {
-    "Renewable Energy": {
-        "Solar Power": {
-            "small-scale solar",
-            "large-scale solar",
-            "concentrated solar power",
-        },
-        "Wind Power": {
-            "offshore wind",
-            "onshore wind",
-        },
-        "Hydro Power": {
-            "small-scale hydro",
-            "large-scale hydro",
-        },
-    },
-    "Fossil Fuels": {
-        "Coal": {
-            "brown coal",
-            "black coal",
-            "peat",
-        },
-        "Gas": {
-            "conventional gas",
-            "non-conventional gas",
-            "LNG",
-        },
-        "Oil": {
-            "oil",
-        },
-    },
-    "Non-Viable Alternatives": {
-        "Biomass": {
-            "waste fermentation",
-            "farmed biomass",
-            "biofuel",
-        },
-        "Nuclear": {
-            "large-scale fission",
-            "small modular fission",
-            "fusion",
-        },
-        "CCS": {
-            "post-combustion carbon capture",
-            "pre-combustion carbon capture",
-            "direct air carbon capture",
-        },
-        "Ocean Energy": {
-            "wave energy",
-            "tidal energy",
-            "ocean thermal energy",
-        },
-        "Geothermal": {
-            "geothermal energy",
-        },
-    },
-    "Storage and Transportation": {
-        "Long-Term Storage": {
-            "gravity storage",
-            "pumped hydro storage",
-            "compressed air energy storage",
-            "large-scale batteries",
-            "hydrogen storage",
-        },
-        "Peaking Supply": {
-            "battery energy storage system",
-            "home batteries",
-            "flywheel storage",
-            "thermal storage",
-        },
-        "Transport": {
-            "electrical transmission lines",
-            "gas pipelines",
-            "hydrogen pipelines",
-            "oil pipelines",
-        },
-    },
-}
-
-ISSUE_TAXONOMY = {
-    "Economic": {
-        "Low Government Revenues",
-        "High Government Expenditure",
-        "Unemployment",
-        "Low Economic Growth",
-        "High Energy Costs",
-        "Reduced Economic Competitiveness",
-    },
-    "Security": {
-        "Inconsistent Energy Availability",
-        "Energy Infrastructure Vulnerability",
-        "Resource Depletion",
-        "International Resource Dependency",
-        "Plan Viability",
-    },
-    "Environmental Sustainability": {
-        "Climate Change",
-        "Destruction of Ecology",
-        "Destruction of Natural Beauty",
-        "Air Pollution",
-        "Water Resource Stress",
-        "Biodiversity Loss",
-    },
-    "Justice": {
-        "Inequity",
-        "Lack of Public Consent",
-        "Adverse Health Impacts",
-        "Regional Decline",
-        "Social Displacement",
-        "Energy Access Inequality",
-    },
-    "National Standing": {
-        "A Failure to Meet International Obligations",
-        "Reputation with Trade Partners",
-        "Weak Leadership in Clean Energy Transition",
-        "Declining Global Influence on Energy Policy",
-    },
-}
-
-
-Impact = Literal["Alleviates", "Exacerbates", "Does Not Impact"]
-tech_level_1 = []
-tech_level_2 = []
-tech_level_3 = []
-for k, v in TECH_TAXONOMY.items():
-    tech_level_1.append(k)
-    for k2, v2 in v.items():
-        tech_level_2.append(k2)
-        for k3 in v2:
-            tech_level_3.append(k3)
-
-TechLevel1 = Literal.__getitem__(tuple(tech_level_1))
-TechLevel2 = Literal.__getitem__(tuple(tech_level_2))
-TechLevel3 = Literal.__getitem__(tuple(tech_level_3))
-
-issue_level_1 = []
-issue_level_2 = []
-for k, v in ISSUE_TAXONOMY.items():
-    issue_level_1.append(k)
-    for k2 in v:
-        issue_level_2.append(k2)
-
-IssueLevel1 = Literal.__getitem__(tuple(issue_level_1))
-IssueLevel2 = Literal.__getitem__(tuple(issue_level_2))
-
-
-class EvaluationLabel(PyBaseModel):
-    tech_level_1: Optional[TechLevel1]
-    tech_level_2: Optional[TechLevel2] = None
-    tech_level_3: Optional[TechLevel3] = None
-
-    issue_level_1: IssueLevel1
-    issue_level_2: Optional[IssueLevel2] = None
-
-    impact: Impact  # same as old sentiment
-
-    # @model_validator(mode="after")
-    # def check_tech_hierarchy(self, values):
-    #     lvl1, lvl2, lvl3 = (
-    #         values.tech_level_1,
-    #         values.tech_level_2,
-    #         values.tech_level_3,
-    #     )
-
-    #     if lvl2 and (
-    #         lvl1 not in TECH_TAXONOMY or lvl2 not in TECH_TAXONOMY[lvl1]
-    #     ):
-    #         raise ValueError(
-    #             f"tech_level_2 '{lvl2}' is not a valid child of tech_level_1 '{lvl1}'"
-    #         )
-
-    #     if lvl3:
-    #         if not lvl2 or lvl2 not in TECH_TAXONOMY.get(lvl1, {}):
-    #             raise ValueError(
-    #                 f"Cannot validate tech_level_3 '{lvl3}' without valid lvl2 '{lvl2}' under lvl1 '{lvl1}'"
-    #             )
-    #         if lvl3 not in TECH_TAXONOMY[lvl1][lvl2]:
-    #             raise ValueError(
-    #                 f"tech_level_3 '{lvl3}' is not a valid child of tech_level_2 '{lvl2}' under tech_level_1 '{lvl1}'"
-    #             )
-    #     return values
-
-    # @model_validator(mode="after")
-    # def check_issue_hierarchy(self, values):
-    #     lvl1, lvl2 = values.issue_level_1, values.issue_level_2
-
-    #     if lvl2 and (
-    #         lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
-    #     ):
-    #         raise ValueError(
-    #             f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
-    #         )
-    #     return values
-
-    def __repr__(self):
-        """Natural-language sentence form."""
-        tech = self.tech_level_3 or self.tech_level_2 or "a technology"
-        tech_parent = f"({self.tech_level_1})" if self.tech_level_1 else ""
-        issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
-        return (
-            f"Policies that support the use of {tech} {tech_parent} "
-            f"will {self.impact} the {self.issue_level_1} issue of {issue2}."
-        )
-
-
-class IssueDeclarationLabel(PyBaseModel):
-    issue_level_1: IssueLevel1
-    issue_level_2: Optional[IssueLevel2] = None
-
-    # @model_validator(mode="after")
-    # def check_issue_hierarchy(self, values):
-    #     lvl1, lvl2 = values.issue_level_1, values.issue_level_2
-    #     if lvl2 and (
-    #         lvl1 not in ISSUE_TAXONOMY or lvl2 not in ISSUE_TAXONOMY[lvl1]
-    #     ):
-    #         raise ValueError(
-    #             f"issue_level_2 '{lvl2}' is not a valid child of issue_level_1 '{lvl1}'"
-    #         )
-    #     return values
-
-    def __repr__(self):
-        """Natural-language sentence form."""
-        issue2 = f" issue of {self.issue_level_2}" if self.issue_level_2 else ""
-        return (
-            f"Policies affecting Australia’s energy generation "
-            f"should address the {self.issue_level_1} issue of {issue2}."
-        )
-
-
-# --- Unified Label Union Type ---
-class Label(PyBaseModel):
-    evaluation: Optional[EvaluationLabel] = None
-    issue: Optional[IssueDeclarationLabel] = None
-
-
-@dataclass
-class Claim:
-    text: str
-    deconstruction: Optional[Label] = None
-
-
 @dataclass
 class DocumentElement:
     text: str
     context: List[str] = field(default_factory=list)
-    claims: Optional[List[Claim]] = None
+    claims: Optional[List] = None
+
+
+
+from dataclasses import dataclass
+from typing import Literal, Optional
+
+ClaimType = Literal["signal", "evaluation", "impact"]
+Label = Literal[1, -1]
+
+class BaseLabelClass(PyBaseModel):
+    issue: Optional[str] = None
+    policy: Optional[str] = None
+    label: Label
+    claim_type: ClaimType
+
+    @model_validator(mode="after")
+    def validate_claim(self):
+        if self.claim_type == "signal":
+            if self.issue is None or self.policy is not None:
+                raise ValueError("signal requires issue only")
+        elif self.claim_type == "evaluation":
+            if self.policy is None or self.issue is not None:
+                raise ValueError("evaluation requires policy only")
+        elif self.claim_type == "impact":
+            if self.issue is None or self.policy is None:
+                raise ValueError("impact requires both issue and policy")
+        return self
+
 
 
 @dataclass
@@ -282,10 +65,19 @@ class Document:
     title: Optional[str]
     elements: Optional[List[DocumentElement]] = None
 
-
 @dataclass
 class Corpus(BaseModel):
     documents: List[Document]
+
+    @classmethod
+    def from_file_of_strings(cls, file_path: str) -> "Corpus":
+        with open(file_path, "r", encoding="utf-8") as f:
+            docs = [
+                Document(id=i, text=line.rstrip("\n"), title=None)
+                for i, line in enumerate(f)
+                if line.strip()
+            ]
+        return cls(documents=docs)
 
 
 class DocumentLevel(BaseModel):
@@ -321,14 +113,3 @@ class ElementLevel(DocumentLevel):
         return self.infer(element)
 
 
-class ClaimLevel(ElementLevel):
-    """
-    Base class for things that run inferance on Claims
-    """
-
-    def infer_element(self, element: DocumentElement):
-        with ThreadPool() as pool:
-            return pool.map(self.infer_claim, element.claims)
-
-    def infer_claim(self, claim: Claim):
-        return self.infer(claim)

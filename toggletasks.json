@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "name": "Docker Compose Up",
+      "cmd": "source run.sh; dc up"
+    },
+    {
+      "name": "Docker Compose Down",
+      "cmd": "source run.sh; dc down"
+    },
+    {
+      "name": "Docker Compose Logs",
+      "cmd": "source run.sh; dc logs"
+    },
+    {
+      "name": "Generate Yaml Schema",
+      "cmd": "PYTHONPATH=$(pwd) python3 ./experiments/configs/.schema_generator.py"
+    },
+    {
+      "name": "Generate Synthetic Data for Semantic Filter",
+      "cmd": "PYTHONPATH=$(pwd) python3 ./data/synthetic/semantic_filter/generate_data.py"
+    },
+    {
+      "name": "Run All Filtertest",
+      "cmd": "analysis/filter/generate_filter_results.sh"
+    }
+  ]
+}
