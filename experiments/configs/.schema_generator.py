@@ -2,32 +2,40 @@ import inspect
 import json
 import importlib
 from pathlib import Path
-from typing import Any, get_type_hints, Optional
+from typing import Any, get_type_hints, Union, get_origin, get_args
 
 # Map stages to their module paths
 MODULES = {
-    "filter": "models.filter",
-    "elementfilter": "models.filter",  # Shares same class set
-    "extractor": "models.extractor",
-    "deconstructor": "models.deconstructor",
+    "processor": "models.processor",
+    "classifier": "models.classifier",
 }
+
 
 # -------- Utility functions --------
 
 
 def python_type_to_json_type(annotation: Any) -> str:
     """Map Python types to JSON Schema types."""
-    origin = getattr(annotation, "__origin__", None)
+    origin = get_origin(annotation)
+    args = get_args(annotation)
+
     if origin in (list, tuple, set):
         return "array"
-    if annotation in (str, Optional[str]):
+
+    if origin is Union:
+        non_none_args = [arg for arg in args if arg is not type(None)]
+        if len(non_none_args) == 1:
+            return python_type_to_json_type(non_none_args[0])
+
+    if annotation is str:
         return "string"
-    if annotation in (int, Optional[int]):
+    if annotation is int:
         return "integer"
-    if annotation in (float, Optional[float]):
+    if annotation is float:
         return "number"
-    if annotation in (bool, Optional[bool]):
+    if annotation is bool:
         return "boolean"
+
     return "string"
 
 
@@ -35,46 +43,62 @@ def class_to_schema(cls: type) -> dict:
     """
     Generate JSON Schema for a class with mutually exclusive options:
     - file
-    - drive
     - constructor parameters exposed at top level
     """
     sig = inspect.signature(cls.__init__)
     hints = get_type_hints(cls.__init__)
 
-    # Build schema for constructor parameters (skip self)
     param_props = {}
     required_params = []
+
     for name, param in sig.parameters.items():
         if name == "self":
             continue
+
+        if param.kind in (
+            inspect.Parameter.VAR_POSITIONAL,
+            inspect.Parameter.VAR_KEYWORD,
+        ):
+            continue
+
         annotation = hints.get(name, Any)
         param_props[name] = {"type": python_type_to_json_type(annotation)}
+
         if param.default is inspect._empty:
             required_params.append(name)
 
-    # Schemas for the three mutually exclusive options
+    constructor_schema = {
+        "type": "object",
+        "properties": param_props,
+        "required": required_params,
+        "additionalProperties": False,
+    }
+
     return {
         "type": "object",
         "description": (cls.__doc__ or "").strip(),
-        "anyOf": [
-            {"required": ["file"], "properties": {"file": {"type": "string"}}},
+        "oneOf": [
             {
-                "required": ["drive"],
-                "properties": {"drive": {"type": "string"}},
+                "type": "object",
+                "properties": {
+                    "file": {"type": "string"},
+                },
+                "required": ["file"],
+                "additionalProperties": False,
             },
-            (
-                {"required": required_params, "properties": param_props}
-                if param_props
-                else {}
-            ),
+            constructor_schema,
         ],
     }
 
 
 def load_module_classes(module_path: str):
-    """Load all classes defined in the module (ignores imported ones)."""
+    """Load all classes defined in the module."""
     mod = importlib.import_module(module_path)
-    return {name: cls for name, cls in inspect.getmembers(mod, inspect.isclass)}
+    return {
+        name: cls
+        for name, cls in inspect.getmembers(mod, inspect.isclass)
+        if cls.__module__ == mod.__name__
+    }
 
 
 # -------- Schema generator --------
@@ -89,47 +113,38 @@ def generate_pipeline_schema():
             "data": {
                 "type": "object",
                 "description": "Data source configuration.",
-                "properties": {
-                    "drive": {
-                        "type": "string",
-                        "description": "Path to input file.",
+                "oneOf": [
+                    {
+                        "properties": {
+                            "file": {
+                                "type": "string",
+                                "description": "Path to input file.",
+                            }
+                        },
+                        "required": ["file"],
+                        "additionalProperties": False,
                     },
-                    "file": {
-                        "type": "string",
-                        "description": "Path to input file.",
+                    {
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "SQL query to fetch data.",
+                            }
+                        },
+                        "required": ["query"],
+                        "additionalProperties": False,
                     },
-                    "query": {
-                        "type": "string",
-                        "description": "SQL query to fetch data.",
-                    },
-                },
-            },
-            "processor": {
-                "type": "object",
-                "description": "Fixed text processor configuration.",
-                "properties": {
-                    "context_size": {
-                        "type": "integer",
-                        "description": "Number of surrounding sentences to include as context.",
-                    },
-                    "sentence_splitting_function": {
-                        "type": "string",
-                        "description": "Python function used for sentence tokenization.",
-                    },
-                },
+                ],
             },
         },
+        "required": ["data", "processor", "classifier"],
         "additionalProperties": False,
         "dependencies": {
-            "filter": ["data"],
-            "processor": ["filter"],
-            "elementfilter": ["processor"],
-            "extractor": ["elementfilter"],
-            "deconstructor": ["extractor"],
+            "processor": ["data"],
+            "classifier": ["processor"],
         },
     }
 
-    # Dynamically build schema for filter, elementfilter, extractor, deconstructor
     for stage, module_path in MODULES.items():
         classes = load_module_classes(module_path)
         if not classes:
@@ -138,7 +153,14 @@ def generate_pipeline_schema():
         one_of = []
         for name, cls in classes.items():
             one_of.append(
-                {"properties": {name: class_to_schema(cls)}, "required": [name]}
+                {
+                    "type": "object",
+                    "properties": {
+                        name: class_to_schema(cls),
+                    },
+                    "required": [name],
+                    "additionalProperties": False,
+                }
             )
 
         schema["properties"][stage] = {
@@ -155,3 +177,4 @@ if __name__ == "__main__":
     Path("./experiments/configs/.schema.json").write_text(
         json.dumps(schema, indent=2)
     )
+
