@@ -15,21 +15,6 @@ setup_dc() {
 
 # --- Run initial setup tasks (one-time) ---
 setup_once() {
-  [ "$SYS_DIR" = "" ] && export SYS_DIR=$PWD
-  echo "Checking for client.json..."
-  if [ -f client.json ]; then
-    echo "✅ client.json exists"
-  else
-    echo "❌ client.json does not exist, creating dummy. No drive features availiable"
-    touch client.json
-  fi
-
-  echo "🔄 Updating git submodules..."
-  git submodule update --init --recursive
-
-
-  echo "Creating Docker volumes..."
-  docker volume inspect hansard_db_data || docker volume create hansard_db_data
   docker volume inspect ollama || docker volume create ollama
 }
 
