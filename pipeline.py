@@ -34,7 +34,7 @@ def main(config_file):
     elif "file" in data_config.keys():
         data = Corpus.load_from_file(data_config["file"])
     elif "strings" in data_config.keys():
-        data = Corpus.from_file_of_strings(data_config["keys"])
+        data = Corpus.from_file_of_strings(data_config["strings"])
     else:
         raise Exception("No valid datasouce")
 

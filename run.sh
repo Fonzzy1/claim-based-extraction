@@ -1,49 +1,27 @@
 #!/bin/bash
 
-# --- Function to define dc based on GPU availability ---
 setup_dc() {
   if command -v nvidia-smi > /dev/null; then
-    dc() {
-      docker compose -f docker-compose.yml -f ./db/docker-compose.yml -f docker-compose-db-overide.yml -f docker-compose-gpu.yml "$@"
+      dc() {
+      docker compose -f docker-compose.yml -f docker-compose-gpu.yml "$@"
     }
   else
-    dc() {
-      docker compose -f docker-compose.yml -f ./db/docker-compose.yml -f docker-compose-db-overide.yml "$@"
+      dc() {
+      docker compose -f docker-compose.yml "$@"
     }
   fi
 }
 
-# --- Run initial setup tasks (one-time) ---
 setup_once() {
-  docker volume inspect ollama || docker volume create ollama
+  docker volume inspect ollama >/dev/null 2>&1 || docker volume create ollama
 }
 
-# --- Auto-up logic ---
 auto_up() {
   echo "🚀 Running auto 'up'..."
-
-  # Ensure dc is available
   setup_dc
-
-  # Run 'dc up -d' first (in case containers aren't started yet)
   dc build pipeline
-  dc up -d
-
-  # Check if Document table is empty
-  COUNT=$(dc exec -T db psql -U prisma_user -d prisma_db -t -c 'SELECT count(*) FROM "Document";' 2>/dev/null | xargs)
-  if [ $? -ne 0 ] || [ "$COUNT" = "" ]; then
-    COUNT=0
-  fi
-
-  if [ "$COUNT" -eq 0 ]; then
-    echo "⬇️  Database is empty, downloading..."
-    dc run download
-  else
-    echo "✅ Database already filled"
-  fi
 }
 
-# --- Only run setup and auto_up if being sourced ---
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   setup_once
   setup_dc
