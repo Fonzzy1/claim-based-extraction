@@ -1,5 +1,5 @@
 from models.classifier.base_classifier import BaseClassifier
-from models.base_model import DocumentElement, Claim, Corpus, Document
+from models.base_model import DocumentElement, Corpus, Document
 import questionary
 
 

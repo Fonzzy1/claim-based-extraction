@@ -78,7 +78,7 @@ classifier:
       - Return only the set of labels, one per line.
       - If there are no relevant claims, return an empty list
 
-    message_prompt_format_string: "{text}"
+    message_prompt_format_string: "{string}"
 
 
 

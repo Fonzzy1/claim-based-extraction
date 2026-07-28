@@ -6,10 +6,12 @@ from models.base_model import (
 )
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
+from itertools import chain
 
 
 from pydantic import BaseModel as TypingBaseModel
 from typing import List, Literal, Optional
+from enum import Enum
 import pandas as pd
 
 def construct_label_class(issues: dict, policies: dict) -> type:
@@ -31,14 +33,14 @@ def construct_label_class(issues: dict, policies: dict) -> type:
         A dynamically created subclass of BaseLabelClass with typed issue and
         policy attributes.
     """
-    IssueLiteral = Literal[*sum(issues.values(), [])]
-    PolicyLiteral = Literal[*sum(policies.values(), [])]
+
+    issue_values = tuple(chain.from_iterable(issues.values()))
+    policy_values = tuple(chain.from_iterable(policies.values()))
+
+    IssueLiteral = Literal.__getitem__(issue_values)
+    PolicyLiteral = Literal.__getitem__(policy_values)
 
     class LabelClass(BaseLabelClass):
-        """
-        Dynamically generated label class with constrained issue and policy
-        attributes.
-        """
         issue: Optional[IssueLiteral] = None
         policy: Optional[PolicyLiteral] = None
 
@@ -53,7 +55,7 @@ class BaseClassifier(ElementLevel):
     def __init__(self, issues, policies) -> None:
         self.label_class = construct_label_class(issues, policies)
 
-    def infer(self, element: DocumentElement) -> List[Claim]:
+    def infer(self, element: DocumentElement):
         """
         for a single sentence in a documents, extract all the claims from it
         """

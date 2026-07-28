@@ -13,20 +13,13 @@ services:
       - DATABASE_URL=postgresql://prisma_user:prisma_password@db:5432/prisma_db?schema=public
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
-      - type: bind
-        source: ${SYS_DIR}/client.json
-        target: /root/client.json
       - ${SYS_DIR}/experiments:/app/experiments
       - ${SYS_DIR}/data:/app/data
     profiles:
       - runner
     networks:
       ai_inferance:
-      db_access:
 
-  db:
-    networks:
-      - db_access
 
 #   back-end:
 #     build:
@@ -59,4 +52,3 @@ volumes:
 
 networks:
   ai_inferance:
-  db_access:

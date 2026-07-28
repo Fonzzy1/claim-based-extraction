@@ -2,7 +2,7 @@ from typing import List
 from openai import OpenAI
 from models.classifier.base_classifier import BaseClassifier
 from pydantic import BaseModel as PyBaseModel
-from models.base_model import DocumentElement, Claim
+from models.base_model import DocumentElement, BaseLabelClass
 
 
 
@@ -41,6 +41,5 @@ class ZeroShotClassifier(BaseClassifier):
         )
 
         # Parse the structured output using Pydantic
-        content: List[str] = response.choices[0].message.parsed.extracted_claims
-        claim_content = [Claim(x) for x in content]
-        return claim_content
+        content = response.choices[0].message.parsed.labels
+        return [ BaseLabelClass(**x.model_dump()) for x in content ]
