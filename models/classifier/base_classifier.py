@@ -53,6 +53,8 @@ def construct_label_class(issues: dict, policies: dict) -> type:
 # Define a Pydantic model for a list of strings output
 class BaseClassifier(ElementLevel):
     def __init__(self, issues, policies) -> None:
+        self.issues = issues
+        self.policies = policies
         self.label_class = construct_label_class(issues, policies)
 
     def infer(self, element: DocumentElement):

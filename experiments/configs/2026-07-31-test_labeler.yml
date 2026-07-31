@@ -1,0 +1,38 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  strings: ./data/dummy.txt
+
+processor:
+  SentenceProcessor:
+    pre_context_size: 0
+    post_context_size: 0
+
+
+classifier:
+  LabelingClassifier:
+    issues:
+      Economic:
+        - Bad Economy
+      Environmental Sustainability:
+        - Climate Change
+    policies:
+      Fossil:
+        - Fossil Fuels
+      Renewable:
+        - Renewables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
