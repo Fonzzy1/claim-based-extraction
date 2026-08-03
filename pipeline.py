@@ -22,15 +22,7 @@ def main(config_file):
     print("Pulling Data")
     data_config = config["data"]
     if "query" in data_config.keys():
-        db = Client(
-            http={
-                "timeout": None,
-            },
-        )
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(db.connect())
-        raw_data = loop.run_until_complete(db.query_raw(data_config["query"]))
-        data = Corpus([Document(**x) for x in raw_data])
+        data = Corpus.from_query(data_config['query'], os.environ['DATABASE_URL'])
     elif "file" in data_config.keys():
         data = Corpus.load_from_file(data_config["file"])
     elif "strings" in data_config.keys():

@@ -10,15 +10,17 @@ services:
   pipeline:
     build: .
     environment:
-      - DATABASE_URL=postgresql://prisma_user:prisma_password@db:5432/prisma_db?schema=public
+      - DATABASE_URL=postgresql://prisma_user:prisma_password@host.docker.internal:5432/prisma_db
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ${SYS_DIR}/experiments:/app/experiments
       - ${SYS_DIR}/data:/app/data
     profiles:
       - runner
     networks:
-      ai_inferance:
+      - ai_inferance
 
 
 #   back-end:

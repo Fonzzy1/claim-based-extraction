@@ -1,0 +1,101 @@
+# Generate the stuff from the ./.schema_generator.py
+# yaml-language-server: $schema=./.schema.json
+data:
+  query: |
+    WITH ministry AS (
+        SELECT *
+        FROM "Ministry"
+        WHERE name = 'Albanese Ministry'
+    ),
+    alp_windows AS (
+        SELECT
+            p.id AS parliamentarian_id,
+            p."firstName",
+            p."lastName",
+            GREATEST(s."startDate", m."firstDate") AS window_start,
+            LEAST(
+                COALESCE(s."endDate", 'infinity'::timestamp),
+                COALESCE(m."lastDate", 'infinity'::timestamp)
+            ) AS window_end
+        FROM "Service" s
+        JOIN "Party" pa
+          ON s."partyId" = pa.id
+        JOIN "Parliamentarian" p
+          ON s."parliamentarianId" = p.id
+        CROSS JOIN ministry m
+        WHERE pa.name = 'Australian Labor Party'
+          AND s."startDate" <= COALESCE(m."lastDate", 'infinity'::timestamp)
+          AND COALESCE(s."endDate", 'infinity'::timestamp) >= m."firstDate"
+    )
+    SELECT DISTINCT
+        d.id AS id,
+        d.text AS text,
+        d.title AS title,
+        sd.date AS speech_date,
+        CONCAT(w."firstName", ' ', w."lastName") AS parliamentarian_name
+    FROM alp_windows w
+    JOIN "rawAuthor" ra
+      ON ra."parliamentarianId" = w.parliamentarian_id
+    JOIN "Document" d
+      ON d."rawAuthorId" = ra.id
+    JOIN "SittingDay" sd
+      ON d."sittingDayId" = sd.id
+    WHERE sd.date >= w.window_start
+      AND sd.date <= w.window_end
+      AND sd.chamber = 'Primary Chamber'
+      AND sd.house = 'House of Representatives'
+      AND (
+          d.title ~* '\menergy\M'
+          OR d.title ~* '\melectricity\M'
+          OR d.title ~* '\mpower\M'
+      )
+    ORDER BY sd.date, d.id;
+
+processor:
+  SentenceProcessor:
+    pre_context_size: 0
+    post_context_size: 0
+
+
+classifier:
+  DummyClassifier:
+    issues:
+      Economic:
+        - Bad Economy
+      Environmental Sustainability:
+        - Climate Change
+    policies:
+      Fossil:
+        - Fossil Fuels
+      Renewable:
+        - Renewables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

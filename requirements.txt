@@ -2,7 +2,6 @@ aiohttp==3.13.1
 beautifulsoup4==4.14.2
 dill==0.4.0
 flask_cors==6.0.1
-google_api_python_client==2.185.0
 lxml==6.0.2
 numpy==2.2.6
 oauth2client==4.1.3
@@ -20,3 +19,5 @@ boolean-query-parser==1.0.1
 nltk==3.9.2
 questionary==2.1.1
 scikit-learn==1.7.2
+sqlalchemy==2.0.50
+psycopg2

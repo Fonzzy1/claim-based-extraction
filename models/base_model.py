@@ -1,15 +1,16 @@
-from tqdm import tqdm
-from multiprocessing.dummy import Pool as ThreadPool
-import dill
-import os
-import os
-import io
+from dataclasses import dataclass, field
 from io import BytesIO
 from multiprocessing.dummy import Pool as ThreadPool
-from typing import Literal, Optional, List, Union
+from typing import Dict, List, Literal, Optional, Union, Any
+
+import dill
+import os
+import pandas as pd
+import sqlalchemy
 from pydantic import BaseModel as PyBaseModel, model_validator
-from dataclasses import dataclass, field
+from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
+
 
 class BaseModel:
     def save_to_file(self, filepath):
@@ -17,11 +18,13 @@ class BaseModel:
             raise FileExistsError("File already exists")
         with open(filepath, "wb") as f:
             dill.dump(self, f)
+
     @classmethod
     def load_from_file(cls, filepath):
         with open(filepath, "rb") as f:
             obj = dill.load(f)
         return obj
+
 
 @dataclass
 class DocumentElement:
@@ -30,12 +33,12 @@ class DocumentElement:
     claims: Optional[List] = None
 
 
-
 from dataclasses import dataclass
 from typing import Literal, Optional
 
 ClaimType = Literal["signal", "evaluation", "impact"]
 Label = Literal[1, -1]
+
 
 class BaseLabelClass(PyBaseModel):
     issue: Optional[str] = None
@@ -57,26 +60,60 @@ class BaseLabelClass(PyBaseModel):
         return self
 
 
-
 @dataclass
 class Document:
     id: int
     text: str
-    title: Optional[str]
+    title: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
     elements: Optional[List[DocumentElement]] = None
+
 
 @dataclass
 class Corpus(BaseModel):
     documents: List[Document]
 
     @classmethod
-    def from_file_of_strings(cls, file_path: str) -> "Corpus":
+    def from_file_of_strings(cls, file_path: str):
         with open(file_path, "r", encoding="utf-8") as f:
             docs = [
                 Document(id=i, text=line.rstrip("\n"), title=None)
                 for i, line in enumerate(f)
                 if line.strip()
             ]
+        return cls(documents=docs)
+
+    @classmethod
+    def from_query(cls, query: str, db_connection_string: str):
+        """
+        Uses pandas to read from DB into documents.
+        Query must return columns: id, text, and optionally title.
+        All additional columns are stored in metadata.
+        """
+        engine = sqlalchemy.create_engine(db_connection_string)
+        df = pd.read_sql_query(query, engine)
+
+        required = {"id", "text"}
+        missing = required - set(df.columns)
+        if missing:
+            raise ValueError(
+                f"Query result missing required columns: {missing}"
+            )
+
+        docs = []
+        for row in df.to_dict(orient="records"):
+            metadata = {
+                k: v for k, v in row.items() if k not in {"id", "text", "title"}
+            }
+            docs.append(
+                Document(
+                    id=row["id"],
+                    text=row["text"],
+                    title=row.get("title"),
+                    metadata=metadata,
+                )
+            )
+
         return cls(documents=docs)
 
 
@@ -111,5 +148,3 @@ class ElementLevel(DocumentLevel):
 
     def infer_element(self, element: DocumentElement):
         return self.infer(element)
-
-
