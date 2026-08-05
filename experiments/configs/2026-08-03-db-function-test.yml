@@ -1,5 +1,14 @@
 # Generate the stuff from the ./.schema_generator.py
 # yaml-language-server: $schema=./.schema.json
+#
+ontology:
+  issues:
+    - Bad Economy
+    - Climate Change
+  policies:
+    - Fossil Fuels
+    - Renewables
+
 data:
   query: |
     WITH ministry AS (
@@ -56,46 +65,5 @@ processor:
     pre_context_size: 0
     post_context_size: 0
 
-
 classifier:
-  DummyClassifier:
-    issues:
-      Economic:
-        - Bad Economy
-      Environmental Sustainability:
-        - Climate Change
-    policies:
-      Fossil:
-        - Fossil Fuels
-      Renewable:
-        - Renewables
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  DummyClassifier: {}

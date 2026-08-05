@@ -14,28 +14,14 @@ from typing import List, Literal, Optional
 from enum import Enum
 import pandas as pd
 
-def construct_label_class(issues: dict, policies: dict) -> type:
-    """
-    Construct a label class with issue and policy fields constrained by the
-    provided issue and policy values.
+def construct_label_class(issues, policies) -> type:
+    def _values(x):
+        if isinstance(x, dict):
+            return tuple(x.keys()) + tuple(chain.from_iterable(x.values()))
+        return tuple(x)
 
-    The returned class subclasses BaseLabelClass and defines two optional
-    annotated attributes:
-
-    - issue: limited to one of the values contained in issues
-    - policy: limited to one of the values contained in policies
-
-    Args:
-        issues: A mapping whose values are iterables of issue labels.
-        policies: A mapping whose values are iterables of policy labels.
-
-    Returns:
-        A dynamically created subclass of BaseLabelClass with typed issue and
-        policy attributes.
-    """
-
-    issue_values = tuple(chain.from_iterable(issues.values()))
-    policy_values = tuple(chain.from_iterable(policies.values()))
+    issue_values = _values(issues)
+    policy_values = _values(policies)
 
     IssueLiteral = Literal.__getitem__(issue_values)
     PolicyLiteral = Literal.__getitem__(policy_values)
@@ -48,14 +34,10 @@ def construct_label_class(issues: dict, policies: dict) -> type:
         labels: List[LabelClass]
 
     return ReturnClass
-
-
 # Define a Pydantic model for a list of strings output
 class BaseClassifier(ElementLevel):
-    def __init__(self, issues, policies) -> None:
-        self.issues = issues
-        self.policies = policies
-        self.label_class = construct_label_class(issues, policies)
+    def __init__(self) -> None:
+        self.label_class = None
 
     def infer(self, element: DocumentElement):
         """

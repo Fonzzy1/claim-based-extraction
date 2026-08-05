@@ -94,10 +94,7 @@ def class_to_schema(cls: type) -> dict:
 def load_module_classes(module_path: str):
     """Load all classes defined in the module."""
     mod = importlib.import_module(module_path)
-    return {
-        name: cls
-        for name, cls in inspect.getmembers(mod, inspect.isclass)
-    }
+    return {name: cls for name, cls in inspect.getmembers(mod, inspect.isclass)}
 
 
 # -------- Schema generator --------
@@ -133,10 +130,58 @@ def generate_pipeline_schema():
                         "required": ["query"],
                         "additionalProperties": False,
                     },
+                    {
+                        "properties": {
+                            "strings": {
+                                "type": "string",
+                                "description": "Location of file with the Strings for processing",
+                            }
+                        },
+                        "required": ["strings"],
+                        "additionalProperties": False,
+                    },
                 ],
             },
+            "ontology": {
+                "type": "object",
+                "description": "Ontology configuration containing issues and policies.",
+                "properties": {
+                    "issues": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                            },
+                        ]
+                    },
+                    "policies": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                            },
+                        ]
+                    },
+                },
+                "required": ["issues", "policies"],
+                "additionalProperties": False,
+            },
         },
-        "required": ["data", "processor", "classifier"],
+        "required": ["data", "processor", "classifier", "ontology"],
         "additionalProperties": False,
         "dependencies": {
             "processor": ["data"],
@@ -176,4 +221,3 @@ if __name__ == "__main__":
     Path("./experiments/configs/.schema.json").write_text(
         json.dumps(schema, indent=2)
     )
-

@@ -4,6 +4,7 @@ import sys
 import importlib
 import os
 from models.base_model import Document, Corpus
+from models.classifier.base_classifier import construct_label_class
 import asyncio
 
 if len(sys.argv) < 2:
@@ -19,14 +20,17 @@ def main(config_file):
     with open(config_file, "r") as file:
         config = yaml.safe_load(file)
 
+    issues = config['ontology']['issues']
+    policies = config['ontology']['issues']
+
     print("Pulling Data")
     data_config = config["data"]
     if "query" in data_config.keys():
-        data = Corpus.from_query(data_config['query'], os.environ['DATABASE_URL'])
+        data = Corpus.from_query(data_config['query'], os.environ['DATABASE_URL'],issues, policies )
     elif "file" in data_config.keys():
         data = Corpus.load_from_file(data_config["file"])
     elif "strings" in data_config.keys():
-        data = Corpus.from_file_of_strings(data_config["strings"])
+        data = Corpus.from_file_of_strings(data_config["strings"], issues, policies)
     else:
         raise Exception("No valid datasouce")
 
@@ -65,6 +69,7 @@ def main(config_file):
         classifier = classifier_class(
             **classifier_config[classifier_class_name]
         )
+        classifier.label_class = construct_label_class(issues, policies)
 
     print("Classifying Claims ...")
     data = classifier.transform(data)

@@ -1,5 +1,15 @@
 # Generate the stuff from the ./.schema_generator.py
 # yaml-language-server: $schema=./.schema.json
+ontology:
+    issues:
+        - Bad Economy
+        - Climate Change
+    policies:
+        - Fossil Fuels
+        - Renewables
+
+
+
 data:
   strings: ./data/dummy.txt
 
@@ -11,16 +21,6 @@ processor:
 
 classifier:
   ZeroShotClassifier:
-    issues:
-      Economic:
-        - Bad Economy
-      Environmental Sustainability:
-        - Climate Change
-    policies:
-      Fossil:
-        - Fossil Fuels
-      Renewable:
-        - Renewables
     model_key: gpt-5.1
     endpoint: https://api.openai.com/v1
 

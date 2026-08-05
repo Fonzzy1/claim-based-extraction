@@ -1,38 +1,20 @@
 # Generate the stuff from the ./.schema_generator.py
-# yaml-language-server: $schema=./.schema.json
+# yaml-language-server: $schema=/Documents/PhD/CSD/experiments/configs/.schema.json
+ontology:
+    issues:
+        - Bad Economy
+        - Climate Change
+    policies:
+        - Fossil Fuels
+        - Renewables
 data:
   strings: ./data/dummy.txt
 
 processor:
   SentenceProcessor:
+    post_context_size: 0 
     pre_context_size: 0
-    post_context_size: 0
 
 
 classifier:
-  LabelingClassifier:
-    issues:
-      Economic:
-        - Bad Economy
-      Environmental Sustainability:
-        - Climate Change
-    policies:
-      Fossil:
-        - Fossil Fuels
-      Renewable:
-        - Renewables
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  LabelingClassifier: {}

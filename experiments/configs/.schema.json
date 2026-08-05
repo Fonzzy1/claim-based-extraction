@@ -30,6 +30,247 @@
             "query"
           ],
           "additionalProperties": false
+        },
+        {
+          "properties": {
+            "strings": {
+              "type": "string",
+              "description": "Location of file with the Strings for processing"
+            }
+          },
+          "required": [
+            "strings"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ontology": {
+      "type": "object",
+      "description": "Ontology configuration containing issues and policies.",
+      "properties": {
+        "issues": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "policies": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "issues",
+        "policies"
+      ],
+      "additionalProperties": false
+    },
+    "processor": {
+      "type": "object",
+      "description": "Processor stage configuration.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "SentenceProcessor": {
+              "type": "object",
+              "description": "",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "pre_context_size": {
+                      "type": "integer"
+                    },
+                    "post_context_size": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "pre_context_size",
+                    "post_context_size"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "SentenceProcessor"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "classifier": {
+      "type": "object",
+      "description": "Classifier stage configuration.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "DummyClassifier": {
+              "type": "object",
+              "description": "",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "DummyClassifier"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "LabelingClassifier": {
+              "type": "object",
+              "description": "",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "LabelingClassifier"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ZeroShotClassifier": {
+              "type": "object",
+              "description": "",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "issues": {
+                      "type": "string"
+                    },
+                    "policies": {
+                      "type": "string"
+                    },
+                    "model_key": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "system_prompt": {
+                      "type": "string"
+                    },
+                    "message_prompt_format_string": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "issues",
+                    "policies",
+                    "model_key",
+                    "endpoint",
+                    "system_prompt",
+                    "message_prompt_format_string"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "ZeroShotClassifier"
+          ],
+          "additionalProperties": false
         }
       ]
     }
@@ -37,7 +278,8 @@
   "required": [
     "data",
     "processor",
-    "classifier"
+    "classifier",
+    "ontology"
   ],
   "additionalProperties": false,
   "dependencies": {

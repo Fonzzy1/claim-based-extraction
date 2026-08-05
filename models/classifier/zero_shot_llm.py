@@ -9,14 +9,12 @@ from models.base_model import DocumentElement, BaseLabelClass
 class ZeroShotClassifier(BaseClassifier):
     def __init__(
             self,
-            issues: dict,
-            policies: dict, 
             model_key: str,
             endpoint: str,
             system_prompt: str,
             message_prompt_format_string: str,
         ):
-            super().__init__(issues, policies)
+            super().__init__()
             self.model_key = model_key
             self.endpoint = endpoint
             self.system_prompt = system_prompt

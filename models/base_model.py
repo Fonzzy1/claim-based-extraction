@@ -60,6 +60,7 @@ class BaseLabelClass(PyBaseModel):
         return self
 
 
+
 @dataclass
 class Document:
     id: int
@@ -72,19 +73,23 @@ class Document:
 @dataclass
 class Corpus(BaseModel):
     documents: List[Document]
+    issues: List[str] | Dict[str, List[str]]
+    policies: List[str] | Dict[str, List[str]]
 
     @classmethod
-    def from_file_of_strings(cls, file_path: str):
+    def from_file_of_strings(cls, file_path: str, issues, policies):
         with open(file_path, "r", encoding="utf-8") as f:
             docs = [
                 Document(id=i, text=line.rstrip("\n"), title=None)
                 for i, line in enumerate(f)
                 if line.strip()
             ]
-        return cls(documents=docs)
+        return cls(documents=docs, issues=issues, policies=policies)
 
     @classmethod
-    def from_query(cls, query: str, db_connection_string: str):
+    def from_query(
+        cls, query: str, db_connection_string: str, issues, policies
+    ):
         """
         Uses pandas to read from DB into documents.
         Query must return columns: id, text, and optionally title.
@@ -114,7 +119,7 @@ class Corpus(BaseModel):
                 )
             )
 
-        return cls(documents=docs)
+        return cls(documents=docs, issues=issues, policies=policies)
 
 
 class DocumentLevel(BaseModel):
